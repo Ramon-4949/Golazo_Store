@@ -10,4 +10,5 @@ sealed interface CreateEvent {
     data class OnImagePicked(val uri: android.net.Uri?) : CreateEvent
     object SaveProduct : CreateEvent
     object ClearMessages : CreateEvent
+
 }

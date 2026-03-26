@@ -14,6 +14,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import com.example.golazo_store.presentation.navigation.RegistroNavHost
 import com.example.golazo_store.ui.theme.AppTheme
 
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -6,4 +6,5 @@ sealed interface FavoritesEvent {
     object ClickFilter : FavoritesEvent
     object ClickMenu : FavoritesEvent
     object ClickCart : FavoritesEvent
+
 }

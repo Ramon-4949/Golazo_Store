@@ -41,6 +41,7 @@ fun FavoritesScreen(
         onBack = onBack,
         bottomNavigation = bottomNavigation
     )
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

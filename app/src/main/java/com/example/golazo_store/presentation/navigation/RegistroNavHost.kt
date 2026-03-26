@@ -15,6 +15,7 @@ import com.example.golazo_store.presentation.categories.CategoriesScreen
 import com.example.golazo_store.presentation.favorites.FavoritesScreen
 import com.example.golazo_store.presentation.components.GolazoBottomNavigation
 
+
 @Composable
 fun RegistroNavHost(
     navController: NavHostController = rememberNavController()
@@ -100,4 +101,4 @@ fun RegistroNavHost(
             )
         }
     }
-}
+}

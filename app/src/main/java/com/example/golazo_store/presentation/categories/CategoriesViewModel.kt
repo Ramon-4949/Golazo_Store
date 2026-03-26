@@ -19,6 +19,7 @@ class CategoriesViewModel @Inject constructor() : ViewModel() {
 
     init {
         loadInitialData()
+
     }
 
     fun onEvent(event: CategoriesEvent) {

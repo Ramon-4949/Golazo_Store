@@ -7,6 +7,7 @@ data class CategoryDemo(
     val subtitle: String,
     val backgroundColor: Color,
     val badge: String? = null
+
 )
 
 data class CategoriesUiState(

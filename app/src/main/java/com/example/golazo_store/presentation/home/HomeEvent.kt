@@ -7,4 +7,5 @@ sealed interface HomeEvent {
     data class AddToCart(val productName: String) : HomeEvent
     object ClickMenu : HomeEvent
     object ClickCart : HomeEvent
+
 }

@@ -39,6 +39,7 @@ fun CategoriesScreen(
         onEvent = viewModel::onEvent,
         bottomNavigation = bottomNavigation
     )
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

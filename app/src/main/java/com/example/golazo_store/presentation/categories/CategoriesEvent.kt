@@ -6,4 +6,5 @@ sealed interface CategoriesEvent {
     object ClickMenu : CategoriesEvent
     object ClickCart : CategoriesEvent
     object ClickViewAll : CategoriesEvent
+
 }

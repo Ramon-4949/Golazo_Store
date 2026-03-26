@@ -6,4 +6,5 @@ data class FavoritesUiState(
     val isLoading: Boolean = false,
     val favoriteItems: List<ProductDemo> = emptyList(),
     val error: String? = null
+
 )
