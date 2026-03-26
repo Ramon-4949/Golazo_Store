@@ -7,4 +7,6 @@ import kotlinx.coroutines.flow.Flow
 interface CamisetaRepository {
     fun getCamisetas(): Flow<Resource<List<Camiseta>>>
     fun getCamisetaById(id: Int): Flow<Resource<Camiseta>>
+    suspend fun upsertCamiseta(camiseta: Camiseta): Resource<Unit>
+    suspend fun deleteCamiseta(id: Int): Resource<Unit>
 }

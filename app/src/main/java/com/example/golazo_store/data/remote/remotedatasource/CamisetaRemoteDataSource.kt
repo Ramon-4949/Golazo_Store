@@ -32,4 +32,44 @@ class CamisetaRemoteDataSource @Inject constructor(
             Result.failure(Exception("Error desconocido", e))
         }
     }
+
+
+    suspend fun createCamiseta(camiseta: CamisetaDto): Result<CamisetaDto> {
+        return try {
+            val response = api.createCamiseta(camiseta)
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(Exception("Error al crear ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("Error desconocido", e))
+        }
+    }
+
+    suspend fun updateCamiseta(id: Int, camiseta: CamisetaDto): Result<Unit> {
+        return try {
+            val response = api.updateCamiseta(id, camiseta)
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Error al actualizar ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("Error desconocido", e))
+        }
+    }
+
+    suspend fun deleteCamiseta(id: Int): Result<Unit> {
+        return try {
+            val response = api.deleteCamiseta(id)
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Error al eliminar ${response.code()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(Exception("Error desconocido", e))
+        }
+    }
 }

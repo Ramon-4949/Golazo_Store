@@ -3,6 +3,7 @@ package com.example.golazo_store.data.repository
 import com.example.golazo_store.data.local.dao.CamisetaDao
 import com.example.golazo_store.data.local.entity.toDomain
 import com.example.golazo_store.data.local.entity.toEntity
+import com.example.golazo_store.data.remote.dto.CamisetaDto
 import com.example.golazo_store.data.remote.remotedatasource.CamisetaRemoteDataSource
 import com.example.golazo_store.domain.model.Camiseta
 import com.example.golazo_store.domain.repository.CamisetaRepository
@@ -48,5 +49,53 @@ class CamisetaRepositoryImpl @Inject constructor(
         } else {
             emit(Resource.Error("Camiseta no encontrada en la base de datos local"))
         }
+    }
+
+    override suspend fun upsertCamiseta(camiseta: Camiseta): Resource<Unit> {
+        val dto = CamisetaDto(
+            camisetaId = camiseta.camisetaId,
+            equipo = camiseta.equipo,
+            liga = camiseta.liga,
+            temporada = camiseta.temporada,
+            descripcion = camiseta.descripcion,
+            precio = camiseta.precio,
+            stock = camiseta.stock,
+            imagenUrl = camiseta.imagenUrl
+        )
+
+        if (camiseta.camisetaId == 0) {
+            val response = remoteDataSource.createCamiseta(dto)
+            return response.fold(
+                onSuccess = { camisetaCreada ->
+                    localDataSource.upsert(camisetaCreada.toDomain().toEntity())
+                    Resource.Success(Unit)
+                },
+                onFailure = { Resource.Error(it.message ?: "Error al crear la camiseta en el servidor") }
+            )
+        } else {
+            val response = remoteDataSource.updateCamiseta(camiseta.camisetaId, dto)
+            return response.fold(
+                onSuccess = {
+                    localDataSource.upsert(camiseta.toEntity())
+                    Resource.Success(Unit)
+                },
+                onFailure = { Resource.Error(it.message ?: "Error al actualizar la camiseta en el servidor") }
+            )
+        }
+    }
+
+    override suspend fun deleteCamiseta(id: Int): Resource<Unit> {
+        val response = remoteDataSource.deleteCamiseta(id)
+
+        return response.fold(
+            onSuccess = {
+                val localEntity = localDataSource.getById(id)
+                if (localEntity != null) {
+                    localDataSource.delete(localEntity)
+                }
+                Resource.Success(Unit)
+            },
+            onFailure = { Resource.Error(it.message ?: "Error al eliminar la camiseta en el servidor") }
+        )
     }
 }
