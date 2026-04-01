@@ -53,17 +53,21 @@ class CamisetaRepositoryImpl @Inject constructor(
 
     override suspend fun upsertCamiseta(camiseta: Camiseta): Resource<Unit> {
         val dto = CamisetaDto(
-            camisetaId = camiseta.camisetaId,
-            equipo = camiseta.equipo,
-            liga = camiseta.liga,
-            temporada = camiseta.temporada,
+            id = camiseta.id,
+            nombre = camiseta.nombre,
             descripcion = camiseta.descripcion,
             precio = camiseta.precio,
-            stock = camiseta.stock,
-            imagenUrl = camiseta.imagenUrl
+            imagenUrl = camiseta.imagenUrl,
+            stockS = camiseta.stockS,
+            stockM = camiseta.stockM,
+            stockL = camiseta.stockL,
+            stockXL = camiseta.stockXL,
+            stock2XL = camiseta.stock2XL,
+            stockTotal = camiseta.stockTotal,
+            categoriaId = camiseta.categoriaId
         )
 
-        if (camiseta.camisetaId == 0) {
+        if (camiseta.id == 0) {
             val response = remoteDataSource.createCamiseta(dto)
             return response.fold(
                 onSuccess = { camisetaCreada ->
@@ -73,7 +77,7 @@ class CamisetaRepositoryImpl @Inject constructor(
                 onFailure = { Resource.Error(it.message ?: "Error al crear la camiseta en el servidor") }
             )
         } else {
-            val response = remoteDataSource.updateCamiseta(camiseta.camisetaId, dto)
+            val response = remoteDataSource.updateCamiseta(camiseta.id, dto)
             return response.fold(
                 onSuccess = {
                     localDataSource.upsert(camiseta.toEntity())

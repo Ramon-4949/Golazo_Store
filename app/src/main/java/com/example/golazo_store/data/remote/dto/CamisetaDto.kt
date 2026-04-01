@@ -3,23 +3,33 @@ package com.example.golazo_store.data.remote.dto
 import com.example.golazo_store.domain.model.Camiseta
 
 data class CamisetaDto(
-    val camisetaId: Int,
-    val equipo: String,
-    val liga: String,
-    val temporada: String,
+    val id: Int,
+    val nombre: String,
     val descripcion: String,
     val precio: Double,
-    val stock: Int,
-    val imagenUrl: String
+    val imagenUrl: String,
+    val stockS: Int,
+    val stockM: Int,
+    val stockL: Int,
+    val stockXL: Int,
+    val stock2XL: Int,
+    val stockTotal: Int = 0,
+    val categoriaId: Int,
+    val categoria: CategoriaDto? = null
 ) {
     fun toDomain() = Camiseta(
-        camisetaId = camisetaId,
-        equipo = equipo,
-        liga = liga,
-        temporada = temporada,
+        id = id,
+        nombre = nombre,
         descripcion = descripcion,
         precio = precio,
-        stock = stock,
-        imagenUrl = imagenUrl
+        imagenUrl = imagenUrl,
+        stockS = stockS,
+        stockM = stockM,
+        stockL = stockL,
+        stockXL = stockXL,
+        stock2XL = stock2XL,
+        stockTotal = stockTotal,
+        categoriaId = categoriaId,
+        categoria = categoria?.toDomain()
     )
 }
