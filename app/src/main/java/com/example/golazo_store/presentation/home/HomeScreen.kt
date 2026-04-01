@@ -117,11 +117,7 @@ fun HomeTopBar(onEvent: (HomeEvent) -> Unit) {
                 textAlign = TextAlign.Center
             )
         },
-        navigationIcon = {
-            IconButton(onClick = { onEvent(HomeEvent.ClickMenu) }) {
-                Icon(Icons.Default.Menu, contentDescription = "Menu")
-            }
-        },
+
         actions = {
             BadgedBox(
                 badge = {

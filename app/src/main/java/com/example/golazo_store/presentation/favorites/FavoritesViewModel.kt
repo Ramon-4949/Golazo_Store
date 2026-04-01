@@ -46,10 +46,7 @@ class FavoritesViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
 
-            // Dummy data matching the favorites screenshot provided by the user
-            val mockFavorites = listOf(
-                ProductDemo("Argentina Retro", "$3,500", true, Color(0xFF1E242B))
-            )
+            val mockFavorites = emptyList<ProductDemo>()
 
             _state.update {
                 it.copy(
