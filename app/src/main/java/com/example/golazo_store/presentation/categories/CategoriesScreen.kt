@@ -95,11 +95,7 @@ fun CategoriesTopBar(onEvent: (CategoriesEvent) -> Unit) {
                 textAlign = TextAlign.Center
             )
         },
-        navigationIcon = {
-            IconButton(onClick = { onEvent(CategoriesEvent.ClickMenu) }) {
-                Icon(Icons.Default.Menu, contentDescription = "Menu")
-            }
-        },
+
         actions = {
             BadgedBox(
                 badge = {

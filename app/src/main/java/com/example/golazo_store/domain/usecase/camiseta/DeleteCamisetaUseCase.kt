@@ -1,4 +1,4 @@
-package com.example.golazo_store.domain.usecase
+package com.example.golazo_store.domain.usecase.camiseta
 
 import com.example.golazo_store.domain.repository.CamisetaRepository
 import com.example.golazo_store.domain.utils.Resource

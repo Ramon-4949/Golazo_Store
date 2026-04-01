@@ -84,7 +84,7 @@ fun CreateBodyScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Crear Camiseta",
+                        text = if (state.isEditing) "Editar Camiseta" else "Crear Camiseta",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
                         modifier = Modifier.fillMaxWidth(),
@@ -121,57 +121,46 @@ fun CreateBodyScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            FormSectionTitle("Información del Producto")
+            FormSectionTitle("Información General")
             
             CustomTextField(
-                label = "Equipo",
-                value = state.equipo,
-                onValueChange = { onEvent(CreateEvent.OnEquipoChange(it)) },
-                placeholder = "Ej. Real Madrid"
-            )
-
-            CustomTextField(
-                label = "Liga",
-                value = state.liga,
-                onValueChange = { onEvent(CreateEvent.OnLigaChange(it)) },
-                placeholder = "Ej. La Liga"
-            )
-
-            CustomTextField(
-                label = "Temporada",
-                value = state.temporada,
-                onValueChange = { onEvent(CreateEvent.OnTemporadaChange(it)) },
-                placeholder = "Ej. 2023/2024"
+                label = "Nombre de la camiseta",
+                value = state.nombre,
+                onValueChange = { onEvent(CreateEvent.OnNombreChange(it)) },
+                placeholder = "Ej. Camiseta Local 24/25"
             )
 
             CustomTextField(
                 label = "Descripción",
                 value = state.descripcion,
                 onValueChange = { onEvent(CreateEvent.OnDescripcionChange(it)) },
-                placeholder = "Ej. Camiseta retro versión jugador",
+                placeholder = "Detalles de la tela, ajuste, etc.",
                 singleLine = false,
                 modifier = Modifier.height(100.dp)
             )
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                CustomTextField(
-                    label = "Precio (€)",
-                    value = state.precio,
-                    onValueChange = { onEvent(CreateEvent.OnPrecioChange(it)) },
-                    placeholder = "0.00",
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f)
-                )
+            CategoryDropdown(
+                categorias = state.categorias,
+                selectedCategoriaId = state.selectedCategoriaId,
+                onCategoriaSelected = { onEvent(CreateEvent.OnCategoriaSelected(it)) }
+            )
 
-                CustomTextField(
-                    label = "Stock",
-                    value = state.stock,
-                    onValueChange = { onEvent(CreateEvent.OnStockChange(it)) },
-                    placeholder = "0",
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.weight(1f)
-                )
-            }
+            CustomTextField(
+                label = "Precio (€)",
+                value = state.precio,
+                onValueChange = { onEvent(CreateEvent.OnPrecioChange(it)) },
+                placeholder = "$ 0.00",
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+            FormSectionTitle("Gestión de Stock por Talla")
+
+            StockRow(label = "S", value = state.stockS, onValueChange = { onEvent(CreateEvent.OnStockSChange(it)) })
+            StockRow(label = "M", value = state.stockM, onValueChange = { onEvent(CreateEvent.OnStockMChange(it)) })
+            StockRow(label = "L", value = state.stockL, onValueChange = { onEvent(CreateEvent.OnStockLChange(it)) })
+            StockRow(label = "XL", value = state.stockXL, onValueChange = { onEvent(CreateEvent.OnStockXLChange(it)) })
+            StockRow(label = "2XL", value = state.stock2XL, onValueChange = { onEvent(CreateEvent.OnStock2XLChange(it)) })
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -186,7 +175,7 @@ fun CreateBodyScreen(
                 if (state.isLoading) {
                     CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(24.dp))
                 } else {
-                    Text("Crear publicación", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(if (state.isEditing) "Editar publicación" else "Crear publicación", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 }
             }
 
@@ -348,6 +337,124 @@ fun CustomTextField(
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = primaryDark,
                 unfocusedBorderColor = Color(0xFFFFF0EC), // Light border
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White
+            )
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CategoryDropdown(
+    categorias: List<com.example.golazo_store.domain.model.Categoria>,
+    selectedCategoriaId: Int?,
+    onCategoriaSelected: (Int) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val selectedText = categorias.find { it.id == selectedCategoriaId }?.nombre ?: "Selecciona una categoría"
+
+    Column(modifier = Modifier.padding(bottom = 16.dp)) {
+        Text(
+            text = "Categoría",
+            fontWeight = FontWeight.Bold,
+            fontSize = 12.sp,
+            color = Color(0xFF2B2B2B),
+            modifier = Modifier.padding(bottom = 4.dp)
+        )
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = it }
+        ) {
+            OutlinedTextField(
+                value = selectedText,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(),
+                shape = RoundedCornerShape(8.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = primaryDark,
+                    unfocusedBorderColor = Color(0xFFFFF0EC),
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White
+                )
+            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.background(Color.White)
+            ) {
+                categorias.forEach { categoria ->
+                    DropdownMenuItem(
+                        text = { Text(text = categoria.nombre, color = Color.Black) },
+                        onClick = {
+                            onCategoriaSelected(categoria.id)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun StockRow(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // Size box
+        Box(
+            modifier = Modifier
+                .width(48.dp)
+                .height(48.dp)
+                .background(Color(0xFFFFFDF5), RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(8.dp))
+                .clickable { /* No action needed */ },
+            contentAlignment = Alignment.Center
+        ) {
+            // we create a border matching Figma: yellow border
+            androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
+                val strokeWidth = 1.dp.toPx()
+                drawRoundRect(
+                    color = Color(0xFFFFD54F),
+                    style = Stroke(width = strokeWidth),
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(8.dp.toPx())
+                )
+            }
+            Text(
+                text = label,
+                fontWeight = FontWeight.Bold,
+                color = if (label.contains("X")) Color(0xFF9FA8B8) else Color.Black,
+                fontSize = 14.sp
+            )
+        }
+        
+        // Input textfield
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            placeholder = { Text("0", color = Color.Gray) },
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            shape = RoundedCornerShape(8.dp),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = primaryDark,
+                unfocusedBorderColor = Color(0xFFFFF0EC),
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White
             )

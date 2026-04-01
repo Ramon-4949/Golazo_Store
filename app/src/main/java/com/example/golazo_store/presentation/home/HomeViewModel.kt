@@ -50,13 +50,7 @@ class HomeViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             
-            // Dummy data to match the current visual state
-            val mockData = listOf(
-                com.example.golazo_store.presentation.home.HomeScreen.ProductDemo("Argentina Retro", "$3,500", true, Color(0xFF1E242B)),
-                com.example.golazo_store.presentation.home.HomeScreen.ProductDemo("Real Madrid Local", "$1,000", false, Color(0xFF262626)),
-                com.example.golazo_store.presentation.home.HomeScreen.ProductDemo("Boca Juniors 2024", "$1,500", false, Color(0xFF1E2836)),
-                com.example.golazo_store.presentation.home.HomeScreen.ProductDemo("Inter Miami Rosa", "$2,500", false, Color(0xFFFA5774))
-            )
+            val mockData = emptyList<com.example.golazo_store.presentation.home.HomeScreen.ProductDemo>()
 
             _state.update { 
                 it.copy(

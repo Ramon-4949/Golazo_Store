@@ -87,13 +87,13 @@ fun GolazoBottomNavigation(
             )
         )
         NavigationBarItem(
-            selected = currentRoute == Screen.CreateCamiseta::class.qualifiedName,
+            selected = currentRoute == Screen.Profile::class.qualifiedName,
             onClick = onNavigateToProfile,
             icon = { Icon(Icons.Filled.Person, contentDescription = "Mi Perfil") },
             label = { 
                 Text(
                     "Mi Perfil",
-                    fontWeight = if (currentRoute == Screen.CreateCamiseta::class.qualifiedName) FontWeight.Bold else FontWeight.Normal
+                    fontWeight = if (currentRoute == Screen.Profile::class.qualifiedName) FontWeight.Bold else FontWeight.Normal
                 ) 
             },
             colors = NavigationBarItemDefaults.colors(

@@ -1,6 +1,7 @@
 package com.example.golazo_store.data.remote.api
 
 import com.example.golazo_store.data.remote.dto.CamisetaDto
+import com.example.golazo_store.data.remote.dto.CategoriaDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -8,6 +9,10 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Multipart
+import retrofit2.http.Part
+import okhttp3.MultipartBody
+import com.example.golazo_store.data.remote.dto.UploadDto
 
 interface GolazoApi {
     @GET("api/Camisetas")
@@ -20,4 +25,11 @@ interface GolazoApi {
     suspend fun updateCamiseta(@Path("id") id: Int, @Body camiseta: CamisetaDto): Response<Unit>
     @DELETE("api/Camisetas/{id}")
     suspend fun deleteCamiseta(@Path("id") id: Int): Response<Unit>
+    
+    @GET("api/Categorias")
+    suspend fun getCategorias(): Response<List<CategoriaDto>>
+    
+    @Multipart
+    @POST("api/Upload")
+    suspend fun uploadImage(@Part imagen: MultipartBody.Part): Response<UploadDto>
 }

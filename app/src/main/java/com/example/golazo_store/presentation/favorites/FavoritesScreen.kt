@@ -148,11 +148,7 @@ fun FavoritesTopBar(onEvent: (FavoritesEvent) -> Unit) {
                 textAlign = TextAlign.Center
             )
         },
-        navigationIcon = {
-            IconButton(onClick = { onEvent(FavoritesEvent.ClickMenu) }) {
-                Icon(Icons.Default.Menu, contentDescription = "Menu")
-            }
-        },
+
         actions = {
             BadgedBox(
                 badge = {

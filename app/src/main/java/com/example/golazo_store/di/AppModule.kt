@@ -4,10 +4,17 @@ import android.content.Context
 import androidx.room.Room
 import com.example.golazo_store.data.local.dao.CamisetaDao
 import com.example.golazo_store.data.local.database.GolazoDatabase
+import com.example.golazo_store.data.local.SessionManager
+import com.example.golazo_store.data.remote.api.AuthApi
 import com.example.golazo_store.data.remote.api.GolazoApi
+import com.example.golazo_store.data.remote.remotedatasource.AuthRemoteDataSource
 import com.example.golazo_store.data.remote.remotedatasource.CamisetaRemoteDataSource
+import com.example.golazo_store.data.repository.AuthRepositoryImpl
 import com.example.golazo_store.data.repository.CamisetaRepositoryImpl
+import com.example.golazo_store.domain.repository.AuthRepository
 import com.example.golazo_store.domain.repository.CamisetaRepository
+import com.example.golazo_store.domain.repository.UploadRepository
+import com.example.golazo_store.data.repository.UploadRepositoryImpl
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -62,11 +69,56 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideAuthApi(moshi: Moshi): AuthApi {
+        return Retrofit.Builder()
+            .baseUrl("http://golazostoreapi.somee.com/")
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create(AuthApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository(
+        api: AuthApi,
+        sessionManager: SessionManager
+    ): AuthRepository {
+        val remoteDataSource = AuthRemoteDataSource(api)
+        return AuthRepositoryImpl(remoteDataSource, sessionManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSessionManager(
+        @ApplicationContext context: Context
+    ): SessionManager {
+        return SessionManager(context)
+    }
+
+    @Provides
+    @Singleton
     fun provideCamisetaRepository(
         api: GolazoApi,
         dao: CamisetaDao
     ): CamisetaRepository {
         val remoteDataSource = CamisetaRemoteDataSource(api)
         return CamisetaRepositoryImpl(remoteDataSource, dao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCategoriaRepository(
+        api: GolazoApi
+    ): com.example.golazo_store.domain.repository.CategoriaRepository {
+        return com.example.golazo_store.data.repository.CategoriaRepositoryImpl(api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUploadRepository(
+        api: GolazoApi,
+        @ApplicationContext context: Context
+    ): UploadRepository {
+        return UploadRepositoryImpl(api, context)
     }
 }

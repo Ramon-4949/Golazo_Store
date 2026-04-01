@@ -15,9 +15,9 @@ interface CamisetaDao {
     @Delete
     suspend fun delete(entity: CamisetaEntity)
 
-    @Query("SELECT * FROM camisetas ORDER BY camisetaId DESC")
+    @Query("SELECT * FROM camisetas ORDER BY id DESC")
     fun observeAll(): Flow<List<CamisetaEntity>>
 
-    @Query("SELECT * FROM camisetas WHERE camisetaId = :id")
+    @Query("SELECT * FROM camisetas WHERE id = :id")
     suspend fun getById(id: Int): CamisetaEntity?
 }

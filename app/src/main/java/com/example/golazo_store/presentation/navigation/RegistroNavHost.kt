@@ -14,6 +14,10 @@ import com.example.golazo_store.presentation.create.CreateScreen
 import com.example.golazo_store.presentation.categories.CategoriesScreen
 import com.example.golazo_store.presentation.favorites.FavoritesScreen
 import com.example.golazo_store.presentation.components.GolazoBottomNavigation
+import com.example.golazo_store.presentation.login.LoginScreen
+import com.example.golazo_store.presentation.register.RegisterScreen
+import com.example.golazo_store.presentation.profile.ProfileScreen
+import com.example.golazo_store.presentation.gestion.GestionScreen
 
 
 @Composable
@@ -48,7 +52,7 @@ fun RegistroNavHost(
                 }
             },
             onNavigateToProfile = {
-                navController.navigate(Screen.CreateCamiseta) {
+                navController.navigate(Screen.Profile) {
                     popUpTo(Screen.Home) { saveState = true }
                     launchSingleTop = true
                     restoreState = true
@@ -59,8 +63,26 @@ fun RegistroNavHost(
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Home
+        startDestination = Screen.Login
     ) {
+        composable<Screen.Login> {
+            LoginScreen(
+                onNavigateToRegister = { navController.navigate(Screen.Register) },
+                onLoginSuccess = { 
+                    navController.navigate(Screen.Home) { 
+                        popUpTo(Screen.Login) { inclusive = true } 
+                    } 
+                }
+            )
+        }
+
+        composable<Screen.Register> {
+            RegisterScreen(
+                onNavigateBack = { navController.navigateUp() },
+                onRegisterSuccess = { navController.navigateUp() }
+            )
+        }
+
         composable<Screen.RegistroList> {
             RegistroListScreen(
                 onNavigateToDetail = { id -> navController.navigate(Screen.RegistroDetail(id)) },
@@ -76,7 +98,7 @@ fun RegistroNavHost(
 
         composable<Screen.Home> {
             HomeScreen(
-                onNavigateToCreate = { navController.navigate(Screen.CreateCamiseta) },
+                onNavigateToCreate = { navController.navigate(Screen.CreateCamiseta()) },
                 bottomNavigation = bottomNavigation
             )
         }
@@ -96,7 +118,31 @@ fun RegistroNavHost(
 
         composable<Screen.CreateCamiseta> {
             CreateScreen(
-                onBack = { navController.navigate(Screen.Home) },
+                onBack = { navController.navigateUp() },
+                bottomNavigation = bottomNavigation
+            )
+        }
+
+        composable<Screen.Profile> {
+            ProfileScreen(
+                onNavigateToLogin = { 
+                    navController.navigate(Screen.Login) { 
+                        popUpTo(navController.graph.startDestinationId) { inclusive = true } 
+                    } 
+                },
+                onNavigateToGestionPublicaciones = {
+                    navController.navigate(Screen.GestionPublicaciones)
+                },
+                onBack = { navController.navigateUp() },
+                bottomNavigation = bottomNavigation
+            )
+        }
+
+        composable<Screen.GestionPublicaciones> {
+            GestionScreen(
+                onNavigateToCreate = { navController.navigate(Screen.CreateCamiseta()) },
+                onNavigateToEdit = { id -> navController.navigate(Screen.CreateCamiseta(id)) },
+                onBack = { navController.navigateUp() },
                 bottomNavigation = bottomNavigation
             )
         }

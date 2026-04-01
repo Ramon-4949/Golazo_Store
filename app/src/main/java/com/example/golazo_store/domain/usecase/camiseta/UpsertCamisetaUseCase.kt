@@ -1,4 +1,4 @@
-package com.example.golazo_store.domain.usecase
+package com.example.golazo_store.domain.usecase.camiseta
 
 import com.example.golazo_store.domain.model.Camiseta
 import com.example.golazo_store.domain.repository.CamisetaRepository
@@ -12,8 +12,8 @@ class UpsertCamisetaUseCase @Inject constructor(
         if (camiseta.precio <= 0) {
             return Resource.Error("El precio debe ser mayor a 0")
         }
-        if (camiseta.equipo.isBlank()) {
-            return Resource.Error("El nombre del equipo no puede estar vacío")
+        if (camiseta.nombre.isBlank()) {
+            return Resource.Error("El nombre de la camiseta no puede estar vacío")
         }
 
         return repository.upsertCamiseta(camiseta)
