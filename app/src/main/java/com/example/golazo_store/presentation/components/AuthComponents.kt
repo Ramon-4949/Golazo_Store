@@ -75,3 +75,5 @@ fun AuthButton(
         Text(text = text, fontWeight = FontWeight.Bold, fontSize = 16.sp)
     }
 }
+
+

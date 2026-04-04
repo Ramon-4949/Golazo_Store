@@ -8,14 +8,14 @@ data class CamisetaDto(
     val descripcion: String,
     val precio: Double,
     val imagenUrl: String,
-    val stockS: Int,
-    val stockM: Int,
-    val stockL: Int,
-    val stockXL: Int,
-    val stock2XL: Int,
-    val stockTotal: Int = 0,
-    val categoriaId: Int,
-    val categoria: CategoriaDto? = null
+    val stockS: Int? = 0,
+    val stockM: Int? = 0,
+    val stockL: Int? = 0,
+    val stockXL: Int? = 0,
+    val stock2XL: Int? = 0,
+    val stockTotal: Int? = 0,
+    val categoriaId: Int? = 0,
+    val categoria: String? = null
 ) {
     fun toDomain() = Camiseta(
         id = id,
@@ -23,13 +23,13 @@ data class CamisetaDto(
         descripcion = descripcion,
         precio = precio,
         imagenUrl = imagenUrl,
-        stockS = stockS,
-        stockM = stockM,
-        stockL = stockL,
-        stockXL = stockXL,
-        stock2XL = stock2XL,
-        stockTotal = stockTotal,
-        categoriaId = categoriaId,
-        categoria = categoria?.toDomain()
+        stockS = stockS ?: 0,
+        stockM = stockM ?: 0,
+        stockL = stockL ?: 0,
+        stockXL = stockXL ?: 0,
+        stock2XL = stock2XL ?: 0,
+        stockTotal = stockTotal ?: 0,
+        categoriaId = categoriaId ?: 0,
+        categoria = null
     )
 }

@@ -13,6 +13,8 @@ import retrofit2.http.Multipart
 import retrofit2.http.Part
 import okhttp3.MultipartBody
 import com.example.golazo_store.data.remote.dto.UploadDto
+import com.example.golazo_store.data.remote.dto.PedidoAdminDto
+import com.example.golazo_store.data.remote.dto.UpdateEstadoDto
 
 interface GolazoApi {
     @GET("api/Camisetas")
@@ -32,4 +34,44 @@ interface GolazoApi {
     @Multipart
     @POST("api/Upload")
     suspend fun uploadImage(@Part imagen: MultipartBody.Part): Response<UploadDto>
+
+    @GET("api/Direcciones")
+    suspend fun getDirecciones(): Response<List<com.example.golazo_store.data.remote.dto.DireccionDto>>
+
+    @GET("api/Direcciones/{id}")
+    suspend fun getDireccionById(@Path("id") id: Int): Response<com.example.golazo_store.data.remote.dto.DireccionDto>
+
+    @POST("api/Direcciones")
+    suspend fun createDireccion(@Body direccion: com.example.golazo_store.data.remote.dto.DireccionDto): Response<com.example.golazo_store.data.remote.dto.DireccionDto>
+
+    @PUT("api/Direcciones/{id}")
+    suspend fun updateDireccion(@Path("id") id: Int, @Body direccion: com.example.golazo_store.data.remote.dto.DireccionDto): Response<Unit>
+
+    @DELETE("api/Direcciones/{id}")
+    suspend fun deleteDireccion(@Path("id") id: Int): Response<Unit>
+
+    // --- MetodosPago ---
+    @GET("api/MetodosPago")
+    suspend fun getMetodosPago(): Response<List<com.example.golazo_store.data.remote.dto.MetodoPagoDto>>
+
+    @POST("api/MetodosPago")
+    suspend fun createMetodoPago(@Body request: com.example.golazo_store.data.remote.dto.MetodoPagoRequestDto): Response<com.example.golazo_store.data.remote.dto.MetodoPagoDto>
+
+    @DELETE("api/MetodosPago/{id}")
+    suspend fun deleteMetodoPago(@Path("id") id: Int): Response<Unit>
+
+    @POST("api/Pedidos")
+    suspend fun createPedido(@Body request: com.example.golazo_store.data.remote.dto.PedidoRequestDto): Response<com.example.golazo_store.data.remote.dto.PedidoDto>
+
+    @GET("api/Pedidos")
+    suspend fun getAdminPedidos(): Response<List<PedidoAdminDto>>
+
+    @GET("api/Pedidos/mis-pedidos")
+    suspend fun getMisPedidos(): Response<List<PedidoAdminDto>>
+
+    @GET("api/Pedidos/{id}")
+    suspend fun getAdminPedidoById(@Path("id") id: Int): Response<PedidoAdminDto>
+
+    @PUT("api/Pedidos/{id}/estado")
+    suspend fun updatePedidoEstado(@Path("id") id: Int, @Body request: UpdateEstadoDto): Response<Unit>
 }

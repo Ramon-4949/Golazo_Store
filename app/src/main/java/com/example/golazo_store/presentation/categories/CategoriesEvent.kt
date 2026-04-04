@@ -8,3 +8,4 @@ sealed interface CategoriesEvent {
     object ClickViewAll : CategoriesEvent
 
 }
+

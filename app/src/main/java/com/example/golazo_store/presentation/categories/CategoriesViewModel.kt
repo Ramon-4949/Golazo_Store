@@ -41,10 +41,9 @@ class CategoriesViewModel @Inject constructor() : ViewModel() {
             _state.update { it.copy(isLoading = true) }
 
             val mockCategories = listOf(
-                CategoryDemo("Clubes", "Equipos de ligas top", Color(0xFF1E2836)),
-                CategoryDemo("Selecciones", "Orgullo nacional", Color(0xFF111418)),
-                CategoryDemo("Retro Clásicos", "Las leyendas nunca mueren", Color(0xFF1B3B26), badge = "COLECCIONISTA"),
-                CategoryDemo("Accesorios", "Completa tu estilo", Color(0xFF4A2511))
+                CategoryDemo("Entrenamiento", "100% flexibles", com.example.Golazo_Store.R.drawable.entrenamiento),
+                CategoryDemo("Selecciones", "Orgullo nacional", com.example.Golazo_Store.R.drawable.selecciones),
+                CategoryDemo("Clubes", "Equipos de ligas top", com.example.Golazo_Store.R.drawable.clubes)
             )
 
             _state.update {
@@ -56,3 +55,5 @@ class CategoriesViewModel @Inject constructor() : ViewModel() {
         }
     }
 }
+
+

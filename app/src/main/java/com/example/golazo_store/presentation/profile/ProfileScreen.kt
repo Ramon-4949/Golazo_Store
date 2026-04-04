@@ -31,6 +31,10 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
     onNavigateToLogin: () -> Unit,
     onNavigateToGestionPublicaciones: () -> Unit,
+    onNavigateToAdminPedidos: () -> Unit,
+    onNavigateToMisPedidos: () -> Unit,
+    onNavigateToAddresses: () -> Unit,
+    onNavigateToPayments: () -> Unit,
     onBack: () -> Unit,
     bottomNavigation: @Composable () -> Unit
 ) {
@@ -136,26 +140,30 @@ fun ProfileScreen(
                         icon = Icons.Default.ShoppingBag,
                         title = "Pedidos",
                         subtitle = "Seguimientos de transacciones",
-                        iconTint = Color(0xFFFFBA08)
+                        iconTint = Color(0xFFFFBA08),
+                        onClick = onNavigateToAdminPedidos
                     )
                 } else {
                     ProfileMenuItem(
                         icon = Icons.Default.ShoppingBag,
                         title = "Mis Pedidos",
                         subtitle = "Historial y seguimiento",
-                        iconTint = Color(0xFFFFBA08)
+                        iconTint = Color(0xFFFFBA08),
+                        onClick = onNavigateToMisPedidos
                     )
                     ProfileMenuItem(
                         icon = Icons.Default.LocationOn,
                         title = "Mis Direcciones",
                         subtitle = "Gestionar puntos de entrega",
-                        iconTint = Color(0xFFFFBA08)
+                        iconTint = Color(0xFFFFBA08),
+                        onClick = onNavigateToAddresses
                     )
                     ProfileMenuItem(
                         icon = Icons.Default.AccountBalanceWallet,
                         title = "Métodos de Pago",
-                        subtitle = "Tarjetas y billeteras",
-                        iconTint = Color(0xFFFFBA08)
+                        subtitle = "Tarjetas y formas de pago",
+                        iconTint = Color(0xFFFFBA08),
+                        onClick = onNavigateToPayments
                     )
                 }
 
@@ -276,3 +284,5 @@ fun ProfileMenuItem(
         }
     }
 }
+
+

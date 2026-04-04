@@ -8,6 +8,10 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
@@ -19,13 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import com.example.golazo_store.ui.theme.primaryDark
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.golazo_store.ui.theme.primaryDark
 
 @Composable
 fun CategoriesScreen(
@@ -61,11 +65,6 @@ fun CategoriesBodyScreen(
                 .padding(paddingValues)
                 .background(Color.White)
         ) {
-            Spacer(modifier = Modifier.height(8.dp))
-            SearchBar(
-                query = state.searchQuery,
-                onQueryChange = { onEvent(CategoriesEvent.UpdateSearchQuery(it)) }
-            )
             Spacer(modifier = Modifier.height(16.dp))
 
             if (state.isLoading) {
@@ -122,28 +121,6 @@ fun CategoriesTopBar(onEvent: (CategoriesEvent) -> Unit) {
     )
 }
 
-@Composable
-fun SearchBar(
-    query: String,
-    onQueryChange: (String) -> Unit
-) {
-    OutlinedTextField(
-        value = query,
-        onValueChange = onQueryChange,
-        placeholder = { Text("Buscar camisetas, equipos...", color = Color.Gray) },
-        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.Gray) },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            unfocusedBorderColor = Color.Transparent,
-            focusedBorderColor = Color.Transparent,
-            unfocusedContainerColor = Color(0xFFF0F4F8),
-            focusedContainerColor = Color(0xFFF0F4F8)
-        )
-    )
-}
 
 @Composable
 fun CategoriesGrid(
@@ -170,21 +147,13 @@ fun CategoriesGrid(
                     fontSize = 18.sp,
                     color = Color.Black
                 )
-                Text(
-                    text = "Ver todas",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp,
-                    color = primaryDark,
-                    modifier = Modifier.clickable { onEvent(CategoriesEvent.ClickViewAll) }
-                )
             }
         }
         
         items(
             items = categories,
             span = { category ->
-                // Make "Retro Clásicos" or any item with a badge span the full width to match the design.
-                if (category.badge != null) GridItemSpan(maxLineSpan) else GridItemSpan(1)
+                if (category.title == "Clubes") GridItemSpan(maxLineSpan) else GridItemSpan(1)
             }
         ) { category ->
             CategoryCard(category = category, onEvent = onEvent)
@@ -208,8 +177,25 @@ fun CategoryCard(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(category.backgroundColor)
         ) {
+            coil.compose.AsyncImage(
+                model = category.imageResId,
+                contentDescription = category.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            
+            // Gradient Overlay
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.8f))
+                        )
+                    )
+            )
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -253,3 +239,6 @@ fun CategoryCard(
         }
     }
 }
+
+
+

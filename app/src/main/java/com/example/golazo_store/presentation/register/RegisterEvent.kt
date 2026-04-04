@@ -7,3 +7,4 @@ sealed interface RegisterEvent {
     data class ConfirmContrasenaChanged(val confirmContrasena: String) : RegisterEvent
     object RegisterClicked : RegisterEvent
 }
+
