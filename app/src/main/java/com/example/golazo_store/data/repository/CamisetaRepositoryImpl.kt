@@ -25,7 +25,7 @@ class CamisetaRepositoryImpl @Inject constructor(
             val camisetasDomain = camisetasDto.map { it.toDomain() }
             camisetasDomain.forEach { localDataSource.upsert(it.toEntity()) }
         }.onFailure {
-            emit(Resource.Error(it.message ?: "Error de sincronización con el servidor"))
+            // Error suprimido de la capa UI; se seguirá observando la DB local asincrónicamente
         }
 
         localDataSource.observeAll().collect { entities ->
@@ -40,14 +40,14 @@ class CamisetaRepositoryImpl @Inject constructor(
         response.onSuccess { camisetaDto ->
             localDataSource.upsert(camisetaDto.toDomain().toEntity())
         }.onFailure {
-            emit(Resource.Error(it.message ?: "Error de red"))
+            // Ignoramos error de red de cara a la UI, la verdadera fuente es local
         }
 
         val localCamiseta = localDataSource.getById(id)
         if (localCamiseta != null) {
             emit(Resource.Success(localCamiseta.toDomain()))
         } else {
-            emit(Resource.Error("Camiseta no encontrada en la base de datos local"))
+            emit(Resource.Error("Camiseta no encontrada localmente ni en el servidor"))
         }
     }
 

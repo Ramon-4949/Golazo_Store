@@ -13,8 +13,14 @@ import com.example.golazo_store.data.repository.AuthRepositoryImpl
 import com.example.golazo_store.data.repository.CamisetaRepositoryImpl
 import com.example.golazo_store.domain.repository.AuthRepository
 import com.example.golazo_store.domain.repository.CamisetaRepository
+import com.example.golazo_store.data.local.dao.CartDao
+import com.example.golazo_store.domain.repository.CartRepository
+import com.example.golazo_store.data.repository.CartRepositoryImpl
 import com.example.golazo_store.domain.repository.UploadRepository
 import com.example.golazo_store.data.repository.UploadRepositoryImpl
+import com.example.golazo_store.domain.repository.DireccionRepository
+import com.example.golazo_store.domain.repository.MetodoPagoRepository
+import com.example.golazo_store.domain.repository.PedidoRepository
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -39,13 +45,20 @@ object AppModule {
             context,
             GolazoDatabase::class.java,
             "golazo_database"
-        ).build()
+        ).fallbackToDestructiveMigration()
+         .build()
     }
 
     @Provides
     @Singleton
     fun provideCamisetaDao(database: GolazoDatabase): CamisetaDao {
         return database.camisetaDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCartDao(database: GolazoDatabase): CartDao {
+        return database.cartDao()
     }
 
     @Singleton
@@ -107,6 +120,32 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideCartRepository(
+        dao: CartDao
+    ): CartRepository {
+        return CartRepositoryImpl(dao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDireccionRepository(
+        api: GolazoApi
+    ): com.example.golazo_store.domain.repository.DireccionRepository {
+        val remoteDataSource = com.example.golazo_store.data.remote.remotedatasource.DireccionRemoteDataSource(api)
+        return com.example.golazo_store.data.repository.DireccionRepositoryImpl(remoteDataSource)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMetodoPagoRepository(
+        api: GolazoApi
+    ): com.example.golazo_store.domain.repository.MetodoPagoRepository {
+        val remoteDataSource = com.example.golazo_store.data.remote.remotedatasource.MetodoPagoRemoteDataSource(api)
+        return com.example.golazo_store.data.repository.MetodoPagoRepositoryImpl(remoteDataSource)
+    }
+
+    @Provides
+    @Singleton
     fun provideCategoriaRepository(
         api: GolazoApi
     ): com.example.golazo_store.domain.repository.CategoriaRepository {
@@ -120,5 +159,13 @@ object AppModule {
         @ApplicationContext context: Context
     ): UploadRepository {
         return UploadRepositoryImpl(api, context)
+    }
+
+    @Provides
+    @Singleton
+    fun providePedidoRepository(
+        remoteDataSource: com.example.golazo_store.data.remote.remotedatasource.PedidoRemoteDataSource
+    ): PedidoRepository {
+        return com.example.golazo_store.data.repository.PedidoRepositoryImpl(remoteDataSource)
     }
 }
