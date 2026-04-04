@@ -9,10 +9,10 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.example.golazo_store.ui.theme.primaryDark
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.golazo_store.presentation.navigation.Screen
-import com.example.golazo_store.ui.theme.primaryDark
 
 
 @Composable
@@ -106,3 +106,6 @@ fun GolazoBottomNavigation(
         )
     }
 }
+
+
+

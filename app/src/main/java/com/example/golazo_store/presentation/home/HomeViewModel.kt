@@ -3,6 +3,9 @@ package com.example.golazo_store.presentation.home
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.golazo_store.domain.repository.CamisetaRepository
+import com.example.golazo_store.domain.repository.CartRepository
+import com.example.golazo_store.domain.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,15 +14,18 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @HiltViewModel
-class HomeViewModel @Inject constructor() : ViewModel() {
+class HomeViewModel @Inject constructor(
+    private val camisetaRepository: CamisetaRepository,
+    private val cartRepository: CartRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeUiState())
     val state: StateFlow<HomeUiState> = _state.asStateFlow()
 
     init {
         loadInitialData()
+        observeCart()
     }
 
     fun onEvent(event: HomeEvent) {
@@ -31,33 +37,52 @@ class HomeViewModel @Inject constructor() : ViewModel() {
                 _state.update { it.copy(selectedFilter = event.filter) }
             }
             is HomeEvent.ToggleFavorite -> {
-                _state.update { currentState ->
-                    val updatedProducts = currentState.products.map {
-                        if (it.name == event.productName) it.copy(isFavorite = !it.isFavorite) else it
-                    }
-                    currentState.copy(products = updatedProducts)
-                }
+                // To be implemented later via DB extension
             }
             is HomeEvent.AddToCart -> {
-                // Future implementation: Add to cart UseCase
+                viewModelScope.launch {
+                    cartRepository.addToCart(event.id, "M", 1)
+                }
             }
             HomeEvent.ClickMenu -> { /* Future drawer state trigger */ }
             HomeEvent.ClickCart -> { /* Future cart navigation trigger */ }
         }
     }
 
+    private fun observeCart() {
+        viewModelScope.launch {
+            cartRepository.getCartItems().collect { items ->
+                val totalCount = items.sumOf { it.cantidad }
+                _state.update { it.copy(cartItemCount = totalCount) }
+            }
+        }
+    }
+
     private fun loadInitialData() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
-            
-            val mockData = emptyList<com.example.golazo_store.presentation.home.HomeScreen.ProductDemo>()
-
-            _state.update { 
-                it.copy(
-                    isLoading = false,
-                    products = mockData
-                ) 
+            camisetaRepository.getCamisetas().collect { resource ->
+                when (resource) {
+                    is Resource.Success -> {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                products = resource.data ?: emptyList(),
+                                error = null
+                            )
+                        }
+                    }
+                    is Resource.Error -> {
+                        _state.update {
+                            it.copy(isLoading = false, error = resource.message)
+                        }
+                    }
+                    is Resource.Loading -> {
+                        _state.update { it.copy(isLoading = true) }
+                    }
+                }
             }
         }
     }
 }
+
+

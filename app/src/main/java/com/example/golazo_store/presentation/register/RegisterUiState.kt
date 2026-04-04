@@ -9,3 +9,4 @@ data class RegisterUiState(
     val isSuccess: Boolean = false,
     val error: String? = null
 )
+

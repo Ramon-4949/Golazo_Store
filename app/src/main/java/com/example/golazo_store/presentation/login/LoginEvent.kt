@@ -5,3 +5,4 @@ sealed interface LoginEvent {
     data class ContrasenaChanged(val contrasena: String) : LoginEvent
     object LoginClicked : LoginEvent
 }
+

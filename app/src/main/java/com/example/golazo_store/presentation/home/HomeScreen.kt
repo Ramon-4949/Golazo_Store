@@ -1,52 +1,52 @@
 package com.example.golazo_store.presentation.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.ShoppingCart
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.GridView
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.outlined.Straighten
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.example.golazo_store.domain.model.Camiseta
 import com.example.golazo_store.ui.theme.primaryDark
-import com.example.golazo_store.ui.theme.primaryLight
-
-object HomeScreen {
-    // Nested data class to keep the import scope clean while avoiding breaking previous references
-    data class ProductDemo(
-        val name: String,
-        val price: String,
-        val isFavorite: Boolean,
-        val backgroundColor: Color
-    )
-}
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
+    onNavigateToDetail: (Int) -> Unit,
     onNavigateToCreate: () -> Unit,
+    onNavigateToCart: () -> Unit,
     bottomNavigation: @Composable () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -54,6 +54,8 @@ fun HomeScreen(
     HomeBodyScreen(
         state = state,
         onEvent = viewModel::onEvent,
+        onNavigateToDetail = onNavigateToDetail,
+        onNavigateToCart = onNavigateToCart,
         bottomNavigation = bottomNavigation
     )
 }
@@ -63,11 +65,17 @@ fun HomeScreen(
 fun HomeBodyScreen(
     state: HomeUiState,
     onEvent: (HomeEvent) -> Unit,
+    onNavigateToDetail: (Int) -> Unit,
+    onNavigateToCart: () -> Unit,
     bottomNavigation: @Composable () -> Unit
 ) {
     Scaffold(
         topBar = {
-            HomeTopBar(onEvent = onEvent)
+            HomeTopBar(
+                cartItemCount = state.cartItemCount,
+                onEvent = onEvent, 
+                onNavigateToCart = onNavigateToCart
+            )
         },
         bottomBar = bottomNavigation
     ) { paddingValues ->
@@ -89,15 +97,20 @@ fun HomeBodyScreen(
                 onFilterSelected = { onEvent(HomeEvent.SelectFilter(it)) }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             if (state.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator(color = primaryDark)
                 }
+            } else if (state.error != null) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = state.error, color = Color.Red, textAlign = TextAlign.Center)
+                }
             } else {
                 ProductsGrid(
                     products = state.products,
-                    onEvent = onEvent
+                    onEvent = onEvent,
+                    onNavigateToDetail = onNavigateToDetail
                 )
             }
         }
@@ -106,34 +119,43 @@ fun HomeBodyScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeTopBar(onEvent: (HomeEvent) -> Unit) {
+fun HomeTopBar(
+    cartItemCount: Int,
+    onEvent: (HomeEvent) -> Unit,
+    onNavigateToCart: () -> Unit
+) {
     TopAppBar(
         title = {
             Text(
                 text = "GOLAZO STORE",
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Black,
                 fontSize = 20.sp,
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = Color(0xFF07152B)
             )
         },
-
         actions = {
-            BadgedBox(
-                badge = {
-                    Badge(
-                        containerColor = primaryDark,
-                        contentColor = Color.Black
-                    ) {
-                        Text(text = "2", fontWeight = FontWeight.Bold)
-                    }
-                },
-                modifier = Modifier.padding(end = 16.dp)
+            IconButton(
+                onClick = { onNavigateToCart() },
+                modifier = Modifier.padding(end = 8.dp)
             ) {
-                IconButton(onClick = { onEvent(HomeEvent.ClickCart) }, modifier = Modifier.size(24.dp)) {
+                BadgedBox(
+                    badge = {
+                        if (cartItemCount > 0) {
+                            Badge(
+                                containerColor = primaryDark,
+                                contentColor = Color.Black
+                            ) {
+                                Text(text = cartItemCount.toString(), fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+                ) {
                     Icon(
                         imageVector = Icons.Outlined.ShoppingCart,
-                        contentDescription = "Cart"
+                        contentDescription = "Cart",
+                        tint = Color(0xFF07152B)
                     )
                 }
             }
@@ -162,7 +184,9 @@ fun SearchBar(
             unfocusedBorderColor = Color.Transparent,
             focusedBorderColor = Color.Transparent,
             unfocusedContainerColor = Color(0xFFF0F4F8),
-            focusedContainerColor = Color(0xFFF0F4F8)
+            focusedContainerColor = Color(0xFFF0F4F8),
+            focusedTextColor = Color.Black,
+            unfocusedTextColor = Color.Black
         )
     )
 }
@@ -173,14 +197,21 @@ fun FilterChipsRow(
     selectedFilter: String,
     onFilterSelected: (String) -> Unit
 ) {
-    Row(
+    LazyRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        filters.forEach { filter ->
+        items(filters) { filter ->
             val isSelected = filter == selectedFilter
+            val icon: ImageVector? = when (filter) {
+                "Precio" -> Icons.Outlined.Payments
+                "Talla" -> Icons.Outlined.Straighten
+                "Retro" -> Icons.Outlined.History
+                else -> null
+            }
+
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(20.dp))
@@ -188,12 +219,23 @@ fun FilterChipsRow(
                     .clickable { onFilterSelected(filter) }
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                Text(
-                    text = filter,
-                    color = if (isSelected) Color.Black else Color.DarkGray,
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                    fontSize = 14.sp
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (icon != null) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = filter,
+                            tint = if (isSelected) Color.Black else Color.DarkGray,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                    }
+                    Text(
+                        text = filter,
+                        color = if (isSelected) Color.Black else Color.DarkGray,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                        fontSize = 14.sp
+                    )
+                }
             }
         }
     }
@@ -201,46 +243,69 @@ fun FilterChipsRow(
 
 @Composable
 fun ProductsGrid(
-    products: List<HomeScreen.ProductDemo>,
-    onEvent: (HomeEvent) -> Unit
+    products: List<Camiseta>,
+    onEvent: (HomeEvent) -> Unit,
+    onNavigateToDetail: (Int) -> Unit
 ) {
+    val format = NumberFormat.getCurrencyInstance(Locale.getDefault())
+    format.maximumFractionDigits = 0
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(bottom = 16.dp)
     ) {
         items(products) { product ->
-            ProductCard(product, onEvent)
+            ProductCard(product, format, onEvent, onNavigateToDetail)
         }
     }
 }
 
 @Composable
 fun ProductCard(
-    product: HomeScreen.ProductDemo,
-    onEvent: (HomeEvent) -> Unit
+    product: Camiseta,
+    format: NumberFormat,
+    onEvent: (HomeEvent) -> Unit,
+    onNavigateToDetail: (Int) -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        modifier = Modifier.clickable { onNavigateToDetail(product.id) }
     ) {
         Column {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
-                    .background(product.backgroundColor)
+                    .background(Color.Transparent)
             ) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("Imagen de\n${product.name}", color = Color.White, textAlign = TextAlign.Center)
+                val imageUrl = product.imagenUrl?.takeIf { it.isNotBlank() }
+                if (imageUrl != null) {
+                    val fullUrl = if (imageUrl.startsWith("http")) imageUrl else "http://golazostoreapi.somee.com\$imageUrl"
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(fullUrl)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = product.nombre,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(top = 16.dp, bottom = 16.dp, start = 8.dp, end = 8.dp)
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "No image",
+                        tint = Color.Gray,
+                        modifier = Modifier.align(Alignment.Center).size(48.dp)
+                    )
                 }
 
                 Box(
@@ -249,54 +314,56 @@ fun ProductCard(
                         .padding(8.dp)
                         .size(32.dp)
                         .background(Color.White, CircleShape)
-                        .clickable { onEvent(HomeEvent.ToggleFavorite(product.name)) },
+                        .clickable { onEvent(HomeEvent.ToggleFavorite(product.id)) },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = if (product.isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        imageVector = Icons.Outlined.FavoriteBorder,
                         contentDescription = "Favorite",
-                        tint = if (product.isFavorite) primaryDark else Color.DarkGray,
+                        tint = Color.DarkGray,
                         modifier = Modifier.size(20.dp)
                     )
                 }
             }
 
             Column(
-                modifier = Modifier.padding(12.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp)
             ) {
                 Text(
-                    text = product.name,
+                    text = product.nombre,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = Color.Black
+                    color = Color(0xFF07152B),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = product.price,
-                    fontWeight = FontWeight.ExtraBold,
+                    text = format.format(product.precio),
+                    fontWeight = FontWeight.Black,
                     fontSize = 16.sp,
-                    color = Color.Black
+                    color = Color(0xFF07152B)
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 Button(
-                    onClick = { onEvent(HomeEvent.AddToCart(product.name)) },
-                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { onEvent(HomeEvent.AddToCart(product.id)) },
+                    modifier = Modifier.fillMaxWidth().height(40.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = primaryDark),
                     shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(vertical = 8.dp)
+                    contentPadding = PaddingValues(0.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.ShoppingCart,
                         contentDescription = "Add",
                         tint = Color.Black,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(18.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
                     Text("Añadir", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                 }
             }
         }
     }
 }
-
-

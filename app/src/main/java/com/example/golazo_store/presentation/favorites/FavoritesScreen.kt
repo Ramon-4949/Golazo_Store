@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.example.golazo_store.ui.theme.primaryDark
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -25,12 +26,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.golazo_store.presentation.home.ProductCard
 import com.example.golazo_store.presentation.home.HomeEvent
-import com.example.golazo_store.ui.theme.primaryDark
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun FavoritesScreen(
     viewModel: FavoritesViewModel = hiltViewModel(),
     onBack: () -> Unit,
+    onNavigateToDetail: (Int) -> Unit,
+    onNavigateToCart: () -> Unit,
     bottomNavigation: @Composable () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -39,6 +43,8 @@ fun FavoritesScreen(
         state = state,
         onEvent = viewModel::onEvent,
         onBack = onBack,
+        onNavigateToDetail = onNavigateToDetail,
+        onNavigateToCart = onNavigateToCart,
         bottomNavigation = bottomNavigation
     )
 
@@ -50,11 +56,16 @@ fun FavoritesBodyScreen(
     state: FavoritesUiState,
     onEvent: (FavoritesEvent) -> Unit,
     onBack: () -> Unit,
+    onNavigateToDetail: (Int) -> Unit,
+    onNavigateToCart: () -> Unit,
     bottomNavigation: @Composable () -> Unit
 ) {
     Scaffold(
         topBar = {
-            FavoritesTopBar(onEvent = onEvent)
+            FavoritesTopBar(
+                onEvent = onEvent,
+                onNavigateToCart = onNavigateToCart
+            )
         },
         bottomBar = bottomNavigation
     ) { paddingValues ->
@@ -110,6 +121,9 @@ fun FavoritesBodyScreen(
                     Text("No hay artículos guardados.", color = Color.Gray)
                 }
             } else {
+                val format = NumberFormat.getCurrencyInstance(Locale.getDefault())
+                format.maximumFractionDigits = 0
+
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
                     modifier = Modifier.fillMaxWidth(),
@@ -117,16 +131,17 @@ fun FavoritesBodyScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(state.favoriteItems) { product ->
-                        // Reusing ProductCard from presentation.home to maintain visual consistency
                         ProductCard(
                             product = product,
+                            format = format,
                             onEvent = { homeEvent ->
                                 when (homeEvent) {
-                                    is HomeEvent.ToggleFavorite -> onEvent(FavoritesEvent.RemoveFavorite(product.name))
-                                    is HomeEvent.AddToCart -> onEvent(FavoritesEvent.AddToCart(product.name))
+                                    is HomeEvent.ToggleFavorite -> onEvent(FavoritesEvent.RemoveFavorite(product.id))
+                                    is HomeEvent.AddToCart -> onEvent(FavoritesEvent.AddToCart(product.id))
                                     else -> {}
                                 }
-                            }
+                            },
+                            onNavigateToDetail = onNavigateToDetail
                         )
                     }
                 }
@@ -137,7 +152,10 @@ fun FavoritesBodyScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FavoritesTopBar(onEvent: (FavoritesEvent) -> Unit) {
+fun FavoritesTopBar(
+    onEvent: (FavoritesEvent) -> Unit,
+    onNavigateToCart: () -> Unit
+) {
     TopAppBar(
         title = {
             Text(
@@ -161,7 +179,7 @@ fun FavoritesTopBar(onEvent: (FavoritesEvent) -> Unit) {
                 },
                 modifier = Modifier.padding(end = 16.dp)
             ) {
-                IconButton(onClick = { onEvent(FavoritesEvent.ClickCart) }, modifier = Modifier.size(24.dp)) {
+                IconButton(onClick = { onNavigateToCart() }, modifier = Modifier.size(24.dp)) {
                     Icon(
                         imageVector = Icons.Outlined.ShoppingCart,
                         contentDescription = "Cart"
@@ -174,3 +192,6 @@ fun FavoritesTopBar(onEvent: (FavoritesEvent) -> Unit) {
         )
     )
 }
+
+
+

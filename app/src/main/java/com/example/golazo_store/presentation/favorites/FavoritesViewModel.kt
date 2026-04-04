@@ -3,7 +3,7 @@ package com.example.golazo_store.presentation.favorites
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.golazo_store.presentation.home.HomeScreen.ProductDemo
+import com.example.golazo_store.domain.model.Camiseta
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +27,7 @@ class FavoritesViewModel @Inject constructor() : ViewModel() {
         when (event) {
             is FavoritesEvent.RemoveFavorite -> {
                 _state.update { currentState ->
-                    val updatedItems = currentState.favoriteItems.filterNot { it.name == event.productName }
+                    val updatedItems = currentState.favoriteItems.filterNot { it.id == event.id }
                     currentState.copy(favoriteItems = updatedItems)
                 }
             }
@@ -46,7 +46,7 @@ class FavoritesViewModel @Inject constructor() : ViewModel() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
 
-            val mockFavorites = emptyList<ProductDemo>()
+            val mockFavorites = emptyList<Camiseta>()
 
             _state.update {
                 it.copy(
@@ -57,3 +57,5 @@ class FavoritesViewModel @Inject constructor() : ViewModel() {
         }
     }
 }
+
+
