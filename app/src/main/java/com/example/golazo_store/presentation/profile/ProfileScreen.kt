@@ -24,12 +24,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.DisposableEffect
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
     onNavigateToLogin: () -> Unit,
+    onNavigateToEditProfile: () -> Unit,
     onNavigateToGestionPublicaciones: () -> Unit,
     onNavigateToAdminPedidos: () -> Unit,
     onNavigateToMisPedidos: () -> Unit,
@@ -41,6 +46,20 @@ fun ProfileScreen(
     val user by viewModel.userState.collectAsState()
 
     val isAdmin = user?.rol == "Admin"
+    
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.loadUser()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -103,7 +122,7 @@ fun ProfileScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedButton(
-                    onClick = { /* TODO Editar Perfil */ },
+                    onClick = onNavigateToEditProfile,
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = Color(0xFF07152B)

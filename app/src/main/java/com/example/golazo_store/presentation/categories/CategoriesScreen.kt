@@ -55,7 +55,10 @@ fun CategoriesBodyScreen(
 ) {
     Scaffold(
         topBar = {
-            CategoriesTopBar(onEvent = onEvent)
+            CategoriesTopBar(
+                cartItemCount = state.cartItemCount,
+                onEvent = onEvent
+            )
         },
         bottomBar = bottomNavigation
     ) { paddingValues ->
@@ -83,34 +86,42 @@ fun CategoriesBodyScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoriesTopBar(onEvent: (CategoriesEvent) -> Unit) {
+fun CategoriesTopBar(
+    cartItemCount: Int,
+    onEvent: (CategoriesEvent) -> Unit
+) {
     TopAppBar(
         title = {
             Text(
                 text = "GOLAZO STORE",
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Black,
                 fontSize = 20.sp,
                 modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                color = Color(0xFF07152B)
             )
         },
-
         actions = {
-            BadgedBox(
-                badge = {
-                    Badge(
-                        containerColor = primaryDark,
-                        contentColor = Color.Black
-                    ) {
-                        Text(text = "2", fontWeight = FontWeight.Bold)
-                    }
-                },
-                modifier = Modifier.padding(end = 16.dp)
+            IconButton(
+                onClick = { onEvent(CategoriesEvent.ClickCart) },
+                modifier = Modifier.padding(end = 8.dp)
             ) {
-                IconButton(onClick = { onEvent(CategoriesEvent.ClickCart) }, modifier = Modifier.size(24.dp)) {
+                BadgedBox(
+                    badge = {
+                        if (cartItemCount > 0) {
+                            Badge(
+                                containerColor = primaryDark,
+                                contentColor = Color.Black
+                            ) {
+                                Text(text = cartItemCount.toString(), fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+                ) {
                     Icon(
                         imageVector = Icons.Outlined.ShoppingCart,
-                        contentDescription = "Cart"
+                        contentDescription = "Cart",
+                        tint = Color(0xFF07152B)
                     )
                 }
             }

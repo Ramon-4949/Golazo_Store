@@ -15,6 +15,7 @@ data class CategoriesUiState(
     val isLoading: Boolean = false,
     val searchQuery: String = "",
     val categories: List<CategoryDemo> = emptyList(),
+    val cartItemCount: Int = 0,
     val error: String? = null
 )
 

@@ -109,6 +109,8 @@ fun HomeBodyScreen(
             } else {
                 ProductsGrid(
                     products = state.products,
+                    categoryMap = state.categoryMap,
+                    favoriteIds = state.favoriteIds,
                     onEvent = onEvent,
                     onNavigateToDetail = onNavigateToDetail
                 )
@@ -205,12 +207,6 @@ fun FilterChipsRow(
     ) {
         items(filters) { filter ->
             val isSelected = filter == selectedFilter
-            val icon: ImageVector? = when (filter) {
-                "Precio" -> Icons.Outlined.Payments
-                "Talla" -> Icons.Outlined.Straighten
-                "Retro" -> Icons.Outlined.History
-                else -> null
-            }
 
             Box(
                 modifier = Modifier
@@ -219,23 +215,12 @@ fun FilterChipsRow(
                     .clickable { onFilterSelected(filter) }
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (icon != null) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = filter,
-                            tint = if (isSelected) Color.Black else Color.DarkGray,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                    }
-                    Text(
-                        text = filter,
-                        color = if (isSelected) Color.Black else Color.DarkGray,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                        fontSize = 14.sp
-                    )
-                }
+                Text(
+                    text = filter,
+                    color = if (isSelected) Color.Black else Color.DarkGray,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                    fontSize = 14.sp
+                )
             }
         }
     }
@@ -244,6 +229,8 @@ fun FilterChipsRow(
 @Composable
 fun ProductsGrid(
     products: List<Camiseta>,
+    categoryMap: Map<Int, String>,
+    favoriteIds: Set<Int>,
     onEvent: (HomeEvent) -> Unit,
     onNavigateToDetail: (Int) -> Unit
 ) {
@@ -260,7 +247,14 @@ fun ProductsGrid(
         contentPadding = PaddingValues(bottom = 16.dp)
     ) {
         items(products) { product ->
-            ProductCard(product, format, onEvent, onNavigateToDetail)
+            ProductCard(
+                product = product,
+                categoryMap = categoryMap,
+                format = format,
+                isFavorite = product.id in favoriteIds,
+                onEvent = onEvent,
+                onNavigateToDetail = onNavigateToDetail
+            )
         }
     }
 }
@@ -268,7 +262,9 @@ fun ProductsGrid(
 @Composable
 fun ProductCard(
     product: Camiseta,
+    categoryMap: Map<Int, String>,
     format: NumberFormat,
+    isFavorite: Boolean,
     onEvent: (HomeEvent) -> Unit,
     onNavigateToDetail: (Int) -> Unit
 ) {
@@ -278,12 +274,15 @@ fun ProductCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier.clickable { onNavigateToDetail(product.id) }
     ) {
-        Column {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp)
-                    .background(Color.Transparent)
+                    .height(200.dp)
+                    .background(Color(0xFFF4F5F7))
             ) {
                 val imageUrl = product.imagenUrl?.takeIf { it.isNotBlank() }
                 if (imageUrl != null) {
@@ -294,17 +293,19 @@ fun ProductCard(
                             .crossfade(true)
                             .build(),
                         contentDescription = product.nombre,
-                        contentScale = ContentScale.Fit,
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(top = 16.dp, bottom = 16.dp, start = 8.dp, end = 8.dp)
+                            .padding(0.dp)
                     )
                 } else {
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "No image",
                         tint = Color.Gray,
-                        modifier = Modifier.align(Alignment.Center).size(48.dp)
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .size(48.dp)
                     )
                 }
 
@@ -317,10 +318,12 @@ fun ProductCard(
                         .clickable { onEvent(HomeEvent.ToggleFavorite(product.id)) },
                     contentAlignment = Alignment.Center
                 ) {
+                    val icon = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.Favorite
+                    val iconTint = if (isFavorite) primaryDark else Color.Black
                     Icon(
-                        imageVector = Icons.Outlined.FavoriteBorder,
+                        imageVector = icon,
                         contentDescription = "Favorite",
-                        tint = Color.DarkGray,
+                        tint = iconTint,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -329,40 +332,41 @@ fun ProductCard(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
+                    .padding(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                val rawCategoryName = categoryMap[product.categoriaId] ?: "OTROS"
+                val categoryName = rawCategoryName.uppercase()
+
+                Text(
+                    text = categoryName,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 11.sp,
+                    color = Color.Gray,
+                    letterSpacing = 1.sp,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                
                 Text(
                     text = product.nombre,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
                     color = Color(0xFF07152B),
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(4.dp))
+                
                 Text(
                     text = format.format(product.precio),
                     fontWeight = FontWeight.Black,
                     fontSize = 16.sp,
-                    color = Color(0xFF07152B)
+                    color = Color(0xFF07152B),
+                    textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(10.dp))
-                Button(
-                    onClick = { onEvent(HomeEvent.AddToCart(product.id)) },
-                    modifier = Modifier.fillMaxWidth().height(40.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryDark),
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(0.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.ShoppingCart,
-                        contentDescription = "Add",
-                        tint = Color.Black,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Añadir", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                }
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }

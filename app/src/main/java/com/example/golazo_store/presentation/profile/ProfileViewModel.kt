@@ -8,9 +8,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
+import androidx.lifecycle.viewModelScope
+import com.example.golazo_store.domain.repository.FavoritesRepository
+import kotlinx.coroutines.launch
+
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val favoritesRepository: FavoritesRepository
 ) : ViewModel() {
 
     private val _userState = MutableStateFlow<Usuario?>(null)
@@ -20,13 +25,16 @@ class ProfileViewModel @Inject constructor(
         loadUser()
     }
 
-    private fun loadUser() {
+    fun loadUser() {
         _userState.value = sessionManager.getUserSession()
     }
 
     fun logout() {
-        sessionManager.clearSession()
-        _userState.value = null
+        viewModelScope.launch {
+            favoritesRepository.clearAllFavorites()
+            sessionManager.clearSession()
+            _userState.value = null
+        }
     }
 }
 

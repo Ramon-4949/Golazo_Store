@@ -41,6 +41,9 @@ sealed class Screen {
     data object Profile : Screen()
 
     @Serializable
+    data object EditProfile : Screen()
+
+    @Serializable
     data object Cart : Screen()
 
     @Serializable
@@ -54,6 +57,12 @@ sealed class Screen {
 
     @Serializable
     data object PaymentAdd : Screen()
+
+    @Serializable
+    data class ChangeAddress(val currentId: Int = -1) : Screen()
+
+    @Serializable
+    data class ChangePayment(val currentId: Int = -1) : Screen()
 
     @Serializable
     data object Checkout : Screen()
