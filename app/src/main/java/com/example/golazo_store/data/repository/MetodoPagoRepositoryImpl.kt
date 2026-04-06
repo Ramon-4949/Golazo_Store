@@ -9,13 +9,17 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
+import com.example.golazo_store.data.local.SessionManager
+
 class MetodoPagoRepositoryImpl @Inject constructor(
-    private val remoteDataSource: MetodoPagoRemoteDataSource
+    private val remoteDataSource: MetodoPagoRemoteDataSource,
+    private val sessionManager: SessionManager
 ) : MetodoPagoRepository {
 
     override fun getMetodosPago(): Flow<Resource<List<MetodoPago>>> = flow {
         emit(Resource.Loading())
-        val response = remoteDataSource.getMetodosPago()
+        val uId = sessionManager.getUserSession()?.id ?: 0
+        val response = remoteDataSource.getMetodosPago(uId)
 
         response.fold(
             onSuccess = { dtos ->
@@ -29,7 +33,8 @@ class MetodoPagoRepositoryImpl @Inject constructor(
     }
 
     override suspend fun createMetodoPago(request: MetodoPagoRegistro): Resource<Unit> {
-        val dto = request.toDto()
+        val uId = sessionManager.getUserSession()?.id ?: 0
+        val dto = request.toDto(uId)
         val response = remoteDataSource.createMetodoPago(dto)
 
         return response.fold(
@@ -43,7 +48,8 @@ class MetodoPagoRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteMetodoPago(id: Int): Resource<Unit> {
-        val response = remoteDataSource.deleteMetodoPago(id)
+        val uId = sessionManager.getUserSession()?.id ?: 0
+        val response = remoteDataSource.deleteMetodoPago(id, uId)
 
         return response.fold(
             onSuccess = {

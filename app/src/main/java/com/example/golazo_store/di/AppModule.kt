@@ -11,6 +11,8 @@ import com.example.golazo_store.data.remote.remotedatasource.AuthRemoteDataSourc
 import com.example.golazo_store.data.remote.remotedatasource.CamisetaRemoteDataSource
 import com.example.golazo_store.data.repository.AuthRepositoryImpl
 import com.example.golazo_store.data.repository.CamisetaRepositoryImpl
+import com.example.golazo_store.data.remote.api.FavoritoApiService
+import com.example.golazo_store.data.remote.remotedatasource.FavoritoRemoteDataSource
 import com.example.golazo_store.domain.repository.AuthRepository
 import com.example.golazo_store.domain.repository.CamisetaRepository
 import com.example.golazo_store.data.local.dao.CartDao
@@ -61,6 +63,28 @@ object AppModule {
         return database.cartDao()
     }
 
+    @Provides
+    @Singleton
+    fun provideFavoriteDao(database: GolazoDatabase): com.example.golazo_store.data.local.dao.FavoriteDao {
+        return database.favoriteDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFavoritesRepository(
+        favoriteDao: com.example.golazo_store.data.local.dao.FavoriteDao,
+        camisetaRepository: CamisetaRepository,
+        sessionManager: SessionManager,
+        remotoDataSource: FavoritoRemoteDataSource
+    ): com.example.golazo_store.domain.repository.FavoritesRepository {
+        return com.example.golazo_store.data.repository.FavoritesRepositoryImpl(
+            favoriteDao, 
+            camisetaRepository,
+            sessionManager,
+            remotoDataSource
+        )
+    }
+
     @Singleton
     @Provides
     fun provideMoshi(): Moshi {
@@ -92,12 +116,31 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideFavoritoApi(moshi: Moshi): FavoritoApiService {
+        return Retrofit.Builder()
+            .baseUrl("http://golazostoreapi.somee.com/")
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .build()
+            .create(FavoritoApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFavoritoRemoteDataSource(
+        api: FavoritoApiService
+    ): FavoritoRemoteDataSource {
+        return FavoritoRemoteDataSource(api)
+    }
+
+    @Provides
+    @Singleton
     fun provideAuthRepository(
         api: AuthApi,
-        sessionManager: SessionManager
+        sessionManager: SessionManager,
+        favoritesRepository: com.example.golazo_store.domain.repository.FavoritesRepository
     ): AuthRepository {
         val remoteDataSource = AuthRemoteDataSource(api)
-        return AuthRepositoryImpl(remoteDataSource, sessionManager)
+        return AuthRepositoryImpl(remoteDataSource, sessionManager, favoritesRepository)
     }
 
     @Provides
@@ -129,19 +172,21 @@ object AppModule {
     @Provides
     @Singleton
     fun provideDireccionRepository(
-        api: GolazoApi
+        api: GolazoApi,
+        sessionManager: SessionManager
     ): com.example.golazo_store.domain.repository.DireccionRepository {
         val remoteDataSource = com.example.golazo_store.data.remote.remotedatasource.DireccionRemoteDataSource(api)
-        return com.example.golazo_store.data.repository.DireccionRepositoryImpl(remoteDataSource)
+        return com.example.golazo_store.data.repository.DireccionRepositoryImpl(remoteDataSource, sessionManager)
     }
 
     @Provides
     @Singleton
     fun provideMetodoPagoRepository(
-        api: GolazoApi
+        api: GolazoApi,
+        sessionManager: SessionManager
     ): com.example.golazo_store.domain.repository.MetodoPagoRepository {
         val remoteDataSource = com.example.golazo_store.data.remote.remotedatasource.MetodoPagoRemoteDataSource(api)
-        return com.example.golazo_store.data.repository.MetodoPagoRepositoryImpl(remoteDataSource)
+        return com.example.golazo_store.data.repository.MetodoPagoRepositoryImpl(remoteDataSource, sessionManager)
     }
 
     @Provides
@@ -164,8 +209,9 @@ object AppModule {
     @Provides
     @Singleton
     fun providePedidoRepository(
-        remoteDataSource: com.example.golazo_store.data.remote.remotedatasource.PedidoRemoteDataSource
+        remoteDataSource: com.example.golazo_store.data.remote.remotedatasource.PedidoRemoteDataSource,
+        sessionManager: SessionManager
     ): PedidoRepository {
-        return com.example.golazo_store.data.repository.PedidoRepositoryImpl(remoteDataSource)
+        return com.example.golazo_store.data.repository.PedidoRepositoryImpl(remoteDataSource, sessionManager)
     }
 }

@@ -18,7 +18,8 @@ class PedidoRemoteDataSource @Inject constructor(
                     Result.success(it)
                 } ?: Result.failure(Exception("Cuerpo de respuesta vacío"))
             } else {
-                Result.failure(Exception("Error al crear pedido: ${response.message()}"))
+                val errorBody = response.errorBody()?.string() ?: response.message()
+                Result.failure(Exception("Error al crear pedido: $errorBody"))
             }
         } catch (e: Exception) {
             val isEndOfInput = e.message?.contains("End of input", ignoreCase = true) == true || 
@@ -50,9 +51,9 @@ class PedidoRemoteDataSource @Inject constructor(
         }
     }
 
-    suspend fun getMisPedidos(): Result<List<PedidoAdminDto>> {
+    suspend fun getMisPedidos(usuarioId: Int): Result<List<PedidoAdminDto>> {
         return try {
-            val response = api.getMisPedidos()
+            val response = api.getMisPedidos(usuarioId)
             if (response.isSuccessful) {
                 response.body()?.let {
                     Result.success(it)

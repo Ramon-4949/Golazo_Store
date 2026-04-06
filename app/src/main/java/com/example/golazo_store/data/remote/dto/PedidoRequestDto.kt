@@ -4,6 +4,7 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class PedidoRequestDto(
+    val usuarioId: Int,
     val direccionId: Int,
     val metodoPagoId: Int,
     val items: List<DetallePedidoDto>

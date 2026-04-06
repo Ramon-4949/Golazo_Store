@@ -46,4 +46,36 @@ class AuthRemoteDataSource @Inject constructor(
             Result.failure(Exception("Error desconocido: ${e.message}", e))
         }
     }
+
+    suspend fun updateProfile(id: Int, request: com.example.golazo_store.data.remote.dto.UpdateProfileRequest): Result<String> {
+        return try {
+            val response = api.updateProfile(id, request)
+            if (response.isSuccessful) {
+                Result.success(response.body()?.string() ?: "Perfil actualizado")
+            } else {
+                val errorMsg = response.errorBody()?.string() ?: response.message()
+                Result.failure(Exception("Error de red: ${response.code()} - $errorMsg"))
+            }
+        } catch (e: HttpException) {
+            Result.failure(Exception("Error de servidor", e))
+        } catch (e: Exception) {
+            Result.failure(Exception("Error desconocido: ${e.message}", e))
+        }
+    }
+
+    suspend fun deleteAccount(id: Int): Result<String> {
+        return try {
+            val response = api.deleteAccount(id)
+            if (response.isSuccessful) {
+                Result.success(response.body()?.string() ?: "Cuenta eliminada")
+            } else {
+                val errorMsg = response.errorBody()?.string() ?: response.message()
+                Result.failure(Exception("Error de red: ${response.code()} - $errorMsg"))
+            }
+        } catch (e: HttpException) {
+            Result.failure(Exception("Error de servidor", e))
+        } catch (e: Exception) {
+            Result.failure(Exception("Error desconocido: ${e.message}", e))
+        }
+    }
 }

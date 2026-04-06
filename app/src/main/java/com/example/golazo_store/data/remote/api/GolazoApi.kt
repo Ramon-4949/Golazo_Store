@@ -35,8 +35,8 @@ interface GolazoApi {
     @POST("api/Upload")
     suspend fun uploadImage(@Part imagen: MultipartBody.Part): Response<UploadDto>
 
-    @GET("api/Direcciones")
-    suspend fun getDirecciones(): Response<List<com.example.golazo_store.data.remote.dto.DireccionDto>>
+    @GET("api/Direcciones/mis-direcciones/{usuarioId}")
+    suspend fun getDirecciones(@Path("usuarioId") usuarioId: Int): Response<List<com.example.golazo_store.data.remote.dto.DireccionDto>>
 
     @GET("api/Direcciones/{id}")
     suspend fun getDireccionById(@Path("id") id: Int): Response<com.example.golazo_store.data.remote.dto.DireccionDto>
@@ -47,18 +47,18 @@ interface GolazoApi {
     @PUT("api/Direcciones/{id}")
     suspend fun updateDireccion(@Path("id") id: Int, @Body direccion: com.example.golazo_store.data.remote.dto.DireccionDto): Response<Unit>
 
-    @DELETE("api/Direcciones/{id}")
-    suspend fun deleteDireccion(@Path("id") id: Int): Response<Unit>
+    @DELETE("api/Direcciones/{id}/usuario/{usuarioId}")
+    suspend fun deleteDireccion(@Path("id") id: Int, @Path("usuarioId") usuarioId: Int): Response<Unit>
 
     // --- MetodosPago ---
-    @GET("api/MetodosPago")
-    suspend fun getMetodosPago(): Response<List<com.example.golazo_store.data.remote.dto.MetodoPagoDto>>
+    @GET("api/MetodosPago/mis-metodos/{usuarioId}")
+    suspend fun getMetodosPago(@Path("usuarioId") usuarioId: Int): Response<List<com.example.golazo_store.data.remote.dto.MetodoPagoDto>>
 
     @POST("api/MetodosPago")
     suspend fun createMetodoPago(@Body request: com.example.golazo_store.data.remote.dto.MetodoPagoRequestDto): Response<com.example.golazo_store.data.remote.dto.MetodoPagoDto>
 
-    @DELETE("api/MetodosPago/{id}")
-    suspend fun deleteMetodoPago(@Path("id") id: Int): Response<Unit>
+    @DELETE("api/MetodosPago/{id}/usuario/{usuarioId}")
+    suspend fun deleteMetodoPago(@Path("id") id: Int, @Path("usuarioId") usuarioId: Int): Response<Unit>
 
     @POST("api/Pedidos")
     suspend fun createPedido(@Body request: com.example.golazo_store.data.remote.dto.PedidoRequestDto): Response<com.example.golazo_store.data.remote.dto.PedidoDto>
@@ -66,8 +66,8 @@ interface GolazoApi {
     @GET("api/Pedidos")
     suspend fun getAdminPedidos(): Response<List<PedidoAdminDto>>
 
-    @GET("api/Pedidos/mis-pedidos")
-    suspend fun getMisPedidos(): Response<List<PedidoAdminDto>>
+    @GET("api/Pedidos/mis-pedidos/{usuarioId}")
+    suspend fun getMisPedidos(@Path("usuarioId") usuarioId: Int): Response<List<PedidoAdminDto>>
 
     @GET("api/Pedidos/{id}")
     suspend fun getAdminPedidoById(@Path("id") id: Int): Response<PedidoAdminDto>

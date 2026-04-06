@@ -8,13 +8,17 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
+import com.example.golazo_store.data.local.SessionManager
+
 class DireccionRepositoryImpl @Inject constructor(
-    private val remoteDataSource: DireccionRemoteDataSource
+    private val remoteDataSource: DireccionRemoteDataSource,
+    private val sessionManager: SessionManager
 ) : DireccionRepository {
 
     override fun getDirecciones(): Flow<Resource<List<Direccion>>> = flow {
         emit(Resource.Loading())
-        val response = remoteDataSource.getDirecciones()
+        val uId = sessionManager.getUserSession()?.id ?: 0
+        val response = remoteDataSource.getDirecciones(uId)
         
         response.fold(
             onSuccess = { dtos ->
@@ -29,7 +33,8 @@ class DireccionRepositoryImpl @Inject constructor(
 
     override fun getDireccionById(id: Int): Flow<Resource<Direccion>> = flow {
         emit(Resource.Loading())
-        val response = remoteDataSource.getDireccionById(id)
+        val uId = sessionManager.getUserSession()?.id ?: 0
+        val response = remoteDataSource.getDireccionById(id, uId)
 
         response.fold(
             onSuccess = { dto ->
@@ -42,7 +47,8 @@ class DireccionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun createDireccion(direccion: Direccion): Resource<Unit> {
-        val dto = direccion.toDto()
+        val uId = sessionManager.getUserSession()?.id ?: 0
+        val dto = direccion.toDto(usuarioIdOverride = uId)
         val response = remoteDataSource.createDireccion(dto)
 
         return response.fold(
@@ -56,7 +62,8 @@ class DireccionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateDireccion(id: Int, direccion: Direccion): Resource<Unit> {
-        val dto = direccion.toDto()
+        val uId = sessionManager.getUserSession()?.id ?: 0
+        val dto = direccion.toDto(usuarioIdOverride = uId)
         val response = remoteDataSource.updateDireccion(id, dto)
 
         return response.fold(
@@ -70,7 +77,8 @@ class DireccionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteDireccion(id: Int): Resource<Unit> {
-        val response = remoteDataSource.deleteDireccion(id)
+        val uId = sessionManager.getUserSession()?.id ?: 0
+        val response = remoteDataSource.deleteDireccion(id, uId)
 
         return response.fold(
             onSuccess = {
