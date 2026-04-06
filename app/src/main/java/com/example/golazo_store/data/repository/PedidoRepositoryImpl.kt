@@ -10,12 +10,16 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
+import com.example.golazo_store.data.local.SessionManager
+
 class PedidoRepositoryImpl @Inject constructor(
-    private val remoteDataSource: PedidoRemoteDataSource
+    private val remoteDataSource: PedidoRemoteDataSource,
+    private val sessionManager: SessionManager
 ) : PedidoRepository {
 
     override suspend fun createPedido(request: PedidoRegistro): Resource<Pedido> {
-        val dto = request.toDto()
+        val uId = sessionManager.getUserSession()?.id ?: 0
+        val dto = request.toDto(uId)
         val response = remoteDataSource.createPedido(dto)
 
         return response.fold(
@@ -50,7 +54,8 @@ class PedidoRepositoryImpl @Inject constructor(
 
     override fun getMisPedidos(): Flow<Resource<List<PedidoAdmin>>> = flow {
         emit(Resource.Loading())
-        val result = remoteDataSource.getMisPedidos()
+        val uId = sessionManager.getUserSession()?.id ?: 0
+        val result = remoteDataSource.getMisPedidos(uId)
         result.fold(
             onSuccess = { dtos ->
                 emit(Resource.Success(dtos.map { it.toDomain() }))

@@ -7,8 +7,9 @@ data class MetodoPagoRegistro(
     val cvv: String,
     val esPrincipal: Boolean
 ) {
-    fun toDto(): com.example.golazo_store.data.remote.dto.MetodoPagoRequestDto {
+    fun toDto(usuarioId: Int): com.example.golazo_store.data.remote.dto.MetodoPagoRequestDto {
         return com.example.golazo_store.data.remote.dto.MetodoPagoRequestDto(
+            usuarioId = usuarioId,
             titular = titular,
             numeroTarjeta = numeroTarjeta,
             expiracion = expiracion,

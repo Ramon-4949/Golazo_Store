@@ -11,15 +11,19 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import com.example.golazo_store.domain.repository.CartRepository
+
 @HiltViewModel
-class CategoriesViewModel @Inject constructor() : ViewModel() {
+class CategoriesViewModel @Inject constructor(
+    private val cartRepository: CartRepository
+) : ViewModel() {
 
     private val _state = MutableStateFlow(CategoriesUiState())
     val state: StateFlow<CategoriesUiState> = _state.asStateFlow()
 
     init {
         loadInitialData()
-
+        observeCart()
     }
 
     fun onEvent(event: CategoriesEvent) {
@@ -33,6 +37,15 @@ class CategoriesViewModel @Inject constructor() : ViewModel() {
             CategoriesEvent.ClickMenu -> { }
             CategoriesEvent.ClickCart -> { }
             CategoriesEvent.ClickViewAll -> { }
+        }
+    }
+
+    private fun observeCart() {
+        viewModelScope.launch {
+            cartRepository.getCartItems().collect { items ->
+                val totalCount = items.sumOf { it.cantidad }
+                _state.update { it.copy(cartItemCount = totalCount) }
+            }
         }
     }
 

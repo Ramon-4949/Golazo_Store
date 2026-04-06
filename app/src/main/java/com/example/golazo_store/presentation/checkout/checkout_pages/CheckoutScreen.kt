@@ -1,4 +1,4 @@
-package com.example.golazo_store.presentation.checkout
+package com.example.golazo_store.presentation.checkout.checkout_pages
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -16,10 +15,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -36,7 +35,9 @@ import java.util.Locale
 fun CheckoutScreen(
     viewModel: CheckoutViewModel = hiltViewModel(),
     onBack: () -> Unit,
-    onSuccess: (String) -> Unit
+    onSuccess: (String) -> Unit,
+    onChangeAddress: (Int?) -> Unit,
+    onChangePayment: (Int?) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -63,7 +64,9 @@ fun CheckoutScreen(
     CheckoutBodyScreen(
         state = state,
         onBack = onBack,
-        onConfirmOrder = { viewModel.onConfirmOrder() }
+        onConfirmOrder = { viewModel.onConfirmOrder() },
+        onChangeAddress = onChangeAddress,
+        onChangePayment = onChangePayment
     )
 }
 
@@ -72,7 +75,9 @@ fun CheckoutScreen(
 fun CheckoutBodyScreen(
     state: CheckoutUiState,
     onBack: () -> Unit,
-    onConfirmOrder: () -> Unit
+    onConfirmOrder: () -> Unit,
+    onChangeAddress: (Int?) -> Unit,
+    onChangePayment: (Int?) -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -152,7 +157,11 @@ fun CheckoutBodyScreen(
             ) {
                 // Dirección de Envío
                 item {
-                    SectionHeader(title = "DIRECCIÓN DE ENVÍO", actionText = "Cambiar", onAction = { /* TODO Navigate to Address Selection */ })
+                    SectionHeader(
+                        title = "DIRECCIÓN DE ENVÍO", 
+                        actionText = "Cambiar", 
+                        onAction = { onChangeAddress(state.direccionPrincipal?.id) }
+                    )
                     Spacer(modifier = Modifier.height(12.dp))
                     if (state.direccionPrincipal != null) {
                         AddressCard(state.direccionPrincipal)
@@ -163,7 +172,11 @@ fun CheckoutBodyScreen(
 
                 // Método de Pago
                 item {
-                    SectionHeader(title = "MÉTODO DE PAGO", actionText = "Cambiar", onAction = { /* TODO Navigate to Payment Selection */ })
+                    SectionHeader(
+                        title = "MÉTODO DE PAGO", 
+                        actionText = "Cambiar", 
+                        onAction = { onChangePayment(state.metodoPagoPrincipal?.id) }
+                    )
                     Spacer(modifier = Modifier.height(12.dp))
                     if (state.metodoPagoPrincipal != null) {
                         PaymentCard(state.metodoPagoPrincipal)
@@ -369,7 +382,7 @@ fun CheckoutCartItem(item: CartItem) {
                 fontSize = 14.sp,
                 color = Color(0xFF07152B),
                 maxLines = 2,
-                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(

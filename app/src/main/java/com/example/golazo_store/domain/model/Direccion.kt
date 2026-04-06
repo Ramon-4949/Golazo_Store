@@ -13,9 +13,9 @@ data class Direccion(
     val reference: String,
     val esPrincipal: Boolean
 ) {
-    fun toDto() = DireccionDto(
-        id = id,
-        usuarioId = usuarioId,
+    fun toDto(usuarioIdOverride: Int? = null) = DireccionDto(
+        id = id.takeIf { it > 0 },
+        usuarioId = usuarioIdOverride ?: usuarioId,
         nombreDireccion = nombreDireccion,
         calleNumero = calleNumero,
         provincia = provincia,

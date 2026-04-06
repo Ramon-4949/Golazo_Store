@@ -1,4 +1,4 @@
-package com.example.golazo_store.presentation.checkout
+package com.example.golazo_store.presentation.checkout.checkout_pages
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -52,8 +52,13 @@ class CheckoutViewModel @Inject constructor(
                     direccionRepository.getDirecciones().collect { res ->
                         if (res is Resource.Success) {
                             val direcciones = res.data ?: emptyList()
-                            val principal = direcciones.find { it.esPrincipal } ?: direcciones.firstOrNull()
-                            _state.update { it.copy(direccionPrincipal = principal) }
+                            val currentPrincipalId = _state.value.direccionPrincipal?.id
+                            val principal = if (currentPrincipalId != null) {
+                                direcciones.find { it.id == currentPrincipalId }
+                            } else {
+                                direcciones.find { it.esPrincipal } ?: direcciones.firstOrNull()
+                            }
+                            _state.update { it.copy(direccionPrincipal = principal, allDirecciones = direcciones) }
                         }
                     }
                 }
@@ -63,14 +68,33 @@ class CheckoutViewModel @Inject constructor(
                     metodoPagoRepository.getMetodosPago().collect { res ->
                         if (res is Resource.Success) {
                             val metodos = res.data ?: emptyList()
-                            val principal = metodos.find { it.esPrincipal } ?: metodos.firstOrNull()
-                            _state.update { it.copy(metodoPagoPrincipal = principal) }
+                            val currentPrincipalId = _state.value.metodoPagoPrincipal?.id
+                            val principal = if (currentPrincipalId != null) {
+                                metodos.find { it.id == currentPrincipalId }
+                            } else {
+                                metodos.find { it.esPrincipal } ?: metodos.firstOrNull()
+                            }
+                            _state.update { it.copy(metodoPagoPrincipal = principal, allMetodosPago = metodos) }
                         }
                     }
                 }
 
                 _state.update { it.copy(isLoadingData = false) }
             }
+        }
+    }
+
+    fun selectAddress(id: Int) {
+        val selected = _state.value.allDirecciones.find { it.id == id }
+        if (selected != null) {
+            _state.update { it.copy(direccionPrincipal = selected) }
+        }
+    }
+
+    fun selectPayment(id: Int) {
+        val selected = _state.value.allMetodosPago.find { it.id == id }
+        if (selected != null) {
+            _state.update { it.copy(metodoPagoPrincipal = selected) }
         }
     }
 

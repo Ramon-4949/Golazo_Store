@@ -8,9 +8,9 @@ import javax.inject.Inject
 class MetodoPagoRemoteDataSource @Inject constructor(
     private val api: GolazoApi
 ) {
-    suspend fun getMetodosPago(): Result<List<MetodoPagoDto>> {
+    suspend fun getMetodosPago(usuarioId: Int): Result<List<MetodoPagoDto>> {
         return try {
-            val response = api.getMetodosPago()
+            val response = api.getMetodosPago(usuarioId)
             if (response.isSuccessful) {
                 Result.success(response.body() ?: emptyList())
             } else {
@@ -36,9 +36,9 @@ class MetodoPagoRemoteDataSource @Inject constructor(
         }
     }
 
-    suspend fun deleteMetodoPago(id: Int): Result<Unit> {
+    suspend fun deleteMetodoPago(id: Int, usuarioId: Int): Result<Unit> {
         return try {
-            val response = api.deleteMetodoPago(id)
+            val response = api.deleteMetodoPago(id, usuarioId)
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {

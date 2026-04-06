@@ -7,9 +7,9 @@ import javax.inject.Inject
 class DireccionRemoteDataSource @Inject constructor(
     private val api: GolazoApi
 ) {
-    suspend fun getDirecciones(): Result<List<DireccionDto>> {
+    suspend fun getDirecciones(usuarioId: Int): Result<List<DireccionDto>> {
         return try {
-            val response = api.getDirecciones()
+            val response = api.getDirecciones(usuarioId)
             if (response.isSuccessful) {
                 Result.success(response.body() ?: emptyList())
             } else {
@@ -20,9 +20,9 @@ class DireccionRemoteDataSource @Inject constructor(
         }
     }
 
-    suspend fun getDireccionById(id: Int): Result<DireccionDto> {
+    suspend fun getDireccionById(id: Int, usuarioId: Int): Result<DireccionDto> {
         return try {
-            val response = api.getDirecciones()
+            val response = api.getDirecciones(usuarioId)
             if (response.isSuccessful) {
                 val list = response.body() ?: emptyList()
                 val match = list.find { it.id == id }
@@ -67,9 +67,9 @@ class DireccionRemoteDataSource @Inject constructor(
         }
     }
 
-    suspend fun deleteDireccion(id: Int): Result<Unit> {
+    suspend fun deleteDireccion(id: Int, usuarioId: Int): Result<Unit> {
         return try {
-            val response = api.deleteDireccion(id)
+            val response = api.deleteDireccion(id, usuarioId)
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {

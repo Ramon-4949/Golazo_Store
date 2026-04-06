@@ -13,7 +13,8 @@ data class PedidoRegistro(
     val metodoPagoId: Int,
     val items: List<DetallePedido>
 ) {
-    fun toDto() = com.example.golazo_store.data.remote.dto.PedidoRequestDto(
+    fun toDto(usuarioId: Int) = com.example.golazo_store.data.remote.dto.PedidoRequestDto(
+        usuarioId = usuarioId,
         direccionId = direccionId,
         metodoPagoId = metodoPagoId,
         items = items.map { it.toDto() }

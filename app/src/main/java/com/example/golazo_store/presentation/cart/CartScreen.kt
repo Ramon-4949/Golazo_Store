@@ -58,7 +58,8 @@ fun CartScreen(
     CartBodyScreen(
         state = state,
         onEvent = viewModel::onEvent,
-        onBack = onBack
+        onBack = onBack,
+        onCheckout = onCheckout
     )
 }
 
@@ -67,7 +68,8 @@ fun CartScreen(
 fun CartBodyScreen(
     state: CartUiState,
     onEvent: (CartEvent) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onCheckout: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -151,7 +153,7 @@ fun CartBodyScreen(
                         .padding(16.dp)
                 ) {
                     Button(
-                        onClick = { onEvent(CartEvent.Checkout) },
+                        onClick = { onCheckout() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),

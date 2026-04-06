@@ -14,30 +14,45 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import com.example.golazo_store.domain.repository.FavoritesRepository
+import com.example.golazo_store.domain.usecase.TriggerSyncFavoritesUseCase
+
+import com.example.golazo_store.domain.repository.CategoriaRepository
+
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val camisetaRepository: CamisetaRepository,
-    private val cartRepository: CartRepository
+    private val cartRepository: CartRepository,
+    private val favoritesRepository: FavoritesRepository,
+    private val categoriaRepository: CategoriaRepository,
+    private val triggerSyncFavoritesUseCase: TriggerSyncFavoritesUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeUiState())
     val state: StateFlow<HomeUiState> = _state.asStateFlow()
 
     init {
+        loadCategorias()
         loadInitialData()
         observeCart()
+        observeFavorites()
     }
 
     fun onEvent(event: HomeEvent) {
         when (event) {
             is HomeEvent.UpdateSearch -> {
                 _state.update { it.copy(searchQuery = event.query) }
+                applyFilters()
             }
             is HomeEvent.SelectFilter -> {
                 _state.update { it.copy(selectedFilter = event.filter) }
+                applyFilters()
             }
             is HomeEvent.ToggleFavorite -> {
-                // To be implemented later via DB extension
+                viewModelScope.launch {
+                    favoritesRepository.toggleFavorite(event.id)
+                    triggerSyncFavoritesUseCase()
+                }
             }
             is HomeEvent.AddToCart -> {
                 viewModelScope.launch {
@@ -46,6 +61,41 @@ class HomeViewModel @Inject constructor(
             }
             HomeEvent.ClickMenu -> { /* Future drawer state trigger */ }
             HomeEvent.ClickCart -> { /* Future cart navigation trigger */ }
+        }
+    }
+
+    private fun applyFilters() {
+        _state.update { currentState ->
+            val query = currentState.searchQuery.lowercase().trim()
+            val filter = currentState.selectedFilter
+
+            val filtered = currentState.allProducts.filter { product ->
+                val matchesQuery = if (query.isEmpty()) true else {
+                    product.nombre.lowercase().contains(query) || product.descripcion.lowercase().contains(query)
+                }
+
+                val productCategoryName = currentState.categoryMap[product.categoriaId] ?: ""
+
+                val matchesCategory = when (filter) {
+                    "Todo" -> true
+                    "Clubes" -> productCategoryName.contains("Clubes", ignoreCase = true)
+                    "Selecciones" -> productCategoryName.contains("Selecciones", ignoreCase = true)
+                    "Entrenamiento" -> productCategoryName.contains("Entrenamiento", ignoreCase = true)
+                    else -> productCategoryName.equals(filter, ignoreCase = true)
+                }
+
+                matchesQuery && matchesCategory
+            }
+
+            currentState.copy(products = filtered)
+        }
+    }
+
+    private fun observeFavorites() {
+        viewModelScope.launch {
+            favoritesRepository.getFavoriteIds().collect { ids ->
+                _state.update { it.copy(favoriteIds = ids.toSet()) }
+            }
         }
     }
 
@@ -66,10 +116,11 @@ class HomeViewModel @Inject constructor(
                         _state.update {
                             it.copy(
                                 isLoading = false,
-                                products = resource.data ?: emptyList(),
+                                allProducts = resource.data ?: emptyList(),
                                 error = null
                             )
                         }
+                        applyFilters()
                     }
                     is Resource.Error -> {
                         _state.update {
@@ -79,6 +130,18 @@ class HomeViewModel @Inject constructor(
                     is Resource.Loading -> {
                         _state.update { it.copy(isLoading = true) }
                     }
+                }
+            }
+        }
+    }
+
+    private fun loadCategorias() {
+        viewModelScope.launch {
+            categoriaRepository.getCategorias().collect { resource ->
+                if (resource is Resource.Success) {
+                    val mappings = resource.data?.associate { it.id to it.nombre } ?: emptyMap()
+                    _state.update { it.copy(categoryMap = mappings) }
+                    applyFilters() // Reapply filters once categories arrive to fix "OTROS" bug
                 }
             }
         }
