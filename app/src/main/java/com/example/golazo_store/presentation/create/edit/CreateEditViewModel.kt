@@ -7,6 +7,8 @@ import com.example.golazo_store.domain.model.Camiseta
 import com.example.golazo_store.domain.repository.CamisetaRepository
 import com.example.golazo_store.domain.repository.CategoriaRepository
 import com.example.golazo_store.domain.repository.UploadRepository
+import com.example.golazo_store.domain.usecase.camiseta.UpsertCamisetaResult
+import com.example.golazo_store.domain.usecase.camiseta.UpsertCamisetaUseCase
 import com.example.golazo_store.domain.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +23,7 @@ class CreateEditViewModel @Inject constructor(
     private val categoriaRepository: CategoriaRepository,
     private val camisetaRepository: CamisetaRepository,
     private val uploadRepository: UploadRepository,
+    private val upsertCamisetaUseCase: UpsertCamisetaUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -89,16 +92,16 @@ class CreateEditViewModel @Inject constructor(
 
     fun onEvent(event: CreateEditEvent) {
         when (event) {
-            is CreateEditEvent.OnNombreChange -> _state.update { it.copy(nombre = event.nombre) }
-            is CreateEditEvent.OnDescripcionChange -> _state.update { it.copy(descripcion = event.descripcion) }
-            is CreateEditEvent.OnPrecioChange -> _state.update { it.copy(precio = event.precio) }
-            is CreateEditEvent.OnStockSChange -> _state.update { it.copy(stockS = event.stock) }
-            is CreateEditEvent.OnStockMChange -> _state.update { it.copy(stockM = event.stock) }
-            is CreateEditEvent.OnStockLChange -> _state.update { it.copy(stockL = event.stock) }
-            is CreateEditEvent.OnStockXLChange -> _state.update { it.copy(stockXL = event.stock) }
-            is CreateEditEvent.OnStock2XLChange -> _state.update { it.copy(stock2XL = event.stock) }
-            is CreateEditEvent.OnCategoriaSelected -> _state.update { it.copy(selectedCategoriaId = event.categoriaId) }
-            is CreateEditEvent.OnImagePicked -> _state.update { it.copy(imageUri = event.uri) }
+            is CreateEditEvent.OnNombreChange -> _state.update { it.copy(nombre = event.nombre, nombreError = null) }
+            is CreateEditEvent.OnDescripcionChange -> _state.update { it.copy(descripcion = event.descripcion, descripcionError = null) }
+            is CreateEditEvent.OnPrecioChange -> _state.update { it.copy(precio = event.precio, precioError = null) }
+            is CreateEditEvent.OnStockSChange -> _state.update { it.copy(stockS = event.stock, stockSError = null) }
+            is CreateEditEvent.OnStockMChange -> _state.update { it.copy(stockM = event.stock, stockMError = null) }
+            is CreateEditEvent.OnStockLChange -> _state.update { it.copy(stockL = event.stock, stockLError = null) }
+            is CreateEditEvent.OnStockXLChange -> _state.update { it.copy(stockXL = event.stock, stockXLError = null) }
+            is CreateEditEvent.OnStock2XLChange -> _state.update { it.copy(stock2XL = event.stock, stock2XLError = null) }
+            is CreateEditEvent.OnCategoriaSelected -> _state.update { it.copy(selectedCategoriaId = event.categoriaId, categoriaError = null) }
+            is CreateEditEvent.OnImagePicked -> _state.update { it.copy(imageUri = event.uri, imageError = null) }
             CreateEditEvent.SaveProduct -> saveProduct()
             CreateEditEvent.ClearMessages -> _state.update { it.copy(successMessage = null, errorMessage = null) }
         }
@@ -106,13 +109,6 @@ class CreateEditViewModel @Inject constructor(
 
     private fun saveProduct() {
         val currentState = _state.value
-
-        // If editing, imageUri could be null initially if they don't pick a new one, 
-        // but for now we enforce re-selecting or assume they need to. 
-        if (currentState.nombre.isBlank() || currentState.precio.isBlank() || currentState.selectedCategoriaId == null) {
-            _state.update { it.copy(errorMessage = "Por favor completa el nombre, precio, y categoría.") }
-            return
-        }
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
@@ -127,9 +123,6 @@ class CreateEditViewModel @Inject constructor(
                     _state.update { it.copy(isLoading = false, errorMessage = uploadResult.message ?: "Error al subir la imagen") }
                     return@launch
                 }
-            } else if (finalImageUrl.isBlank()) {
-                _state.update { it.copy(isLoading = false, errorMessage = "Debes seleccionar una imagen para la camiseta") }
-                return@launch
             }
 
             val nuevaCamiseta = Camiseta(
@@ -138,32 +131,62 @@ class CreateEditViewModel @Inject constructor(
                 descripcion = currentState.descripcion,
                 precio = currentState.precio.toDoubleOrNull() ?: 0.0,
                 imagenUrl = finalImageUrl,
-                stockS = currentState.stockS.toIntOrNull() ?: 0,
-                stockM = currentState.stockM.toIntOrNull() ?: 0,
-                stockL = currentState.stockL.toIntOrNull() ?: 0,
-                stockXL = currentState.stockXL.toIntOrNull() ?: 0,
-                stock2XL = currentState.stock2XL.toIntOrNull() ?: 0,
-                categoriaId = currentState.selectedCategoriaId
+                stockS = currentState.stockS.toIntOrNull() ?: if (currentState.stockS.isBlank()) 0 else -1,
+                stockM = currentState.stockM.toIntOrNull() ?: if (currentState.stockM.isBlank()) 0 else -1,
+                stockL = currentState.stockL.toIntOrNull() ?: if (currentState.stockL.isBlank()) 0 else -1,
+                stockXL = currentState.stockXL.toIntOrNull() ?: if (currentState.stockXL.isBlank()) 0 else -1,
+                stock2XL = currentState.stock2XL.toIntOrNull() ?: if (currentState.stock2XL.isBlank()) 0 else -1,
+                categoriaId = currentState.selectedCategoriaId ?: 0
             )
 
-            val result = camisetaRepository.upsertCamiseta(nuevaCamiseta)
-
-            when (result) {
-                is Resource.Success -> {
-                    _state.update { 
-                        it.copy(
-                            isLoading = false,
-                            successMessage = if (currentCamisetaId != -1) "¡Camiseta actualizada!" else "¡Camiseta creada exitosamente!",
-                            nombre = "", descripcion = "", precio = "",
-                            stockS = "", stockM = "", stockL = "", stockXL = "", stock2XL = "",
-                            selectedCategoriaId = null, imageUri = null, originalImageUrl = null
-                        )
+            upsertCamisetaUseCase(nuevaCamiseta, currentState.precio).collect { result ->
+                when (result) {
+                    is UpsertCamisetaResult.Success -> {
+                        _state.update { 
+                            it.copy(
+                                isLoading = false,
+                                successMessage = if (currentCamisetaId != -1) "¡Camiseta actualizada!" else "¡Camiseta creada exitosamente!",
+                                nombre = "", descripcion = "", precio = "",
+                                stockS = "", stockM = "", stockL = "", stockXL = "", stock2XL = "",
+                                selectedCategoriaId = null, imageUri = null, originalImageUrl = null,
+                                nombreError = null, descripcionError = null, precioError = null,
+                                categoriaError = null, imageError = null, stockSError = null,
+                                stockMError = null, stockLError = null, stockXLError = null,
+                                stock2XLError = null
+                            )
+                        }
+                    }
+                    is UpsertCamisetaResult.Error -> {
+                        _state.update { it.copy(isLoading = false, errorMessage = result.message) }
+                    }
+                    is UpsertCamisetaResult.Loading -> {
+                        _state.update { 
+                            it.copy(
+                                isLoading = true, errorMessage = null,
+                                nombreError = null, descripcionError = null, precioError = null,
+                                categoriaError = null, imageError = null, stockSError = null,
+                                stockMError = null, stockLError = null, stockXLError = null, stock2XLError = null
+                            ) 
+                        }
+                    }
+                    is UpsertCamisetaResult.ValidationError -> {
+                        _state.update { 
+                            it.copy(
+                                isLoading = false,
+                                nombreError = result.nombreError,
+                                descripcionError = result.descripcionError,
+                                precioError = result.precioError,
+                                categoriaError = result.categoriasError,
+                                imageError = result.imagenError,
+                                stockSError = result.stockSError,
+                                stockMError = result.stockMError,
+                                stockLError = result.stockLError,
+                                stockXLError = result.stockXLError,
+                                stock2XLError = result.stock2XLError
+                            )
+                        }
                     }
                 }
-                is Resource.Error -> {
-                    _state.update { it.copy(isLoading = false, errorMessage = result.message) }
-                }
-                is Resource.Loading -> {}
             }
         }
     }

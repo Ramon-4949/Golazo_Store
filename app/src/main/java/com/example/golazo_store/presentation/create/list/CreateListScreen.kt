@@ -15,6 +15,9 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,6 +65,8 @@ fun CreateListBodyScreen(
     onBack: () -> Unit,
     bottomNavigation: @Composable () -> Unit
 ) {
+    var showDeleteDialog by remember { mutableStateOf<Camiseta?>(null) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -132,10 +137,38 @@ fun CreateListBodyScreen(
                         CreateListCardItem(
                             camiseta = camiseta,
                             onEditClick = { onNavigateToEdit(camiseta.id) },
-                            onDeleteClick = { onEvent(CreateListEvent.OnDeleteClick(camiseta)) }
+                            onDeleteClick = { showDeleteDialog = camiseta }
                         )
                     }
                 }
+            }
+
+            if (showDeleteDialog != null) {
+                AlertDialog(
+                    onDismissRequest = { showDeleteDialog = null },
+                    title = {
+                        Text("Eliminar publicación", fontWeight = FontWeight.Bold)
+                    },
+                    text = {
+                        Text("¿Estás seguro de que deseas eliminar '${showDeleteDialog?.nombre}'? Esta acción no se puede deshacer.")
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showDeleteDialog?.let { onEvent(CreateListEvent.OnDeleteClick(it)) }
+                                showDeleteDialog = null
+                            }
+                        ) {
+                            Text("Eliminar", color = Color.Red, fontWeight = FontWeight.Bold)
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = { showDeleteDialog = null }) {
+                            Text("Cancelar", color = Color.Gray)
+                        }
+                    },
+                    containerColor = Color.White
+                )
             }
         }
     }

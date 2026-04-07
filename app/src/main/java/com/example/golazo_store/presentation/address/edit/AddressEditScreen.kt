@@ -94,36 +94,36 @@ fun AddressEditBodyScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 24.dp)
-                    .verticalScroll(rememberScrollState())
+                    .padding(vertical = 16.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
-
                 // Nombre de la Dirección
                 AddressTextField(
                     label = "Nombre de la dirección (ej. Casa, Trabajo)",
                     value = state.nombreDireccion,
                     placeholder = "Ej. Mi Casa",
+                    error = state.nombreError,
                     onValueChange = { onEvent(AddressEditEvent.OnNombreDireccionChange(it)) }
                 )
-                Spacer(modifier = Modifier.height(16.dp))
 
                 // Calle
                 AddressTextField(
                     label = "Calle",
                     value = state.calleNumero,
                     placeholder = "Av. Paseo de la Reforma 123",
+                    error = state.calleError,
                     onValueChange = { onEvent(AddressEditEvent.OnCalleNumeroChange(it)) }
                 )
-                Spacer(modifier = Modifier.height(16.dp))
 
                 // Provincia
                 AddressTextField(
                     label = "Provincia",
                     value = state.provincia,
                     placeholder = "Duarte",
+                    error = state.provinciaError,
                     onValueChange = { onEvent(AddressEditEvent.OnProvinciaChange(it)) }
                 )
-                Spacer(modifier = Modifier.height(16.dp))
 
                 // CP y Ciudad en Row
                 Row(
@@ -134,6 +134,7 @@ fun AddressEditBodyScreen(
                         label = "Código Postal",
                         value = state.codigoPostal,
                         placeholder = "31000",
+                        error = state.codigoPostalError,
                         onValueChange = { onEvent(AddressEditEvent.OnCodigoPostalChange(it)) },
                         modifier = Modifier.weight(1f)
                     )
@@ -141,11 +142,11 @@ fun AddressEditBodyScreen(
                         label = "Ciudad",
                         value = state.ciudad,
                         placeholder = "Santiago",
+                        error = state.ciudadError,
                         onValueChange = { onEvent(AddressEditEvent.OnCiudadChange(it)) },
                         modifier = Modifier.weight(1f)
                     )
                 }
-                Spacer(modifier = Modifier.height(16.dp))
 
                 // Referencia
                 AddressTextField(
@@ -217,6 +218,7 @@ fun AddressTextField(
     label: String,
     value: String,
     placeholder: String,
+    error: String? = null,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     singleLine: Boolean = true,
@@ -234,16 +236,25 @@ fun AddressTextField(
             value = value,
             onValueChange = onValueChange,
             placeholder = { Text(placeholder, color = Color.Gray) },
-            modifier = Modifier.fillMaxWidth().height(if (singleLine) 56.dp else (lines * 40).dp),
+            isError = error != null,
+            supportingText = {
+                if (error != null) {
+                    Text(text = error, color = MaterialTheme.colorScheme.error)
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedContainerColor = Color.White,
                 focusedContainerColor = Color.White,
                 unfocusedBorderColor = Color(0xFFE2E8F0),
                 focusedBorderColor = primaryDark,
-                cursorColor = primaryDark
+                cursorColor = primaryDark,
+                errorBorderColor = MaterialTheme.colorScheme.error,
+                errorSupportingTextColor = MaterialTheme.colorScheme.error
             ),
             singleLine = singleLine,
+            minLines = if (singleLine) 1 else lines,
             maxLines = if (singleLine) 1 else lines
         )
     }

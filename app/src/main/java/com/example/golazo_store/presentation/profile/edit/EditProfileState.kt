@@ -7,5 +7,8 @@ data class EditProfileState(
     val confirmarContrasena: String = "",
     val isLoading: Boolean = false,
     val successMessage: String? = null,
-    val error: String? = null
+    val error: String? = null,
+    val nombreError: String? = null,
+    val passwordError: String? = null,
+    val confirmPasswordError: String? = null
 )

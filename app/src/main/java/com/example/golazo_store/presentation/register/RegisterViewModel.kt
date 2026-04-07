@@ -2,8 +2,8 @@ package com.example.golazo_store.presentation.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.golazo_store.domain.usecase.Login.RegisterResult
 import com.example.golazo_store.domain.usecase.Login.RegisterUseCase
-import com.example.golazo_store.domain.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,16 +22,16 @@ class RegisterViewModel @Inject constructor(
     fun onEvent(event: RegisterEvent) {
         when (event) {
             is RegisterEvent.NombreChanged -> {
-                _state.update { it.copy(nombre = event.nombre, error = null) }
+                _state.update { it.copy(nombre = event.nombre, nombreError = null) }
             }
             is RegisterEvent.CorreoChanged -> {
-                _state.update { it.copy(correo = event.correo, error = null) }
+                _state.update { it.copy(correo = event.correo, emailError = null) }
             }
             is RegisterEvent.ContrasenaChanged -> {
-                _state.update { it.copy(contrasena = event.contrasena, error = null) }
+                _state.update { it.copy(contrasena = event.contrasena, passwordError = null) }
             }
             is RegisterEvent.ConfirmContrasenaChanged -> {
-                _state.update { it.copy(confirmContrasena = event.confirmContrasena, error = null) }
+                _state.update { it.copy(confirmContrasena = event.confirmContrasena, confirmPasswordError = null) }
             }
             RegisterEvent.RegisterClicked -> register()
         }
@@ -40,14 +40,8 @@ class RegisterViewModel @Inject constructor(
     private fun register() {
         val current = _state.value
 
-        if (current.nombre.isBlank() || current.correo.isBlank() || 
-            current.contrasena.isBlank() || current.confirmContrasena.isBlank()) {
-            _state.update { it.copy(error = "Por favor, complete todos los campos") }
-            return
-        }
-
         if (current.contrasena != current.confirmContrasena) {
-            _state.update { it.copy(error = "Las contraseñas no coinciden") }
+            _state.update { it.copy(confirmPasswordError = "Las contraseñas no coinciden") }
             return
         }
 
@@ -58,14 +52,24 @@ class RegisterViewModel @Inject constructor(
                 password = current.contrasena.trim()
             ).collect { result ->
                 when (result) {
-                    is Resource.Loading -> {
+                    is RegisterResult.Loading -> {
                         _state.update { it.copy(isLoading = true, error = null) }
                     }
-                    is Resource.Success -> {
+                    is RegisterResult.Success -> {
                         _state.update { it.copy(isLoading = false, isSuccess = true) }
                     }
-                    is Resource.Error -> {
+                    is RegisterResult.Error -> {
                         _state.update { it.copy(isLoading = false, error = result.message) }
+                    }
+                    is RegisterResult.ValidationError -> {
+                        _state.update { 
+                            it.copy(
+                                isLoading = false,
+                                nombreError = result.nombreError,
+                                emailError = result.emailError,
+                                passwordError = result.passwordError
+                            ) 
+                        }
                     }
                 }
             }

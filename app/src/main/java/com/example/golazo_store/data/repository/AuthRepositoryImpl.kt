@@ -9,7 +9,6 @@ import com.example.golazo_store.domain.utils.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
-
 import com.example.golazo_store.domain.repository.FavoritesRepository
 
 class AuthRepositoryImpl @Inject constructor(
@@ -21,12 +20,12 @@ class AuthRepositoryImpl @Inject constructor(
         emit(Resource.Loading())
         val response = remoteDataSource.login(UsuarioLoginDTO(correo, password))
         response.fold(
-            onSuccess = { loginResponse -> 
+            onSuccess = { loginResponse ->
                 loginResponse.usuario?.let { userDto ->
                     sessionManager.saveUserSession(userDto.toDomain())
                     favoritesRepository.syncDownFavorites()
                 }
-                emit(Resource.Success(loginResponse.mensaje ?: "Login Exitoso")) 
+                emit(Resource.Success(loginResponse.mensaje ?: "Login Exitoso"))
             },
             onFailure = { emit(Resource.Error(it.message ?: "Error al Iniciar Sesión")) }
         )
@@ -46,7 +45,6 @@ class AuthRepositoryImpl @Inject constructor(
         val response = remoteDataSource.updateProfile(id, com.example.golazo_store.data.remote.dto.UpdateProfileRequest(nombreUsuario, nuevaContrasena))
         response.fold(
             onSuccess = {
-                // Update local session to display the new name immediately
                 val currentSession = sessionManager.getUserSession()
                 if (currentSession != null && currentSession.id == id) {
                     sessionManager.saveUserSession(currentSession.copy(nombre = nombreUsuario))

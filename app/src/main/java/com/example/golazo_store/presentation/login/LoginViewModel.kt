@@ -2,8 +2,8 @@ package com.example.golazo_store.presentation.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.golazo_store.domain.usecase.Login.LoginResult
 import com.example.golazo_store.domain.usecase.Login.LoginUseCase
-import com.example.golazo_store.domain.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,10 +22,10 @@ class LoginViewModel @Inject constructor(
     fun onEvent(event: LoginEvent) {
         when (event) {
             is LoginEvent.CorreoChanged -> {
-                _state.update { it.copy(correo = event.correo, error = null) }
+                _state.update { it.copy(correo = event.correo, emailError = null) }
             }
             is LoginEvent.ContrasenaChanged -> {
-                _state.update { it.copy(contrasena = event.contrasena, error = null) }
+                _state.update { it.copy(contrasena = event.contrasena, passwordError = null) }
             }
             LoginEvent.LoginClicked -> login()
         }
@@ -33,22 +33,27 @@ class LoginViewModel @Inject constructor(
 
     private fun login() {
         val current = _state.value
-        if (current.correo.isBlank() || current.contrasena.isBlank()) {
-            _state.update { it.copy(error = "Por favor, complete todos los campos") }
-            return
-        }
-
+        
         viewModelScope.launch {
             loginUseCase(correo = current.correo.trim(), password = current.contrasena.trim()).collect { result ->
                 when (result) {
-                    is Resource.Loading -> {
+                    is LoginResult.Loading -> {
                         _state.update { it.copy(isLoading = true, error = null) }
                     }
-                    is Resource.Success -> {
+                    is LoginResult.Success -> {
                         _state.update { it.copy(isLoading = false, isSuccess = true) }
                     }
-                    is Resource.Error -> {
+                    is LoginResult.Error -> {
                         _state.update { it.copy(isLoading = false, error = result.message) }
+                    }
+                    is LoginResult.ValidationError -> {
+                        _state.update { 
+                            it.copy(
+                                isLoading = false,
+                                emailError = result.emailError,
+                                passwordError = result.passwordError
+                            ) 
+                        }
                     }
                 }
             }

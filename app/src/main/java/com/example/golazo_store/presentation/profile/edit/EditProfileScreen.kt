@@ -121,11 +121,11 @@ fun EditProfileScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
                     .padding(horizontal = 24.dp)
+                    .padding(vertical = 16.dp)
                     .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Spacer(modifier = Modifier.height(24.dp))
-                
                 // Avatar
                 Box(
                     modifier = Modifier
@@ -141,8 +141,6 @@ fun EditProfileScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
                 Text(
                     text = "Actualiza tu información",
                     fontSize = 16.sp,
@@ -150,33 +148,28 @@ fun EditProfileScreen(
                     color = Color(0xFF53647A)
                 )
 
-                Spacer(modifier = Modifier.height(32.dp))
-
                 // Inputs
                 EditProfileTextField(
                     label = "Nombre de usuario",
                     value = state.nombreUsuario,
+                    error = state.nombreError,
                     onValueChange = { viewModel.onEvent(EditProfileEvent.OnNombreUsuarioChange(it)) },
                     placeholder = "Ej. JuanGolazo10"
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
                 EditProfilePasswordField(
                     label = "Nueva contraseña",
                     value = state.nuevaContrasena,
+                    error = state.passwordError,
                     onValueChange = { viewModel.onEvent(EditProfileEvent.OnNuevaContrasenaChange(it)) }
                 )
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 EditProfilePasswordField(
                     label = "Confirmar contraseña",
                     value = state.confirmarContrasena,
+                    error = state.confirmPasswordError,
                     onValueChange = { viewModel.onEvent(EditProfileEvent.OnConfirmarContrasenaChange(it)) }
                 )
-
-                Spacer(modifier = Modifier.height(48.dp))
 
                 // Action Buttons
                 Button(
@@ -195,8 +188,6 @@ fun EditProfileScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
                 TextButton(onClick = onBack) {
                     Text(
                         text = "Cancelar",
@@ -205,8 +196,6 @@ fun EditProfileScreen(
                         color = Color(0xFF53647A)
                     )
                 }
-
-                Spacer(modifier = Modifier.height(32.dp))
 
                 // Eliminate Account Button
                 Row(
@@ -241,6 +230,7 @@ fun EditProfileScreen(
 fun EditProfileTextField(
     label: String,
     value: String,
+    error: String? = null,
     onValueChange: (String) -> Unit,
     placeholder: String
 ) {
@@ -259,13 +249,21 @@ fun EditProfileTextField(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
+            isError = error != null,
+            supportingText = {
+                if (error != null) {
+                    Text(text = error, color = MaterialTheme.colorScheme.error)
+                }
+            },
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = Color(0xFFE2E8F0),
                 focusedBorderColor = primaryDark,
                 unfocusedContainerColor = Color(0xFFFAFAFA),
                 focusedContainerColor = Color(0xFFFAFAFA),
                 unfocusedTextColor = Color(0xFF07152B),
-                focusedTextColor = Color(0xFF07152B)
+                focusedTextColor = Color(0xFF07152B),
+                errorBorderColor = MaterialTheme.colorScheme.error,
+                errorSupportingTextColor = MaterialTheme.colorScheme.error
             )
         )
     }
@@ -276,6 +274,7 @@ fun EditProfileTextField(
 fun EditProfilePasswordField(
     label: String,
     value: String,
+    error: String? = null,
     onValueChange: (String) -> Unit
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
@@ -297,13 +296,21 @@ fun EditProfilePasswordField(
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             placeholder = { Text("••••••••", color = Color(0xFFA0B2C6)) },
+            isError = error != null,
+            supportingText = {
+                if (error != null) {
+                    Text(text = error, color = MaterialTheme.colorScheme.error)
+                }
+            },
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedBorderColor = Color(0xFFE2E8F0),
                 focusedBorderColor = primaryDark,
                 unfocusedContainerColor = Color(0xFFFAFAFA),
                 focusedContainerColor = Color(0xFFFAFAFA),
                 unfocusedTextColor = Color(0xFF07152B),
-                focusedTextColor = Color(0xFF07152B)
+                focusedTextColor = Color(0xFF07152B),
+                errorBorderColor = MaterialTheme.colorScheme.error,
+                errorSupportingTextColor = MaterialTheme.colorScheme.error
             ),
             trailingIcon = {
                 val image = if (passwordVisible)

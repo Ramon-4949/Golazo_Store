@@ -23,6 +23,7 @@ fun AuthTextField(
     onValueChange: (String) -> Unit,
     label: String,
     placeholder: String,
+    error: String? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
@@ -38,6 +39,12 @@ fun AuthTextField(
         trailingIcon = trailingIcon,
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
+        isError = error != null,
+        supportingText = {
+            if (error != null) {
+                Text(text = error, color = MaterialTheme.colorScheme.error)
+            }
+        },
         shape = RoundedCornerShape(12.dp),
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedContainerColor = AuthBackground,
@@ -46,8 +53,11 @@ fun AuthTextField(
             focusedBorderColor = AuthYellow,
             cursorColor = AuthYellow,
             focusedLabelColor = AuthYellow,
-            unfocusedLabelColor = Color.DarkGray
+            unfocusedLabelColor = Color.DarkGray,
+            errorBorderColor = MaterialTheme.colorScheme.error,
+            errorSupportingTextColor = MaterialTheme.colorScheme.error
         ),
+        singleLine = true,
         modifier = modifier.fillMaxWidth()
     )
 }
