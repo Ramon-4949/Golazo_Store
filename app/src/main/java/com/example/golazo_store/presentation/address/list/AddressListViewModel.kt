@@ -2,7 +2,8 @@ package com.example.golazo_store.presentation.address.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.golazo_store.domain.repository.DireccionRepository
+import com.example.golazo_store.domain.usecase.address.GetDireccionesUseCase
+import com.example.golazo_store.domain.usecase.address.DeleteDireccionUseCase
 import com.example.golazo_store.domain.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddressListViewModel @Inject constructor(
-    private val direccionRepository: DireccionRepository
+    private val getDireccionesUseCase: GetDireccionesUseCase,
+    private val deleteDireccionUseCase: DeleteDireccionUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AddressListUiState(isLoading = true))
@@ -28,7 +30,7 @@ class AddressListViewModel @Inject constructor(
 
     private fun loadAddresses() {
         viewModelScope.launch {
-            direccionRepository.getDirecciones().collect { resource ->
+            getDireccionesUseCase().collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         allAddresses = resource.data ?: emptyList()
@@ -68,7 +70,7 @@ class AddressListViewModel @Inject constructor(
             }
             is AddressListEvent.OnDeleteAddress -> {
                 viewModelScope.launch {
-                    val result = direccionRepository.deleteDireccion(event.id)
+                    val result = deleteDireccionUseCase(event.id)
                     if (result is Resource.Success) {
                         loadAddresses() // Reload after deletion
                     } else if (result is Resource.Error) {

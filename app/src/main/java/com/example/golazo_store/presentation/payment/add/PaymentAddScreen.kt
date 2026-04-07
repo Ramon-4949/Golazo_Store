@@ -103,35 +103,33 @@ fun PaymentAddBodyScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 24.dp)
-                    .verticalScroll(rememberScrollState())
+                    .padding(vertical = 16.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
-
                 // Interactive Card UI
                 VisualCreditCard(state)
-
-                Spacer(modifier = Modifier.height(24.dp))
 
                 // Nombre Titular
                 PaymentTextField(
                     label = "Nombre en la tarjeta",
                     value = state.nombreTitular,
                     placeholder = "Ej. Juan Pérez",
+                    error = state.titularError,
                     leadingIcon = Icons.Default.PersonOutline,
                     onValueChange = { onEvent(PaymentAddEvent.OnNombreTitularChange(it)) }
                 )
-                Spacer(modifier = Modifier.height(16.dp))
 
                 // Número de tarjeta
                 PaymentTextField(
                     label = "Número de tarjeta",
                     value = state.numeroTarjeta,
                     placeholder = "0000 0000 0000 0000",
+                    error = state.numeroTarjetaError,
                     leadingIcon = Icons.Outlined.CreditCard,
                     keyboardType = KeyboardType.Number,
                     onValueChange = { onEvent(PaymentAddEvent.OnNumeroTarjetaChange(it)) }
                 )
-                Spacer(modifier = Modifier.height(16.dp))
 
                 // Expiración y CVV
                 Row(
@@ -142,6 +140,7 @@ fun PaymentAddBodyScreen(
                         label = "Expiración",
                         value = state.expiracionMMYY,
                         placeholder = "MM/AA",
+                        error = state.expiracionError,
                         leadingIcon = Icons.Default.DateRange,
                         keyboardType = KeyboardType.Number,
                         modifier = Modifier.weight(1f),
@@ -154,14 +153,13 @@ fun PaymentAddBodyScreen(
                         label = "CVV",
                         value = state.cvv,
                         placeholder = "123",
+                        error = state.cvvError,
                         leadingIcon = Icons.Default.Lock,
                         keyboardType = KeyboardType.Number,
                         modifier = Modifier.weight(1f),
                         onValueChange = { onEvent(PaymentAddEvent.OnCvvChange(it)) }
                     )
                 }
-
-                Spacer(modifier = Modifier.height(24.dp))
 
                 // Checkbox Principal
                 Row(
@@ -365,6 +363,7 @@ fun PaymentTextField(
     label: String,
     value: String,
     placeholder: String,
+    error: String? = null,
     leadingIcon: ImageVector,
     onValueChange: (String) -> Unit,
     keyboardType: KeyboardType = KeyboardType.Text,
@@ -392,14 +391,22 @@ fun PaymentTextField(
             },
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             visualTransformation = visualTransformation,
-            modifier = Modifier.fillMaxWidth().height(56.dp),
+            isError = error != null,
+            supportingText = {
+                if (error != null) {
+                    Text(text = error, color = MaterialTheme.colorScheme.error)
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedContainerColor = Color.White,
                 focusedContainerColor = Color.White,
                 unfocusedBorderColor = Color(0xFFE2E8F0),
                 focusedBorderColor = primaryDark,
-                cursorColor = primaryDark
+                cursorColor = primaryDark,
+                errorBorderColor = MaterialTheme.colorScheme.error,
+                errorSupportingTextColor = MaterialTheme.colorScheme.error
             ),
             singleLine = true
         )

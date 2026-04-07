@@ -121,7 +121,8 @@ fun RegistroNavHost(
 
         composable<Screen.CamisetaDetail> {
             CamisetaDetailScreen(
-                onBack = { navController.navigateUp() }
+                onBack = { navController.navigateUp() },
+                onAddToCartSuccess = { navController.navigate(Screen.Cart) }
             )
         }
 

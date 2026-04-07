@@ -2,7 +2,9 @@ package com.example.golazo_store.presentation.cart
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.golazo_store.domain.repository.CartRepository
+import com.example.golazo_store.domain.usecase.cart.GetCartItemsUseCase
+import com.example.golazo_store.domain.usecase.cart.RemoveFromCartUseCase
+import com.example.golazo_store.domain.usecase.cart.UpdateCartItemQuantityUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +15,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CartViewModel @Inject constructor(
-    private val cartRepository: CartRepository
+    private val getCartItemsUseCase: GetCartItemsUseCase,
+    private val updateCartItemQuantityUseCase: UpdateCartItemQuantityUseCase,
+    private val removeFromCartUseCase: RemoveFromCartUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CartUiState(isLoading = true))
@@ -25,7 +29,7 @@ class CartViewModel @Inject constructor(
 
     private fun loadCartItems() {
         viewModelScope.launch {
-            cartRepository.getCartItems().collect { items ->
+            getCartItemsUseCase().collect { items ->
                 val subtotal = items.sumOf { it.precio * it.cantidad }
                 _state.update {
                     it.copy(
@@ -43,21 +47,21 @@ class CartViewModel @Inject constructor(
         when (event) {
             is CartEvent.IncrementQuantity -> {
                 viewModelScope.launch {
-                    cartRepository.updateQuantity(event.cartId, event.currentQuantity + 1)
+                    updateCartItemQuantityUseCase(event.cartId, event.currentQuantity + 1)
                 }
             }
             is CartEvent.DecrementQuantity -> {
                 viewModelScope.launch {
                     if (event.currentQuantity > 1) {
-                        cartRepository.updateQuantity(event.cartId, event.currentQuantity - 1)
+                        updateCartItemQuantityUseCase(event.cartId, event.currentQuantity - 1)
                     } else {
-                        cartRepository.removeFromCart(event.cartId)
+                        removeFromCartUseCase(event.cartId)
                     }
                 }
             }
             is CartEvent.RemoveItem -> {
                 viewModelScope.launch {
-                    cartRepository.removeFromCart(event.cartId)
+                    removeFromCartUseCase(event.cartId)
                 }
             }
             is CartEvent.Checkout -> {

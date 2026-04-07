@@ -4,8 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.golazo_store.data.local.SessionManager
-import com.example.golazo_store.domain.model.Direccion
-import com.example.golazo_store.domain.repository.DireccionRepository
+import com.example.golazo_store.domain.usecase.address.GetDireccionByIdUseCase
+import com.example.golazo_store.domain.usecase.address.SaveAddressResult
+import com.example.golazo_store.domain.usecase.address.SaveAddressUseCase
 import com.example.golazo_store.domain.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddressEditViewModel @Inject constructor(
-    private val repository: DireccionRepository,
+    private val getDireccionByIdUseCase: GetDireccionByIdUseCase,
+    private val saveAddressUseCase: SaveAddressUseCase,
     private val sessionManager: SessionManager,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -37,7 +39,7 @@ class AddressEditViewModel @Inject constructor(
     private fun loadAddress(id: Int) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            repository.getDireccionById(id).collect { resource ->
+            getDireccionByIdUseCase(id).collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         resource.data?.let { dir ->
@@ -68,11 +70,11 @@ class AddressEditViewModel @Inject constructor(
 
     fun onEvent(event: AddressEditEvent) {
         when (event) {
-            is AddressEditEvent.OnNombreDireccionChange -> _state.update { it.copy(nombreDireccion = event.value) }
-            is AddressEditEvent.OnCalleNumeroChange -> _state.update { it.copy(calleNumero = event.value) }
-            is AddressEditEvent.OnProvinciaChange -> _state.update { it.copy(provincia = event.value) }
-            is AddressEditEvent.OnCodigoPostalChange -> _state.update { it.copy(codigoPostal = event.value) }
-            is AddressEditEvent.OnCiudadChange -> _state.update { it.copy(ciudad = event.value) }
+            is AddressEditEvent.OnNombreDireccionChange -> _state.update { it.copy(nombreDireccion = event.value, nombreError = null) }
+            is AddressEditEvent.OnCalleNumeroChange -> _state.update { it.copy(calleNumero = event.value, calleError = null) }
+            is AddressEditEvent.OnProvinciaChange -> _state.update { it.copy(provincia = event.value, provinciaError = null) }
+            is AddressEditEvent.OnCodigoPostalChange -> _state.update { it.copy(codigoPostal = event.value, codigoPostalError = null) }
+            is AddressEditEvent.OnCiudadChange -> _state.update { it.copy(ciudad = event.value, ciudadError = null) }
             is AddressEditEvent.OnReferenceChange -> _state.update { it.copy(reference = event.value) }
             is AddressEditEvent.OnEsPrincipalChange -> _state.update { it.copy(esPrincipal = event.value) }
             is AddressEditEvent.OnSave -> saveAddress()
@@ -81,20 +83,13 @@ class AddressEditViewModel @Inject constructor(
 
     private fun saveAddress() {
         val currentState = _state.value
-        if (currentState.nombreDireccion.isBlank() || currentState.calleNumero.isBlank() ||
-            currentState.provincia.isBlank() || currentState.codigoPostal.isBlank() || currentState.ciudad.isBlank()
-        ) {
-            _state.update { it.copy(error = "Por favor completa los campos obligatorios.") }
-            return
-        }
-
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             
             val userId = sessionManager.getUserSession()?.id ?: 0
 
-            val direccion = Direccion(
-                id = currentState.id ?: 0,
+            val result = saveAddressUseCase(
+                id = currentState.id?.takeIf { it != -1 },
                 usuarioId = userId,
                 nombreDireccion = currentState.nombreDireccion,
                 calleNumero = currentState.calleNumero,
@@ -105,16 +100,25 @@ class AddressEditViewModel @Inject constructor(
                 esPrincipal = currentState.esPrincipal
             )
 
-            val result = if (currentState.id != null && currentState.id != -1) {
-                repository.updateDireccion(currentState.id, direccion)
-            } else {
-                repository.createDireccion(direccion)
-            }
-
-            if (result is Resource.Success) {
-                _state.update { it.copy(isLoading = false, isSaved = true) }
-            } else if (result is Resource.Error) {
-                _state.update { it.copy(isLoading = false, error = result.message ?: "Error al guardar dirección") }
+            when (result) {
+                is SaveAddressResult.Success -> {
+                    _state.update { it.copy(isLoading = false, isSaved = true) }
+                }
+                is SaveAddressResult.Error -> {
+                    _state.update { it.copy(isLoading = false, error = result.message) }
+                }
+                is SaveAddressResult.ValidationError -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            nombreError = result.nombreError,
+                            calleError = result.calleError,
+                            provinciaError = result.provinciaError,
+                            codigoPostalError = result.codigoPostalError,
+                            ciudadError = result.ciudadError
+                        )
+                    }
+                }
             }
         }
     }

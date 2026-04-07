@@ -109,18 +109,17 @@ fun CreateEditBodyScreen(
                 .background(Color.White)
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
+                .padding(vertical = 16.dp)
                 .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
             ImagePickerSection(
                 imageUri = state.imageUri,
                 originalImageUrl = state.originalImageUrl,
+                error = state.imageError,
                 onImagePicked = { uri -> onEvent(CreateEditEvent.OnImagePicked(uri)) }
             )
-
-            Spacer(modifier = Modifier.height(24.dp))
 
             FormSectionTitle("Información General")
             
@@ -128,7 +127,8 @@ fun CreateEditBodyScreen(
                 label = "Nombre de la camiseta",
                 value = state.nombre,
                 onValueChange = { onEvent(CreateEditEvent.OnNombreChange(it)) },
-                placeholder = "Ej. Camiseta Local 24/25"
+                placeholder = "Ej. Camiseta Local 24/25",
+                error = state.nombreError
             )
 
             CustomTextField(
@@ -136,6 +136,7 @@ fun CreateEditBodyScreen(
                 value = state.descripcion,
                 onValueChange = { onEvent(CreateEditEvent.OnDescripcionChange(it)) },
                 placeholder = "Detalles de la tela, ajuste, etc.",
+                error = state.descripcionError,
                 singleLine = false,
                 modifier = Modifier.height(100.dp)
             )
@@ -143,6 +144,7 @@ fun CreateEditBodyScreen(
             CategoryDropdown(
                 categorias = state.categorias,
                 selectedCategoriaId = state.selectedCategoriaId,
+                error = state.categoriaError,
                 onCategoriaSelected = { onEvent(CreateEditEvent.OnCategoriaSelected(it)) }
             )
 
@@ -151,19 +153,17 @@ fun CreateEditBodyScreen(
                 value = state.precio,
                 onValueChange = { onEvent(CreateEditEvent.OnPrecioChange(it)) },
                 placeholder = "$ 0.00",
+                error = state.precioError,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
             FormSectionTitle("Gestión de Stock por Talla")
 
-            StockRow(label = "S", value = state.stockS, onValueChange = { onEvent(CreateEditEvent.OnStockSChange(it)) })
-            StockRow(label = "M", value = state.stockM, onValueChange = { onEvent(CreateEditEvent.OnStockMChange(it)) })
-            StockRow(label = "L", value = state.stockL, onValueChange = { onEvent(CreateEditEvent.OnStockLChange(it)) })
-            StockRow(label = "XL", value = state.stockXL, onValueChange = { onEvent(CreateEditEvent.OnStockXLChange(it)) })
-            StockRow(label = "2XL", value = state.stock2XL, onValueChange = { onEvent(CreateEditEvent.OnStock2XLChange(it)) })
-
-            Spacer(modifier = Modifier.height(24.dp))
+            StockRow(label = "S", value = state.stockS, error = state.stockSError, onValueChange = { onEvent(CreateEditEvent.OnStockSChange(it)) })
+            StockRow(label = "M", value = state.stockM, error = state.stockMError, onValueChange = { onEvent(CreateEditEvent.OnStockMChange(it)) })
+            StockRow(label = "L", value = state.stockL, error = state.stockLError, onValueChange = { onEvent(CreateEditEvent.OnStockLChange(it)) })
+            StockRow(label = "XL", value = state.stockXL, error = state.stockXLError, onValueChange = { onEvent(CreateEditEvent.OnStockXLChange(it)) })
+            StockRow(label = "2XL", value = state.stock2XL, error = state.stock2XLError, onValueChange = { onEvent(CreateEditEvent.OnStock2XLChange(it)) })
 
             Button(
                 onClick = { onEvent(CreateEditEvent.SaveProduct) },
@@ -180,8 +180,6 @@ fun CreateEditBodyScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
             Text(
                 text = "Cancelar",
                 color = Color(0xFF6B7A93),
@@ -191,8 +189,6 @@ fun CreateEditBodyScreen(
                     .clickable { onBack() }
                     .padding(8.dp)
             )
-
-            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
@@ -201,6 +197,7 @@ fun CreateEditBodyScreen(
 fun ImagePickerSection(
     imageUri: android.net.Uri?,
     originalImageUrl: String? = null,
+    error: String? = null,
     onImagePicked: (android.net.Uri?) -> Unit
 ) {
     val launcher = rememberLauncherForActivityResult(
@@ -296,6 +293,18 @@ fun ImagePickerSection(
             }
         }
     }
+    
+    if (error != null) {
+        Text(
+            text = error,
+            color = MaterialTheme.colorScheme.error,
+            fontSize = 12.sp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp, top = 4.dp),
+            textAlign = TextAlign.Start
+        )
+    }
 }
 
 @Composable
@@ -317,11 +326,12 @@ fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
+    error: String? = null,
     singleLine: Boolean = true,
     modifier: Modifier = Modifier,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
-    Column(modifier = modifier.padding(bottom = 16.dp)) {
+    Column(modifier = modifier) {
         Text(
             text = label,
             fontWeight = FontWeight.Bold,
@@ -337,11 +347,19 @@ fun CustomTextField(
             shape = RoundedCornerShape(8.dp),
             singleLine = singleLine,
             keyboardOptions = keyboardOptions,
+            isError = error != null,
+            supportingText = {
+                if (error != null) {
+                    Text(text = error, color = MaterialTheme.colorScheme.error)
+                }
+            },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = primaryDark,
                 unfocusedBorderColor = Color(0xFFFFF0EC), // Light border
                 focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White
+                unfocusedContainerColor = Color.White,
+                errorBorderColor = MaterialTheme.colorScheme.error,
+                errorSupportingTextColor = MaterialTheme.colorScheme.error
             )
         )
     }
@@ -352,12 +370,13 @@ fun CustomTextField(
 fun CategoryDropdown(
     categorias: List<com.example.golazo_store.domain.model.Categoria>,
     selectedCategoriaId: Int?,
+    error: String? = null,
     onCategoriaSelected: (Int) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     val selectedText = categorias.find { it.id == selectedCategoriaId }?.nombre ?: "Selecciona una categoría"
 
-    Column(modifier = Modifier.padding(bottom = 16.dp)) {
+    Column(modifier = Modifier) {
         Text(
             text = "Categoría",
             fontWeight = FontWeight.Bold,
@@ -378,11 +397,20 @@ fun CategoryDropdown(
                     .fillMaxWidth()
                     .menuAnchor(),
                 shape = RoundedCornerShape(8.dp),
+                singleLine = true,
+                isError = error != null,
+                supportingText = {
+                    if (error != null) {
+                        Text(text = error, color = MaterialTheme.colorScheme.error)
+                    }
+                },
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = primaryDark,
                     unfocusedBorderColor = Color(0xFFFFF0EC),
                     focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White
+                    unfocusedContainerColor = Color.White,
+                    errorBorderColor = MaterialTheme.colorScheme.error,
+                    errorSupportingTextColor = MaterialTheme.colorScheme.error
                 )
             )
             ExposedDropdownMenu(
@@ -408,12 +436,11 @@ fun CategoryDropdown(
 fun StockRow(
     label: String,
     value: String,
+    error: String? = null,
     onValueChange: (String) -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -450,16 +477,22 @@ fun StockRow(
             onValueChange = onValueChange,
             placeholder = { Text("0", color = Color.Gray) },
             singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
+            modifier = Modifier.fillMaxWidth(),
+            isError = error != null,
+            supportingText = {
+                if (error != null) {
+                    Text(text = error, color = MaterialTheme.colorScheme.error)
+                }
+            },
             shape = RoundedCornerShape(8.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = primaryDark,
                 unfocusedBorderColor = Color(0xFFFFF0EC),
                 focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White
+                unfocusedContainerColor = Color.White,
+                errorBorderColor = MaterialTheme.colorScheme.error,
+                errorSupportingTextColor = MaterialTheme.colorScheme.error
             )
         )
     }

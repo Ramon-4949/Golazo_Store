@@ -71,11 +71,14 @@ class CamisetaDetailViewModel @Inject constructor(
                     _state.update { it.copy(errorMessage = "Debes seleccionar una talla primero") }
                 } else {
                     viewModelScope.launch {
+                        _state.update { it.copy(isLoading = true) }
                         cartRepository.addToCart(event.id, size, 1)
-                        // Trigger a success message or navigate. For now, clear error if any.
-                        _state.update { it.copy(errorMessage = null) }
+                        _state.update { it.copy(isLoading = false, isAddedToCart = true, errorMessage = null) }
                     }
                 }
+            }
+            is CamisetaDetailEvent.ResetAddToCart -> {
+                _state.update { it.copy(isAddedToCart = false) }
             }
             is CamisetaDetailEvent.RetryLoading -> {
                 if (currentCamisetaId != -1) {

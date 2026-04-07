@@ -2,7 +2,8 @@ package com.example.golazo_store.presentation.payment.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.golazo_store.domain.repository.MetodoPagoRepository
+import com.example.golazo_store.domain.usecase.payment.GetMetodosPagoUseCase
+import com.example.golazo_store.domain.usecase.payment.DeleteMetodoPagoUseCase
 import com.example.golazo_store.domain.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PaymentListViewModel @Inject constructor(
-    private val repository: MetodoPagoRepository
+    private val getMetodosPagoUseCase: GetMetodosPagoUseCase,
+    private val deleteMetodoPagoUseCase: DeleteMetodoPagoUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PaymentListUiState(isLoading = true))
@@ -26,7 +28,7 @@ class PaymentListViewModel @Inject constructor(
 
     private fun loadPayments() {
         viewModelScope.launch {
-            repository.getMetodosPago().collect { resource ->
+            getMetodosPagoUseCase().collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         _state.update {
@@ -57,7 +59,7 @@ class PaymentListViewModel @Inject constructor(
             }
             is PaymentListEvent.OnDeletePayment -> {
                 viewModelScope.launch {
-                    val result = repository.deleteMetodoPago(event.id)
+                    val result = deleteMetodoPagoUseCase(event.id)
                     if (result is Resource.Success) {
                         loadPayments()
                     } else if (result is Resource.Error) {

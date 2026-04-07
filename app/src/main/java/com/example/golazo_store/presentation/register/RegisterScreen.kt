@@ -105,6 +105,7 @@ fun RegisterScreen(
                     onValueChange = { viewModel.onEvent(RegisterEvent.NombreChanged(it)) },
                     label = "Nombre completo",
                     placeholder = "Juan Pérez",
+                    error = state.nombreError,
                     leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = Color.Gray) }
                 )
 
@@ -114,6 +115,7 @@ fun RegisterScreen(
                     onValueChange = { viewModel.onEvent(RegisterEvent.CorreoChanged(it)) },
                     label = "Correo electrónico",
                     placeholder = "ejemplo@correo.com",
+                    error = state.emailError,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = Color.Gray) }
                 )
@@ -124,6 +126,7 @@ fun RegisterScreen(
                     onValueChange = { viewModel.onEvent(RegisterEvent.ContrasenaChanged(it)) },
                     label = "Contraseña",
                     placeholder = "••••••••",
+                    error = state.passwordError,
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = Color.Gray) },
@@ -141,13 +144,11 @@ fun RegisterScreen(
                     onValueChange = { viewModel.onEvent(RegisterEvent.ConfirmContrasenaChanged(it)) },
                     label = "Confirmar contraseña",
                     placeholder = "••••••••",
+                    error = state.confirmPasswordError,
                     visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     leadingIcon = { Icon(Icons.Default.Refresh, contentDescription = null, tint = Color.Gray) },
                     trailingIcon = {
-                        // The Figma doesn't explicitly show a visibility toggle for the confirm password, 
-                        // but it's good UX to add it, or we can omit it if strictly following Figma. Let's omit to strictly follow Figma.
-                        // Actually Figma shows lock with circular arrow, we used Refresh icon which is similar.
                     }
                 )
             }

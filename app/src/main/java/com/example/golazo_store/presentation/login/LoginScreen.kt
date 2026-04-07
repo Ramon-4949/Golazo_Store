@@ -88,6 +88,7 @@ fun LoginScreen(
                 onValueChange = { viewModel.onEvent(LoginEvent.CorreoChanged(it)) },
                 label = "Correo electrónico",
                 placeholder = "ejemplo@correo.com",
+                error = state.emailError,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
 
@@ -96,6 +97,7 @@ fun LoginScreen(
                 onValueChange = { viewModel.onEvent(LoginEvent.ContrasenaChanged(it)) },
                 label = "Contraseña",
                 placeholder = "Introduce tu contraseña",
+                error = state.passwordError,
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 trailingIcon = {

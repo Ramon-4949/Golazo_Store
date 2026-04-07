@@ -9,5 +9,10 @@ data class PaymentAddUiState(
     
     val isLoading: Boolean = false,
     val error: String? = null,
-    val isSaved: Boolean = false
+    val isSaved: Boolean = false,
+
+    val titularError: String? = null,
+    val numeroTarjetaError: String? = null,
+    val expiracionError: String? = null,
+    val cvvError: String? = null
 )

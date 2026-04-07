@@ -12,5 +12,11 @@ data class AddressEditUiState(
     
     val isLoading: Boolean = false,
     val error: String? = null,
-    val isSaved: Boolean = false
+    val isSaved: Boolean = false,
+
+    val nombreError: String? = null,
+    val calleError: String? = null,
+    val provinciaError: String? = null,
+    val codigoPostalError: String? = null,
+    val ciudadError: String? = null
 )

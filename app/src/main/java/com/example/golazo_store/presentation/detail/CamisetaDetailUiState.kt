@@ -6,5 +6,6 @@ data class CamisetaDetailUiState(
     val isLoading: Boolean = false,
     val camiseta: Camiseta? = null,
     val selectedSize: String? = null,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val isAddedToCart: Boolean = false
 )

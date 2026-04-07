@@ -2,8 +2,10 @@ package com.example.golazo_store.presentation.profile.edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.golazo_store.data.local.SessionManager
-import com.example.golazo_store.domain.repository.AuthRepository
+import com.example.golazo_store.domain.usecase.profile.DeleteAccountUseCase
+import com.example.golazo_store.domain.usecase.profile.GetUserSessionUseCase
+import com.example.golazo_store.domain.usecase.profile.UpdateProfileResult
+import com.example.golazo_store.domain.usecase.profile.UpdateProfileUseCase
 import com.example.golazo_store.domain.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,8 +17,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
-    private val sessionManager: SessionManager
+    private val updateProfileUseCase: UpdateProfileUseCase,
+    private val deleteAccountUseCase: DeleteAccountUseCase,
+    private val getUserSessionUseCase: GetUserSessionUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditProfileState())
@@ -27,7 +30,7 @@ class EditProfileViewModel @Inject constructor(
     }
 
     private fun loadCurrentUser() {
-        val user = sessionManager.getUserSession()
+        val user = getUserSessionUseCase()
         if (user != null) {
             _state.update {
                 it.copy(
@@ -41,13 +44,13 @@ class EditProfileViewModel @Inject constructor(
     fun onEvent(event: EditProfileEvent) {
         when (event) {
             is EditProfileEvent.OnNombreUsuarioChange -> {
-                _state.update { it.copy(nombreUsuario = event.nombre) }
+                _state.update { it.copy(nombreUsuario = event.nombre, nombreError = null) }
             }
             is EditProfileEvent.OnNuevaContrasenaChange -> {
-                _state.update { it.copy(nuevaContrasena = event.contrasena) }
+                _state.update { it.copy(nuevaContrasena = event.contrasena, passwordError = null) }
             }
             is EditProfileEvent.OnConfirmarContrasenaChange -> {
-                _state.update { it.copy(confirmarContrasena = event.contrasena) }
+                _state.update { it.copy(confirmarContrasena = event.contrasena, confirmPasswordError = null) }
             }
             is EditProfileEvent.OnGuardarCambios -> {
                 guardarCambios()
@@ -67,44 +70,42 @@ class EditProfileViewModel @Inject constructor(
     private fun guardarCambios() {
         val currentState = _state.value
 
-        if (currentState.nombreUsuario.isBlank()) {
-            _state.update { it.copy(error = "El nombre de usuario no puede estar vacío.") }
-            return
-        }
-
-        if (currentState.nuevaContrasena.isNotBlank() || currentState.confirmarContrasena.isNotBlank()) {
-            if (currentState.nuevaContrasena != currentState.confirmarContrasena) {
-                _state.update { it.copy(error = "Las contraseñas no coinciden.") }
-                return
-            }
-        }
-
         viewModelScope.launch {
-            val contrasena = if (currentState.nuevaContrasena.isNotBlank()) currentState.nuevaContrasena else null
-            authRepository.updateProfile(
+            updateProfileUseCase(
                 id = currentState.id,
                 nombreUsuario = currentState.nombreUsuario,
-                nuevaContrasena = contrasena
+                nuevaContrasena = currentState.nuevaContrasena,
+                confirmarContrasena = currentState.confirmarContrasena
             ).collect { result ->
                 when (result) {
-                    is Resource.Loading -> {
+                    is UpdateProfileResult.Loading -> {
                         _state.update { it.copy(isLoading = true, error = null) }
                     }
-                    is Resource.Success -> {
+                    is UpdateProfileResult.Success -> {
                         _state.update {
                             it.copy(
                                 isLoading = false,
-                                successMessage = result.data ?: "Perfil actualizado exitosamente",
+                                successMessage = result.message,
                                 nuevaContrasena = "",
                                 confirmarContrasena = ""
                             )
                         }
                     }
-                    is Resource.Error -> {
+                    is UpdateProfileResult.Error -> {
                         _state.update {
                             it.copy(
                                 isLoading = false,
-                                error = result.message ?: "Ocurrió un error al actualizar el perfil"
+                                error = result.message
+                            )
+                        }
+                    }
+                    is UpdateProfileResult.ValidationError -> {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                nombreError = result.nombreError,
+                                passwordError = result.passwordError,
+                                confirmPasswordError = result.confirmPasswordError
                             )
                         }
                     }
@@ -116,7 +117,7 @@ class EditProfileViewModel @Inject constructor(
     private fun eliminarCuenta() {
         val currentState = _state.value
         viewModelScope.launch {
-            authRepository.deleteAccount(currentState.id).collect { result ->
+            deleteAccountUseCase(currentState.id).collect { result ->
                 when (result) {
                     is Resource.Loading -> {
                         _state.update { it.copy(isLoading = true, error = null) }

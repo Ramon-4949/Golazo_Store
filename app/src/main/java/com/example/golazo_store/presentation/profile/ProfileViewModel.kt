@@ -1,21 +1,20 @@
 package com.example.golazo_store.presentation.profile
 
 import androidx.lifecycle.ViewModel
-import com.example.golazo_store.data.local.SessionManager
+import androidx.lifecycle.viewModelScope
 import com.example.golazo_store.domain.model.Usuario
+import com.example.golazo_store.domain.usecase.profile.GetUserSessionUseCase
+import com.example.golazo_store.domain.usecase.profile.LogoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import javax.inject.Inject
-
-import androidx.lifecycle.viewModelScope
-import com.example.golazo_store.domain.repository.FavoritesRepository
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val sessionManager: SessionManager,
-    private val favoritesRepository: FavoritesRepository
+    private val getUserSessionUseCase: GetUserSessionUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : ViewModel() {
 
     private val _userState = MutableStateFlow<Usuario?>(null)
@@ -26,13 +25,12 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun loadUser() {
-        _userState.value = sessionManager.getUserSession()
+        _userState.value = getUserSessionUseCase()
     }
 
     fun logout() {
         viewModelScope.launch {
-            favoritesRepository.clearAllFavorites()
-            sessionManager.clearSession()
+            logoutUseCase()
             _userState.value = null
         }
     }

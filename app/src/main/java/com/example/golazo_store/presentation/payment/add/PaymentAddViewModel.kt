@@ -2,9 +2,8 @@ package com.example.golazo_store.presentation.payment.add
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.golazo_store.domain.model.MetodoPagoRegistro
-import com.example.golazo_store.domain.repository.MetodoPagoRepository
-import com.example.golazo_store.domain.utils.Resource
+import com.example.golazo_store.domain.usecase.payment.AddPaymentMethodUseCase
+import com.example.golazo_store.domain.usecase.payment.AddPaymentResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PaymentAddViewModel @Inject constructor(
-    private val repository: MetodoPagoRepository
+    private val addPaymentMethodUseCase: AddPaymentMethodUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PaymentAddUiState())
@@ -23,23 +22,23 @@ class PaymentAddViewModel @Inject constructor(
 
     fun onEvent(event: PaymentAddEvent) {
         when (event) {
-            is PaymentAddEvent.OnNombreTitularChange -> _state.update { it.copy(nombreTitular = event.value) }
+            is PaymentAddEvent.OnNombreTitularChange -> _state.update { it.copy(nombreTitular = event.value, titularError = null) }
             is PaymentAddEvent.OnNumeroTarjetaChange -> {
                 val digitsOnly = event.value.filter { it.isDigit() }
                 if (digitsOnly.length <= 16) {
-                    _state.update { it.copy(numeroTarjeta = digitsOnly) }
+                    _state.update { it.copy(numeroTarjeta = digitsOnly, numeroTarjetaError = null) }
                 }
             }
             is PaymentAddEvent.OnExpiracionChange -> {
                 val value = event.value.filter { it.isDigit() }
                 if (value.length <= 4) {
-                    _state.update { it.copy(expiracionMMYY = value) }
+                    _state.update { it.copy(expiracionMMYY = value, expiracionError = null) }
                 }
             }
             is PaymentAddEvent.OnCvvChange -> {
                 val digitsOnly = event.value.filter { it.isDigit() }
                 if (digitsOnly.length <= 4) {
-                    _state.update { it.copy(cvv = digitsOnly) }
+                    _state.update { it.copy(cvv = digitsOnly, cvvError = null) }
                 }
             }
             is PaymentAddEvent.OnEsPrincipalChange -> _state.update { it.copy(esPrincipal = event.value) }
@@ -49,32 +48,36 @@ class PaymentAddViewModel @Inject constructor(
 
     private fun savePayment() {
         val currentState = _state.value
-        
-        // Basic validations
-        if (currentState.nombreTitular.isBlank() || currentState.numeroTarjeta.length < 15 ||
-            currentState.expiracionMMYY.length != 4 || currentState.cvv.length < 3
-        ) {
-            _state.update { it.copy(error = "Por favor completa todos los campos correctamente.") }
-            return
-        }
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
-            val metodoPagoRegistro = MetodoPagoRegistro(
+            val result = addPaymentMethodUseCase(
                 titular = currentState.nombreTitular,
                 numeroTarjeta = currentState.numeroTarjeta,
-                expiracion = "${currentState.expiracionMMYY.take(2)}/${currentState.expiracionMMYY.takeLast(2)}",
+                expiracion = currentState.expiracionMMYY,
                 cvv = currentState.cvv,
                 esPrincipal = currentState.esPrincipal
             )
 
-            val result = repository.createMetodoPago(metodoPagoRegistro)
-
-            if (result is Resource.Success) {
-                _state.update { it.copy(isLoading = false, isSaved = true) }
-            } else if (result is Resource.Error) {
-                _state.update { it.copy(isLoading = false, error = result.message ?: "Error al guardar la tarjeta") }
+            when (result) {
+                is AddPaymentResult.Success -> {
+                    _state.update { it.copy(isLoading = false, isSaved = true) }
+                }
+                is AddPaymentResult.Error -> {
+                    _state.update { it.copy(isLoading = false, error = result.message) }
+                }
+                is AddPaymentResult.ValidationError -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            titularError = result.titularError,
+                            numeroTarjetaError = result.numeroTarjetaError,
+                            expiracionError = result.expiracionError,
+                            cvvError = result.cvvError
+                        )
+                    }
+                }
             }
         }
     }

@@ -35,13 +35,22 @@ import java.util.Locale
 import com.example.golazo_store.ui.theme.primaryDark
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun CamisetaDetailScreen(
     viewModel: CamisetaDetailViewModel = hiltViewModel(),
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onAddToCartSuccess: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(state.isAddedToCart) {
+        if (state.isAddedToCart) {
+            onAddToCartSuccess()
+            viewModel.onEvent(CamisetaDetailEvent.ResetAddToCart)
+        }
+    }
 
     CamisetaDetailBodyScreen(
         state = state,
