@@ -108,17 +108,7 @@ fun LoginScreen(
                 }
             )
 
-            // Olvido contraseña
-            Text(
-                text = "¿Olvidaste tu contraseña?",
-                color = Color.DarkGray,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp,
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(top = 8.dp)
-                    .clickable { /* TO-DO en el futuro */ }
-            )
+
         }
 
         Spacer(modifier = Modifier.height(32.dp))
