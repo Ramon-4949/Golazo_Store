@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 @HiltViewModel
@@ -84,17 +85,75 @@ class CheckoutViewModel @Inject constructor(
         }
     }
 
+    fun refreshCurrentSelections() {
+        viewModelScope.launch {
+            launch {
+                direccionRepository.getDirecciones().collect { res ->
+                    if (res is Resource.Success) {
+                        val direcciones = res.data ?: emptyList()
+                        val currentPrincipalId = _state.value.direccionPrincipal?.id
+                        val fallback = direcciones.find { it.id == currentPrincipalId } ?: direcciones.find { it.esPrincipal } ?: direcciones.firstOrNull()
+                        _state.update { it.copy(direccionPrincipal = fallback, allDirecciones = direcciones) }
+                    }
+                }
+            }
+            launch {
+                metodoPagoRepository.getMetodosPago().collect { res ->
+                    if (res is Resource.Success) {
+                        val metodos = res.data ?: emptyList()
+                        val currentPrincipalId = _state.value.metodoPagoPrincipal?.id
+                        val fallback = metodos.find { it.id == currentPrincipalId } ?: metodos.find { it.esPrincipal } ?: metodos.firstOrNull()
+                        _state.update { it.copy(metodoPagoPrincipal = fallback, allMetodosPago = metodos) }
+                    }
+                }
+            }
+        }
+    }
+
     fun selectAddress(id: Int) {
-        val selected = _state.value.allDirecciones.find { it.id == id }
-        if (selected != null) {
-            _state.update { it.copy(direccionPrincipal = selected) }
+        viewModelScope.launch {
+            _state.update { it.copy(isLoadingData = true) }
+            
+            direccionRepository.getDirecciones().collect { res ->
+                if (res is Resource.Success) {
+                    val direcciones = res.data ?: emptyList()
+                    val selected = direcciones.find { it.id == id }
+                    if (selected != null) {
+                        _state.update { it.copy(direccionPrincipal = selected, allDirecciones = direcciones) }
+                    } else {
+                        // Si no lo encuentra por alguna razon, mantiene el actual o usa principal
+                        val currentPrincipalId = _state.value.direccionPrincipal?.id
+                        val fallback = direcciones.find { it.id == currentPrincipalId } ?: direcciones.find { it.esPrincipal } ?: direcciones.firstOrNull()
+                        _state.update { it.copy(direccionPrincipal = fallback, allDirecciones = direcciones) }
+                    }
+                }
+            }
+            
+            delay(500)
+            _state.update { it.copy(isLoadingData = false) }
         }
     }
 
     fun selectPayment(id: Int) {
-        val selected = _state.value.allMetodosPago.find { it.id == id }
-        if (selected != null) {
-            _state.update { it.copy(metodoPagoPrincipal = selected) }
+        viewModelScope.launch {
+            _state.update { it.copy(isLoadingData = true) }
+            
+            metodoPagoRepository.getMetodosPago().collect { res ->
+                if (res is Resource.Success) {
+                    val metodos = res.data ?: emptyList()
+                    val selected = metodos.find { it.id == id }
+                    if (selected != null) {
+                        _state.update { it.copy(metodoPagoPrincipal = selected, allMetodosPago = metodos) }
+                    } else {
+                        val currentPrincipalId = _state.value.metodoPagoPrincipal?.id
+                        val fallback = metodos.find { it.id == currentPrincipalId } ?: metodos.find { it.esPrincipal } ?: metodos.firstOrNull()
+                        _state.update { it.copy(metodoPagoPrincipal = fallback, allMetodosPago = metodos) }
+                    }
+                }
+            }
+            
+            delay(500)
+            _state.update { it.copy(isLoadingData = false) }
         }
     }
 
