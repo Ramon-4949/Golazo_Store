@@ -13,5 +13,6 @@ data class PedidoRequestDto(
 @JsonClass(generateAdapter = true)
 data class DetallePedidoDto(
     val camisetaId: Int,
-    val cantidad: Int
+    val cantidad: Int,
+    val talla: String
 )

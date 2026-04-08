@@ -23,10 +23,12 @@ data class PedidoRegistro(
 
 data class DetallePedido(
     val camisetaId: Int,
-    val cantidad: Int
+    val cantidad: Int,
+    val talla: String
 ) {
     fun toDto() = com.example.golazo_store.data.remote.dto.DetallePedidoDto(
         camisetaId = camisetaId,
-        cantidad = cantidad
+        cantidad = cantidad,
+        talla = talla
     )
 }

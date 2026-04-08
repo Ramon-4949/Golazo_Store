@@ -20,4 +20,7 @@ interface CamisetaDao {
 
     @Query("SELECT * FROM camisetas WHERE id = :id")
     suspend fun getById(id: Int): CamisetaEntity?
+
+    @Query("SELECT * FROM camisetas WHERE id = :id")
+    fun observeById(id: Int): Flow<CamisetaEntity?>
 }

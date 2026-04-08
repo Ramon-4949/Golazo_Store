@@ -10,6 +10,12 @@ import com.example.golazo_store.domain.repository.CamisetaRepository
 import com.example.golazo_store.domain.utils.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import javax.inject.Inject
 
 class CamisetaRepositoryImpl @Inject constructor(
@@ -25,7 +31,6 @@ class CamisetaRepositoryImpl @Inject constructor(
             val camisetasDomain = camisetasDto.map { it.toDomain() }
             camisetasDomain.forEach { localDataSource.upsert(it.toEntity()) }
         }.onFailure {
-            // Error suprimido de la capa UI; se seguirá observando la DB local asincrónicamente
         }
 
         localDataSource.observeAll().collect { entities ->
@@ -35,19 +40,30 @@ class CamisetaRepositoryImpl @Inject constructor(
 
     override fun getCamisetaById(id: Int): Flow<Resource<Camiseta>> = flow {
         emit(Resource.Loading())
+        
 
-        val response = remoteDataSource.getCamisetaById(id)
-        response.onSuccess { camisetaDto ->
-            localDataSource.upsert(camisetaDto.toDomain().toEntity())
-        }.onFailure {
-            // Ignoramos error de red de cara a la UI, la verdadera fuente es local
-        }
-
-        val localCamiseta = localDataSource.getById(id)
+        val localEntity = localDataSource.getById(id)
+        val localCamiseta = localEntity?.toDomain()
         if (localCamiseta != null) {
-            emit(Resource.Success(localCamiseta.toDomain()))
-        } else {
-            emit(Resource.Error("Camiseta no encontrada localmente ni en el servidor"))
+            emit(Resource.Success(localCamiseta))
+        }
+        
+
+        try {
+            val response = remoteDataSource.getCamisetaById(id)
+            response.onSuccess { remoteDto ->
+                val remoteCamiseta = remoteDto.toDomain()
+                
+
+                localDataSource.upsert(remoteCamiseta.toEntity())
+                
+
+                emit(Resource.Success(remoteCamiseta))
+            }.onFailure {
+                if (localCamiseta == null) emit(Resource.Error("Error de servidor"))
+            }
+        } catch (e: Exception) {
+            if (localCamiseta == null) emit(Resource.Error("Revisa tu conexión a internet"))
         }
     }
 
