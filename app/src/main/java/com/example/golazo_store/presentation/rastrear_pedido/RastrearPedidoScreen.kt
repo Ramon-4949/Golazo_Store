@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.*
@@ -134,13 +135,13 @@ fun RastrearPedidoScreen(
 
 @Composable
 fun OrderTimeline(pedido: PedidoAdmin) {
-    val states = listOf("Recibido", "Procesando", "En Camino", "Entregado")
     val currentStateRaw = pedido.estado.uppercase()
+    val isCanceled = currentStateRaw == "CANCELADO"
     
     val currentIndex = when {
-        currentStateRaw == "ENTREGADO" || currentStateRaw == "COMPLETADO" -> 3
-        currentStateRaw == "EN CAMINO" -> 2
-        currentStateRaw == "PROCESANDO" -> 1
+        currentStateRaw == "COMPLETADO" -> 2
+        currentStateRaw == "ENVIADO" -> 1
+        isCanceled -> 2 // If canceled, it replaces the end of timeline
         else -> 0
     }
     
@@ -160,32 +161,39 @@ fun OrderTimeline(pedido: PedidoAdmin) {
         TimelineItem(
             isCompleted = currentIndex >= 0,
             isLast = false,
-            title = "Pedido realizado",
-            subtitle = formattedDate,
-            isCurrent = currentIndex == 0
+            title = "Pendiente",
+            subtitle = if(currentIndex == 0 && !isCanceled) "Tu pedido está siendo procesado" else formattedDate,
+            isCurrent = currentIndex == 0 && !isCanceled,
+            isCanceled = false
         )
-        TimelineItem(
-            isCompleted = currentIndex >= 1,
-            isLast = false,
-            title = "Procesando",
-            subtitle = if(currentIndex >= 1) "Tu pedido está siendo preparado" else "",
-            isCurrent = currentIndex == 1
-        )
-        TimelineItem(
-            isCompleted = currentIndex >= 2,
-            isLast = false,
-            title = "En camino",
-            subtitle = if(currentIndex == 2) "El repartidor está cerca de tu zona" else if (currentIndex > 2) "Completado" else "",
-            isCurrent = currentIndex == 2,
-            isTruck = true
-        )
-        TimelineItem(
-            isCompleted = currentIndex >= 3,
-            isLast = true,
-            title = "Entregado",
-            subtitle = if(currentIndex == 3) "Paquete entregado" else "Pendiente de entrega",
-            isCurrent = currentIndex == 3
-        )
+        if (isCanceled) {
+            TimelineItem(
+                isCompleted = true,
+                isLast = true,
+                title = "Cancelado",
+                subtitle = "El pedido ha sido cancelado",
+                isCurrent = true,
+                isCanceled = true
+            )
+        } else {
+            TimelineItem(
+                isCompleted = currentIndex >= 1,
+                isLast = false,
+                title = "Enviado",
+                subtitle = if(currentIndex == 1) "El repartidor está de camino" else "",
+                isCurrent = currentIndex == 1,
+                isTruck = true,
+                isCanceled = false
+            )
+            TimelineItem(
+                isCompleted = currentIndex >= 2,
+                isLast = true,
+                title = "Completado",
+                subtitle = if(currentIndex == 2) "Pedido entregado con éxito" else "Pendiente de entrega",
+                isCurrent = currentIndex == 2,
+                isCanceled = false
+            )
+        }
     }
 }
 
@@ -196,7 +204,8 @@ fun TimelineItem(
     isLast: Boolean,
     title: String,
     subtitle: String,
-    isTruck: Boolean = false
+    isTruck: Boolean = false,
+    isCanceled: Boolean = false
 ) {
     Row(modifier = Modifier.height(IntrinsicSize.Min)) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(30.dp)) {
@@ -207,7 +216,9 @@ fun TimelineItem(
                     .clip(CircleShape)
                     .background(
                         when {
+                            isCanceled -> Color(0xFFFFEBEE) // Light Red
                             isCurrent && isTruck -> Color(0xFFFFF7E6) // Light orange logic 
+                            title == "Completado" && isCompleted -> Color(0xFFE8F5E9) // Light Green
                             isCompleted || isCurrent -> Color(0xFF212529) // Dark fulfilled
                             else -> Color.White
                         }
@@ -219,8 +230,12 @@ fun TimelineItem(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                if (isCurrent && isTruck) {
+                if (isCanceled) {
+                    Icon(Icons.Default.Close, contentDescription = null, tint = Color.Red, modifier = Modifier.size(14.dp))
+                } else if (isCurrent && isTruck) {
                     Icon(Icons.Default.LocalShipping, contentDescription = null, tint = primaryDark, modifier = Modifier.size(14.dp))
+                } else if (title == "Completado" && isCompleted) {
+                    Icon(Icons.Default.Check, contentDescription = null, tint = Color(0xFF4CAF50), modifier = Modifier.size(14.dp))
                 } else if (isCompleted || isCurrent) {
                     Icon(Icons.Default.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
                 }
@@ -230,7 +245,7 @@ fun TimelineItem(
                     modifier = Modifier
                         .width(2.dp)
                         .weight(1f)
-                        .background(if (isCompleted && !isCurrent) Color(0xFF212529) else Color(0xFFDEE2E6))
+                        .background(if (isCompleted && !isCurrent && !isCanceled) Color(0xFF212529) else Color(0xFFDEE2E6))
                 )
             }
         }
@@ -242,7 +257,13 @@ fun TimelineItem(
                 text = title,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
-                color = if (isCurrent && isTruck) primaryDark else if (isCompleted || isCurrent) Color.Black else Color.Gray
+                color = when {
+                    isCanceled -> Color.Red
+                    title == "Completado" && isCompleted -> Color(0xFF4CAF50)
+                    isCurrent && isTruck -> primaryDark
+                    isCompleted || isCurrent -> Color.Black
+                    else -> Color.Gray
+                }
             )
             if (subtitle.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(4.dp))
