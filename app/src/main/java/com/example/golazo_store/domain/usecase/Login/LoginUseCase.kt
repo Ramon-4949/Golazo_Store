@@ -7,6 +7,7 @@ import com.example.golazo_store.domain.utils.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.catch
 import javax.inject.Inject
 
 class LoginUseCase @Inject constructor(
@@ -28,13 +29,17 @@ class LoginUseCase @Inject constructor(
 
         emit(LoginResult.Loading)
 
-        repository.login(correo, password).collect { result ->
-            when (result) {
-                is Resource.Success -> emit(LoginResult.Success)
-                is Resource.Error -> emit(LoginResult.Error(result.message ?: "Ocurrió un error al iniciar sesión"))
-                else -> {}
+        repository.login(correo, password)
+            .catch { e ->
+                emit(LoginResult.Error(e.message ?: "Error inesperado al iniciar sesión"))
             }
-        }
+            .collect { result ->
+                when (result) {
+                    is Resource.Success -> emit(LoginResult.Success)
+                    is Resource.Error -> emit(LoginResult.Error(result.message ?: "Ocurrió un error al iniciar sesión"))
+                    else -> {}
+                }
+            }
     }
 }
 

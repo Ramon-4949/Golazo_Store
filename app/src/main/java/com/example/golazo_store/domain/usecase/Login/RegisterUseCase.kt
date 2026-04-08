@@ -8,6 +8,7 @@ import com.example.golazo_store.domain.utils.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.catch
 import javax.inject.Inject
 
 class RegisterUseCase @Inject constructor(
@@ -32,13 +33,17 @@ class RegisterUseCase @Inject constructor(
 
         emit(RegisterResult.Loading)
 
-        repository.register(nombre, correo, password).collect { result ->
-            when (result) {
-                is Resource.Success -> emit(RegisterResult.Success)
-                is Resource.Error -> emit(RegisterResult.Error(result.message ?: "Ocurrió un error en el registro"))
-                else -> {}
+        repository.register(nombre, correo, password)
+            .catch { e ->
+                emit(RegisterResult.Error(e.message ?: "Ocurrió un error inesperado al registrar"))
             }
-        }
+            .collect { result ->
+                when (result) {
+                    is Resource.Success -> emit(RegisterResult.Success)
+                    is Resource.Error -> emit(RegisterResult.Error(result.message ?: "Ocurrió un error en el registro"))
+                    else -> {}
+                }
+            }
     }
 }
 
