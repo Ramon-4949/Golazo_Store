@@ -21,6 +21,7 @@ class CreateListViewModel @Inject constructor(
     val state: StateFlow<CreateListUiState> = _state.asStateFlow()
 
     init {
+        // Quitamos la inyección fantasma de Antigravity
         loadCamisetas()
     }
 
@@ -29,20 +30,20 @@ class CreateListViewModel @Inject constructor(
             repository.getCamisetas().collect { result ->
                 when (result) {
                     is Resource.Success -> {
-                        _state.update { 
+                        _state.update {
                             it.copy(
                                 camisetas = result.data ?: emptyList(),
                                 isLoading = false,
                                 errorMessage = null
-                            ) 
+                            )
                         }
                     }
                     is Resource.Error -> {
-                        _state.update { 
+                        _state.update {
                             it.copy(
                                 isLoading = false,
                                 errorMessage = result.message
-                            ) 
+                            )
                         }
                     }
                     is Resource.Loading -> {
@@ -66,5 +67,3 @@ class CreateListViewModel @Inject constructor(
         }
     }
 }
-
-

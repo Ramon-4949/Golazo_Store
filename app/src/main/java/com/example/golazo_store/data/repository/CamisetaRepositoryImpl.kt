@@ -12,10 +12,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import javax.inject.Inject
 
 class CamisetaRepositoryImpl @Inject constructor(
@@ -26,45 +22,50 @@ class CamisetaRepositoryImpl @Inject constructor(
     override fun getCamisetas(): Flow<Resource<List<Camiseta>>> = flow {
         emit(Resource.Loading())
 
-        val response = remoteDataSource.getCamisetas()
-        response.onSuccess { camisetasDto ->
-            val camisetasDomain = camisetasDto.map { it.toDomain() }
-            camisetasDomain.forEach { localDataSource.upsert(it.toEntity()) }
-        }.onFailure {
+        try {
+            // 1. Buscamos datos frescos en la API
+            val response = remoteDataSource.getCamisetas()
+            response.onSuccess { camisetasDto ->
+                val camisetasDomain = camisetasDto.map { it.toDomain() }
+                // 2. Guardamos todo en Room
+                camisetasDomain.forEach { localDataSource.upsert(it.toEntity()) }
+            }
+        } catch (e: Exception) {
+            // Si no hay internet, ignoramos el error, Room nos salvará abajo
         }
 
-        localDataSource.observeAll().collect { entities ->
-            emit(Resource.Success(entities.map { it.toDomain() }))
-        }
+        // 3. Nos quedamos escuchando a Room. Si Room cambia, la UI se actualiza sola.
+        emitAll(
+            localDataSource.observeAll().map { entities ->
+                Resource.Success(entities.map { it.toDomain() })
+            }
+        )
     }
 
     override fun getCamisetaById(id: Int): Flow<Resource<Camiseta>> = flow {
         emit(Resource.Loading())
-        
-
-        val localEntity = localDataSource.getById(id)
-        val localCamiseta = localEntity?.toDomain()
-        if (localCamiseta != null) {
-            emit(Resource.Success(localCamiseta))
-        }
-        
 
         try {
+            // 1. Petición a la API para el stock en tiempo real
             val response = remoteDataSource.getCamisetaById(id)
             response.onSuccess { remoteDto ->
-                val remoteCamiseta = remoteDto.toDomain()
-                
-
-                localDataSource.upsert(remoteCamiseta.toEntity())
-                
-
-                emit(Resource.Success(remoteCamiseta))
-            }.onFailure {
-                if (localCamiseta == null) emit(Resource.Error("Error de servidor"))
+                // 2. Actualizamos el stock fresco en Room
+                localDataSource.upsert(remoteDto.toDomain().toEntity())
             }
         } catch (e: Exception) {
-            if (localCamiseta == null) emit(Resource.Error("Revisa tu conexión a internet"))
+            // Ignoramos error de red aquí
         }
+
+        // 3. Emitimos desde Room. Esto asegura que la talla y el stock cambien mágicamente.
+        emitAll(
+            localDataSource.observeById(id).map { entity ->
+                if (entity != null) {
+                    Resource.Success(entity.toDomain())
+                } else {
+                    Resource.Error("Camiseta no encontrada en la base de datos local")
+                }
+            }
+        )
     }
 
     override suspend fun upsertCamiseta(camiseta: Camiseta): Resource<Unit> {
@@ -90,7 +91,7 @@ class CamisetaRepositoryImpl @Inject constructor(
                     localDataSource.upsert(camisetaCreada.toDomain().toEntity())
                     Resource.Success(Unit)
                 },
-                onFailure = { Resource.Error(it.message ?: "Error al crear la camiseta en el servidor") }
+                onFailure = { Resource.Error(it.message ?: "Error al crear la camiseta") }
             )
         } else {
             val response = remoteDataSource.updateCamiseta(camiseta.id, dto)
@@ -99,14 +100,13 @@ class CamisetaRepositoryImpl @Inject constructor(
                     localDataSource.upsert(camiseta.toEntity())
                     Resource.Success(Unit)
                 },
-                onFailure = { Resource.Error(it.message ?: "Error al actualizar la camiseta en el servidor") }
+                onFailure = { Resource.Error(it.message ?: "Error al actualizar la camiseta") }
             )
         }
     }
 
     override suspend fun deleteCamiseta(id: Int): Resource<Unit> {
         val response = remoteDataSource.deleteCamiseta(id)
-
         return response.fold(
             onSuccess = {
                 val localEntity = localDataSource.getById(id)
@@ -115,7 +115,23 @@ class CamisetaRepositoryImpl @Inject constructor(
                 }
                 Resource.Success(Unit)
             },
-            onFailure = { Resource.Error(it.message ?: "Error al eliminar la camiseta en el servidor") }
+            onFailure = { Resource.Error(it.message ?: "Error al eliminar") }
         )
+    }
+
+    override suspend fun syncCamisetas(): Resource<Unit> {
+        return try {
+            val response = remoteDataSource.getCamisetas()
+            response.fold(
+                onSuccess = { camisetasDto ->
+                    val camisetasDomain = camisetasDto.map { it.toDomain() }
+                    camisetasDomain.forEach { localDataSource.upsert(it.toEntity()) }
+                    Resource.Success(Unit)
+                },
+                onFailure = { Resource.Error(it.message ?: "Error al sincronizar") }
+            )
+        } catch (e: Exception) {
+            Resource.Error("Error de red: ${e.message}")
+        }
     }
 }

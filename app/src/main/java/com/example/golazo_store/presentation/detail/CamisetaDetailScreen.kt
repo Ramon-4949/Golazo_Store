@@ -226,18 +226,21 @@ fun CamisetaDetailContent(
                 "XL" to camiseta.stockXL,
                 "2XL" to camiseta.stock2XL
             )
-            val availableSizes = sizes.filter { it.second > 0 }
 
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(availableSizes) { sizeItem ->
+                items(sizes) { sizeItem ->
+                    val hasStock = sizeItem.second > 0
                     SizeChip(
                         size = sizeItem.first,
                         isSelected = selectedSize == sizeItem.first,
                         isError = sizeError != null,
-                        onClick = { onEvent(CamisetaDetailEvent.SelectSize(sizeItem.first)) }
+                        isEnabled = hasStock,
+                        onClick = { 
+                            if (hasStock) onEvent(CamisetaDetailEvent.SelectSize(sizeItem.first)) 
+                        }
                     )
                 }
             }
@@ -429,33 +432,48 @@ fun SizeChip(
     size: String,
     isSelected: Boolean,
     isError: Boolean,
+    isEnabled: Boolean = true,
     onClick: () -> Unit
 ) {
     val borderColor = when {
+        !isEnabled -> Color(0xFFE2E8F0)
         isError -> MaterialTheme.colorScheme.error
         isSelected -> primaryDark
         else -> Color(0xFFE2E8F0)
     }
 
     val borderWidth = if (isError || isSelected) 2.dp else 1.dp
+    
+    val backgroundColor = when {
+        !isEnabled -> Color(0xFFF1F5F9)
+        isSelected -> Color(0xFFFFF7E6)
+        else -> Color.White
+    }
+
+    val textColor = when {
+        !isEnabled -> Color.LightGray
+        isError -> MaterialTheme.colorScheme.error
+        isSelected -> primaryDark
+        else -> Color(0xFF07152B)
+    }
 
     Box(
         modifier = Modifier
             .size(width = 64.dp, height = 48.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(if (isSelected) Color(0xFFFFF7E6) else Color.White)
+            .background(backgroundColor)
             .border(
                 width = borderWidth,
                 color = borderColor,
                 shape = RoundedCornerShape(8.dp)
             )
-            .clickable { onClick() },
+            .clickable(enabled = isEnabled) { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = size,
             fontWeight = FontWeight.Bold,
-            color = if (isError) MaterialTheme.colorScheme.error else if (isSelected) primaryDark else Color(0xFF07152B),
+            color = textColor,
             fontSize = 14.sp
         )
     }
