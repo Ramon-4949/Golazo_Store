@@ -30,7 +30,7 @@ class ChangeAddressViewModel @Inject constructor(
         loadDirecciones()
     }
 
-    private fun loadDirecciones() {
+    fun loadDirecciones() {
         viewModelScope.launch {
             repository.getDirecciones().collect { result ->
                 if (result is Resource.Success) {

@@ -5,4 +5,6 @@ sealed class CamisetaDetailEvent {
     data class AddToCart(val id: Int) : CamisetaDetailEvent()
     object RetryLoading : CamisetaDetailEvent()
     object ResetAddToCart : CamisetaDetailEvent()
+    object RefreshCamiseta : CamisetaDetailEvent()
+    data class SelectQuantity(val quantity: Int) : CamisetaDetailEvent()
 }

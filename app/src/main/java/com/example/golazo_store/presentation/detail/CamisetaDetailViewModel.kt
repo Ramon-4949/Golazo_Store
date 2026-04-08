@@ -7,6 +7,7 @@ import com.example.golazo_store.domain.repository.CamisetaRepository
 import com.example.golazo_store.domain.repository.CartRepository
 import com.example.golazo_store.domain.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,6 +23,7 @@ class CamisetaDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val currentCamisetaId: Int = savedStateHandle.get<Int>("id") ?: -1
+    private var loadJob: Job? = null
 
     private val _state = MutableStateFlow(CamisetaDetailUiState(isLoading = true))
     val state: StateFlow<CamisetaDetailUiState> = _state.asStateFlow()
@@ -35,7 +37,8 @@ class CamisetaDetailViewModel @Inject constructor(
     }
 
     private fun loadCamiseta(id: Int) {
-        viewModelScope.launch {
+        loadJob?.cancel()
+        loadJob = viewModelScope.launch {
             camisetaRepository.getCamisetaById(id).collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
@@ -63,23 +66,28 @@ class CamisetaDetailViewModel @Inject constructor(
     fun onEvent(event: CamisetaDetailEvent) {
         when (event) {
             is CamisetaDetailEvent.SelectSize -> {
-                _state.update { it.copy(selectedSize = event.size) }
+                _state.update { it.copy(selectedSize = event.size, sizeError = null, quantity = 1) }
+            }
+            is CamisetaDetailEvent.SelectQuantity -> {
+                _state.update { it.copy(quantity = event.quantity) }
             }
             is CamisetaDetailEvent.AddToCart -> {
                 val size = _state.value.selectedSize
+                val qty = _state.value.quantity
                 if (size == null) {
-                    _state.update { it.copy(errorMessage = "Debes seleccionar una talla primero") }
+                    _state.update { it.copy(sizeError = "Debes seleccionar una talla primero") }
                 } else {
                     viewModelScope.launch {
                         _state.update { it.copy(isLoading = true) }
-                        cartRepository.addToCart(event.id, size, 1)
-                        _state.update { it.copy(isLoading = false, isAddedToCart = true, errorMessage = null) }
+                        cartRepository.addToCart(event.id, size, qty)
+                        _state.update { it.copy(isLoading = false, isAddedToCart = true, errorMessage = null, sizeError = null) }
                     }
                 }
             }
             is CamisetaDetailEvent.ResetAddToCart -> {
                 _state.update { it.copy(isAddedToCart = false) }
             }
+            is CamisetaDetailEvent.RefreshCamiseta,
             is CamisetaDetailEvent.RetryLoading -> {
                 if (currentCamisetaId != -1) {
                     loadCamiseta(currentCamisetaId)

@@ -43,7 +43,7 @@ class CheckoutViewModel @Inject constructor(
                     it.copy(
                         cartItems = items,
                         subtotal = subtotal,
-                        total = subtotal // Envío es gratis
+                        total = subtotal
                     )
                 }
                 
@@ -122,7 +122,8 @@ class CheckoutViewModel @Inject constructor(
             val items = currentState.cartItems.map {
                 DetallePedido(
                     camisetaId = it.camisetaId,
-                    cantidad = it.cantidad
+                    cantidad = it.cantidad,
+                    talla = it.talla
                 )
             }
 

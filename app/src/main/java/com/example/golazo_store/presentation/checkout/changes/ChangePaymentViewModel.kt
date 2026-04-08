@@ -30,7 +30,7 @@ class ChangePaymentViewModel @Inject constructor(
         loadMetodosPago()
     }
 
-    private fun loadMetodosPago() {
+    fun loadMetodosPago() {
         viewModelScope.launch {
             repository.getMetodosPago().collect { result ->
                 if (result is Resource.Success) {

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Save
@@ -20,6 +21,16 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.golazo_store.ui.theme.primaryDark
+
+val provinciasDR = listOf(
+    "Azua", "Baoruco", "Barahona", "Dajabón", "Distrito Nacional", "Duarte",
+    "Elías Piña", "El Seibo", "Espaillat", "Hato Mayor", "Hermanas Mirabal",
+    "Independencia", "La Altagracia", "La Romana", "La Vega", "María Trinidad Sánchez",
+    "Monseñor Nouel", "Monte Cristi", "Monte Plata", "Pedernales", "Peravia",
+    "Puerto Plata", "Samaná", "Sánchez Ramírez", "San Cristóbal", "San José de Ocoa",
+    "San Juan", "San Pedro de Macorís", "Santiago", "Santiago Rodríguez",
+    "Santo Domingo", "Valverde"
+)
 
 @Composable
 fun AddressEditScreen(
@@ -117,11 +128,12 @@ fun AddressEditBodyScreen(
                 )
 
                 // Provincia
-                AddressTextField(
+                AddressProvinceDropdown(
                     label = "Provincia",
                     value = state.provincia,
-                    placeholder = "Duarte",
+                    placeholder = "Seleccione una provincia",
                     error = state.provinciaError,
+                    provincias = provinciasDR,
                     onValueChange = { onEvent(AddressEditEvent.OnProvinciaChange(it)) }
                 )
 
@@ -257,5 +269,75 @@ fun AddressTextField(
             minLines = if (singleLine) 1 else lines,
             maxLines = if (singleLine) 1 else lines
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddressProvinceDropdown(
+    label: String,
+    value: String,
+    placeholder: String,
+    error: String?,
+    provincias: List<String>,
+    onValueChange: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = label,
+            fontWeight = FontWeight.Bold,
+            fontSize = 13.sp,
+            color = Color(0xFF07152B)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = it },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = value,
+                onValueChange = {},
+                readOnly = true,
+                placeholder = { Text(placeholder, color = Color.Gray) },
+                isError = error != null,
+                supportingText = {
+                    if (error != null) {
+                        Text(text = error, color = MaterialTheme.colorScheme.error)
+                    }
+                },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                },
+                modifier = Modifier.fillMaxWidth().menuAnchor(),
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedContainerColor = Color.White,
+                    focusedContainerColor = Color.White,
+                    unfocusedBorderColor = Color(0xFFE2E8F0),
+                    focusedBorderColor = primaryDark,
+                    errorBorderColor = MaterialTheme.colorScheme.error,
+                    errorContainerColor = Color.White
+                )
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.background(Color.White)
+            ) {
+                provincias.forEach { provincia ->
+                    DropdownMenuItem(
+                        text = { Text(provincia, color = Color(0xFF07152B)) },
+                        onClick = {
+                            onValueChange(provincia)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
     }
 }

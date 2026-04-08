@@ -7,5 +7,7 @@ data class CamisetaDetailUiState(
     val camiseta: Camiseta? = null,
     val selectedSize: String? = null,
     val errorMessage: String? = null,
-    val isAddedToCart: Boolean = false
+    val isAddedToCart: Boolean = false,
+    val sizeError: String? = null,
+    val quantity: Int = 1
 )

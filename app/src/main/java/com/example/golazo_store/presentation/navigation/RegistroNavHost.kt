@@ -15,7 +15,6 @@ import com.example.golazo_store.presentation.checkout.checkout_pages.CheckoutScr
 import com.example.golazo_store.presentation.checkout.checkout_pages.CheckoutSuccessScreen
 import com.example.golazo_store.presentation.checkout.changes.ChangeAddressScreen
 import com.example.golazo_store.presentation.checkout.changes.ChangePaymentScreen
-import com.example.golazo_store.presentation.checkout.checkout_pages.CheckoutSuccessUiState
 import com.example.golazo_store.presentation.checkout.checkout_pages.CheckoutSuccessViewModel
 import com.example.golazo_store.presentation.checkout.checkout_pages.CheckoutViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -97,10 +96,10 @@ fun RegistroNavHost(
         composable<Screen.Login> {
             LoginScreen(
                 onNavigateToRegister = { navController.navigate(Screen.Register) },
-                onLoginSuccess = { 
-                    navController.navigate(Screen.Home) { 
-                        popUpTo(Screen.Login) { inclusive = true } 
-                    } 
+                onLoginSuccess = {
+                    navController.navigate(Screen.Home) {
+                        popUpTo(Screen.Login) { inclusive = true }
+                    }
                 }
             )
         }
@@ -122,7 +121,15 @@ fun RegistroNavHost(
         composable<Screen.CamisetaDetail> {
             CamisetaDetailScreen(
                 onBack = { navController.navigateUp() },
-                onAddToCartSuccess = { navController.navigate(Screen.Cart) }
+                onAddToCartSuccess = {
+                    navController.navigate(Screen.Cart) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
             )
         }
 
@@ -219,16 +226,16 @@ fun RegistroNavHost(
         composable<Screen.Cart> {
             CartScreen(
                 onBack = { navController.navigateUp() },
-                onCheckout = { 
+                onCheckout = {
                     navController.navigate(Screen.Checkout) {
                         launchSingleTop = true
-                    } 
+                    }
                 }
             )
         }
         composable<Screen.AddressList> {
             AddressListScreen(
-                onNavigateToEdit = { id -> 
+                onNavigateToEdit = { id ->
                     navController.navigate(Screen.AddressEdit(id))
                 },
                 onBack = { navController.navigateUp() }
@@ -300,6 +307,9 @@ fun RegistroNavHost(
                 onAddressSelected = { selectedId ->
                     navController.previousBackStackEntry?.savedStateHandle?.set("selected_address_id", selectedId)
                     navController.navigateUp()
+                },
+                onAddNewAddress = {
+                    navController.navigate(Screen.AddressEdit(null))
                 }
             )
         }
@@ -312,6 +322,9 @@ fun RegistroNavHost(
                 onPaymentSelected = { selectedId ->
                     navController.previousBackStackEntry?.savedStateHandle?.set("selected_payment_id", selectedId)
                     navController.navigateUp()
+                },
+                onAddNewPayment = {
+                    navController.navigate(Screen.PaymentAdd)
                 }
             )
         }

@@ -11,20 +11,27 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.golazo_store.domain.model.Direccion
 import com.example.golazo_store.ui.theme.primaryDark
@@ -35,10 +42,24 @@ fun ChangeAddressScreen(
     onBack: () -> Unit,
     currentSelectedId: Int,
     onAddressSelected: (Int) -> Unit,
+    onAddNewAddress: () -> Unit,
     viewModel: ChangeAddressViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var searchQuery by remember { mutableStateOf("") }
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.loadDirecciones()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     val filteredList = if (searchQuery.isBlank()) {
         state.direcciones
@@ -113,6 +134,12 @@ fun ChangeAddressScreen(
                             direccion = direccion,
                             isSelected = isSelected,
                             onClick = { onAddressSelected(direccion.id) }
+                        )
+                    }
+                    item {
+                        DashedAddButton(
+                            text = "AÑADIR NUEVA DIRECCIÓN",
+                            onClick = onAddNewAddress
                         )
                     }
                 }
@@ -199,6 +226,40 @@ fun AddressSelectionCard(direccion: Direccion, isSelected: Boolean, onClick: () 
                         .border(1.dp, Color(0xFFD1D5DB), CircleShape)
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun DashedAddButton(text: String, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .drawBehind {
+                val stroke = Stroke(
+                    width = 2.dp.toPx(),
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(15f, 15f), 0f)
+                )
+                drawRoundRect(
+                    color = Color(0xFF6B7A90).copy(alpha = 0.5f),
+                    style = stroke,
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(12.dp.toPx())
+                )
+            }
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Default.Add, contentDescription = null, tint = Color(0xFF6B7A90))
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = text,
+                fontWeight = FontWeight.Bold,
+                fontSize = 12.sp,
+                color = Color(0xFF6B7A90),
+                letterSpacing = 1.sp
+            )
         }
     }
 }

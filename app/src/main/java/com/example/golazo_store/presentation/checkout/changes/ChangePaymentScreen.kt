@@ -11,21 +11,28 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.golazo_store.domain.model.MetodoPago
 import com.example.golazo_store.ui.theme.primaryDark
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.drawscope.Stroke
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,9 +40,23 @@ fun ChangePaymentScreen(
     onBack: () -> Unit,
     currentSelectedId: Int,
     onPaymentSelected: (Int) -> Unit,
+    onAddNewPayment: () -> Unit,
     viewModel: ChangePaymentViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.loadMetodosPago()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -91,6 +112,12 @@ fun ChangePaymentScreen(
                             metodoPago = metodo,
                             isSelected = isSelected,
                             onClick = { onPaymentSelected(metodo.id ?: -1) }
+                        )
+                    }
+                    item {
+                        DashedAddButton(
+                            text = "AÑADIR NUEVO MÉTODO DE PAGO",
+                            onClick = onAddNewPayment
                         )
                     }
                 }
@@ -178,6 +205,41 @@ fun PaymentSelectionCard(metodoPago: MetodoPago, isSelected: Boolean, onClick: (
                         .border(1.dp, Color(0xFFD1D5DB), CircleShape)
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun DashedAddButton(text: String, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 8.dp)
+            .drawBehind {
+                val stroke = Stroke(
+                    width = 2.dp.toPx(),
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(15f, 15f), 0f)
+                )
+                drawRoundRect(
+                    color = Color(0xFF6B7A90).copy(alpha = 0.5f),
+                    style = stroke,
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(12.dp.toPx())
+                )
+            }
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(Icons.Default.Add, contentDescription = null, tint = Color(0xFF6B7A90))
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = text,
+                fontWeight = FontWeight.Bold,
+                fontSize = 12.sp,
+                color = Color(0xFF6B7A90),
+                letterSpacing = 1.sp
+            )
         }
     }
 }
