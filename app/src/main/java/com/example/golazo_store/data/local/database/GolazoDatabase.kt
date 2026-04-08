@@ -11,7 +11,7 @@ import com.example.golazo_store.data.local.entity.FavoriteEntity
 
 @Database(
     entities = [CamisetaEntity::class, CartEntity::class, FavoriteEntity::class],
-    version = 5,
+    version = 8,
     exportSchema = false
 )
 abstract class GolazoDatabase : RoomDatabase() {

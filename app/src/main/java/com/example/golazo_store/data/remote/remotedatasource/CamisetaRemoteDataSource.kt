@@ -29,7 +29,7 @@ class CamisetaRemoteDataSource @Inject constructor(
                 Result.failure(Exception("Error de red ${response.code()}"))
             }
         } catch (e: Exception) {
-            Result.failure(Exception("Error desconocido", e))
+            Result.failure(Exception("Error desconocido: ${e.message}", e))
         }
     }
 

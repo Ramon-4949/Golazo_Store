@@ -9,4 +9,5 @@ interface CamisetaRepository {
     fun getCamisetaById(id: Int): Flow<Resource<Camiseta>>
     suspend fun upsertCamiseta(camiseta: Camiseta): Resource<Unit>
     suspend fun deleteCamiseta(id: Int): Resource<Unit>
+    suspend fun syncCamisetas(): Resource<Unit>
 }

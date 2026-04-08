@@ -15,7 +15,7 @@ data class CamisetaDto(
     val stock2XL: Int? = 0,
     val stockTotal: Int? = 0,
     val categoriaId: Int? = 0,
-    val categoria: String? = null
+    val categoria: CategoriaDto? = null
 ) {
     fun toDomain() = Camiseta(
         id = id,
