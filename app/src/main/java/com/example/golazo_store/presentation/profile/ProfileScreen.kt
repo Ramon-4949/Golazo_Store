@@ -69,11 +69,11 @@ fun ProfileScreen(
                         text = "Mi Perfil",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF07152B)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
@@ -82,7 +82,7 @@ fun ProfileScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF7F7F7))
+                .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
@@ -90,21 +90,21 @@ fun ProfileScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
                     .padding(vertical = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Box(
                     modifier = Modifier
                         .size(100.dp)
-                        .background(Color(0xFFF0F4F8), shape = CircleShape),
+                        .background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = "Avatar",
                         modifier = Modifier.size(50.dp),
-                        tint = Color(0xFFA0B2C6)
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -112,20 +112,20 @@ fun ProfileScreen(
                     text = user?.nombre ?: "Usuario",
                     fontSize = 28.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFF07152B)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = user?.correo ?: "correo@golazo.com",
                     fontSize = 16.sp,
-                    color = Color(0xFF6B7A90)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 OutlinedButton(
                     onClick = onNavigateToEditProfile,
                     shape = RoundedCornerShape(24.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = Color(0xFF07152B)
+                        contentColor = MaterialTheme.colorScheme.onSurface
                     )
                 ) {
                     Text("Editar Perfil", fontWeight = FontWeight.SemiBold)
@@ -142,7 +142,7 @@ fun ProfileScreen(
                     text = "MI ACTIVIDAD",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF6B7A90),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     letterSpacing = 1.sp
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -152,14 +152,14 @@ fun ProfileScreen(
                         icon = Icons.Default.GridView,
                         title = "Gestión de publicaciones",
                         subtitle = "Control de catálogo",
-                        iconTint = Color(0xFFFFBA08),
+                        iconTint = MaterialTheme.colorScheme.primary,
                         onClick = onNavigateToGestionPublicaciones
                     )
                     ProfileMenuItem(
                         icon = Icons.Default.ShoppingBag,
                         title = "Pedidos",
                         subtitle = "Seguimientos de transacciones",
-                        iconTint = Color(0xFFFFBA08),
+                        iconTint = MaterialTheme.colorScheme.primary,
                         onClick = onNavigateToAdminPedidos
                     )
                 } else {
@@ -167,21 +167,21 @@ fun ProfileScreen(
                         icon = Icons.Default.ShoppingBag,
                         title = "Mis Pedidos",
                         subtitle = "Historial y seguimiento",
-                        iconTint = Color(0xFFFFBA08),
+                        iconTint = MaterialTheme.colorScheme.primary,
                         onClick = onNavigateToMisPedidos
                     )
                     ProfileMenuItem(
                         icon = Icons.Default.LocationOn,
                         title = "Mis Direcciones",
                         subtitle = "Gestionar puntos de entrega",
-                        iconTint = Color(0xFFFFBA08),
+                        iconTint = MaterialTheme.colorScheme.primary,
                         onClick = onNavigateToAddresses
                     )
                     ProfileMenuItem(
                         icon = Icons.Default.AccountBalanceWallet,
                         title = "Métodos de Pago",
                         subtitle = "Tarjetas y formas de pago",
-                        iconTint = Color(0xFFFFBA08),
+                        iconTint = MaterialTheme.colorScheme.primary,
                         onClick = onNavigateToPayments
                     )
                 }
@@ -191,14 +191,14 @@ fun ProfileScreen(
                     text = "PREFERENCIAS",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF6B7A90),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     letterSpacing = 1.sp
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Card(
                     shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
@@ -216,13 +216,13 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .size(48.dp)
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(Color(0xFFFFEBEB)),
+                                .background(MaterialTheme.colorScheme.errorContainer),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ExitToApp,
                                 contentDescription = "Cerrar Sesión",
-                                tint = Color(0xFFE53935)
+                                tint = MaterialTheme.colorScheme.error
                             )
                         }
                         Spacer(modifier = Modifier.width(16.dp))
@@ -231,12 +231,12 @@ fun ProfileScreen(
                                 text = "Cerrar Sesión",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFFE53935)
+                                color = MaterialTheme.colorScheme.error
                             )
                             Text(
                                 text = "Salir de tu cuenta",
                                 fontSize = 13.sp,
-                                color = Color(0xFF6B7A90)
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -256,7 +256,7 @@ fun ProfileMenuItem(
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 12.dp)
@@ -272,7 +272,7 @@ fun ProfileMenuItem(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFFFF9E6)),
+                    .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -287,18 +287,18 @@ fun ProfileMenuItem(
                     text = title,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF07152B)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
                     text = subtitle,
                     fontSize = 13.sp,
-                    color = Color(0xFF6B7A90)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Icon(
                 imageVector = Icons.Default.KeyboardArrowRight,
                 contentDescription = "Ir",
-                tint = Color(0xFFA0B2C6)
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

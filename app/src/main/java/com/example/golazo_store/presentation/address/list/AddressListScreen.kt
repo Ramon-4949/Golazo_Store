@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.golazo_store.domain.model.Direccion
-import com.example.golazo_store.ui.theme.primaryDark
+
 
 @Composable
 fun AddressListScreen(
@@ -65,15 +65,15 @@ fun AddressListScreen(
                         addressToDelete = null
                     }
                 ) {
-                    Text("Eliminar", color = Color(0xFFE53935), fontWeight = FontWeight.Bold)
+                    Text("Eliminar", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { addressToDelete = null }) {
-                    Text("Cancelar", color = Color.Gray)
+                    Text("Cancelar", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             },
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         )
     }
 
@@ -103,7 +103,7 @@ fun AddressListBodyScreen(
                         text = "Mis Direcciones",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = Color(0xFF07152B)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -111,30 +111,30 @@ fun AddressListBodyScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "ATRÁS",
-                            tint = Color(0xFF07152B)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onNavigateToEdit(null) },
-                containerColor = primaryDark,
+                containerColor = MaterialTheme.colorScheme.primary,
                 shape = CircleShape,
                 modifier = Modifier.padding(bottom = 50.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.AddLocationAlt,
                     contentDescription = "Agregar Dirección",
-                    tint = Color.Black
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         },
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -151,20 +151,20 @@ fun AddressListBodyScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                placeholder = { Text("Buscar dirección...", color = Color.Gray) },
+                placeholder = { Text("Buscar dirección...", color = MaterialTheme.colorScheme.onSurfaceVariant) },
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "Search",
-                        tint = Color.Gray
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = Color(0xFFF5F6F8),
-                    focusedContainerColor = Color(0xFFF5F6F8),
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                     unfocusedBorderColor = Color.Transparent,
-                    focusedBorderColor = Color(0xFFE2E8F0)
+                    focusedBorderColor = MaterialTheme.colorScheme.outlineVariant
                 ),
                 singleLine = true
             )
@@ -173,11 +173,11 @@ fun AddressListBodyScreen(
 
             if (state.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = primaryDark)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else if (state.addresses.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No tienes direcciones guardadas.", color = Color.Gray)
+                    Text("No tienes direcciones guardadas.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
                 LazyColumn(
@@ -212,14 +212,14 @@ fun AddressItemCard(
         else -> Icons.Default.LocationOn
     }
     
-    val iconBgColor = if (isMain) Color(0xFFFFF9E6) else Color(0xFFF0F4F8)
-    val iconTintColor = if (isMain) primaryDark else Color(0xFFA0B2C6)
+    val iconBgColor = if (isMain) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
+    val iconTintColor = if (isMain) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
 
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = if (isMain) 4.dp else 2.dp),
-        border = if (isMain) androidx.compose.foundation.BorderStroke(2.dp, primaryDark) else null,
+        border = if (isMain) androidx.compose.foundation.BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -256,20 +256,20 @@ fun AddressItemCard(
                             text = address.nombreDireccion,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
-                            color = Color(0xFF07152B)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         if (isMain) {
                             Spacer(modifier = Modifier.width(8.dp))
                             Box(
                                 modifier = Modifier
-                                    .background(primaryDark, RoundedCornerShape(12.dp))
+                                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
                                     .padding(horizontal = 8.dp, vertical = 2.dp)
                             ) {
                                 Text(
                                     text = "PRINCIPAL",
                                     fontSize = 10.sp,
                                     fontWeight = FontWeight.ExtraBold,
-                                    color = Color.Black
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
                         }
@@ -280,7 +280,7 @@ fun AddressItemCard(
                     Text(
                         text = "${address.calleNumero}, ${address.provincia}\n${address.ciudad}, CP ${address.codigoPostal}",
                         fontSize = 13.sp,
-                        color = Color(0xFF6B7A90),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         lineHeight = 18.sp
                     )
 
@@ -289,7 +289,7 @@ fun AddressItemCard(
                         Text(
                             text = "Ref: ${address.reference}",
                             fontSize = 12.sp,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -298,7 +298,7 @@ fun AddressItemCard(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            Divider(color = Color(0xFFF0F4F8))
+            Divider(color = MaterialTheme.colorScheme.surfaceVariant)
             Spacer(modifier = Modifier.height(12.dp))
 
             // Action Buttons
@@ -313,7 +313,7 @@ fun AddressItemCard(
                     Icon(
                         imageVector = Icons.Outlined.Edit,
                         contentDescription = "Editar",
-                        tint = Color(0xFF07152B),
+                        tint = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
@@ -321,7 +321,7 @@ fun AddressItemCard(
                         text = "Editar",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF07152B)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
@@ -332,7 +332,7 @@ fun AddressItemCard(
                     Icon(
                         imageVector = Icons.Outlined.DeleteOutline,
                         contentDescription = "Eliminar",
-                        tint = Color(0xFFE53935),
+                        tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
@@ -340,7 +340,7 @@ fun AddressItemCard(
                         text = "Eliminar",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE53935)
+                        color = MaterialTheme.colorScheme.error
                     )
                 }
             }

@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import com.example.golazo_store.ui.theme.primaryDark
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -65,15 +64,13 @@ fun CategoriesBodyScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
-                .background(Color.White)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
             if (state.isLoading) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = primaryDark)
-                }
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             } else {
                 CategoriesGrid(
                     categories = state.categories,
@@ -98,7 +95,7 @@ fun CategoriesTopBar(
                 fontSize = 20.sp,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
-                color = Color(0xFF07152B)
+                color = MaterialTheme.colorScheme.onSurface
             )
         },
         actions = {
@@ -110,8 +107,8 @@ fun CategoriesTopBar(
                     badge = {
                         if (cartItemCount > 0) {
                             Badge(
-                                containerColor = primaryDark,
-                                contentColor = Color.Black
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             ) {
                                 Text(text = cartItemCount.toString(), fontWeight = FontWeight.Bold)
                             }
@@ -121,13 +118,13 @@ fun CategoriesTopBar(
                     Icon(
                         imageVector = Icons.Outlined.ShoppingCart,
                         contentDescription = "Cart",
-                        tint = Color(0xFF07152B)
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         )
     )
 }
@@ -156,7 +153,7 @@ fun CategoriesGrid(
                     text = "Explorar Categorías",
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 18.sp,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -202,7 +199,7 @@ fun CategoryCard(
                     .fillMaxSize()
                     .background(
                         Brush.verticalGradient(
-                            colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.8f))
+                            colors = listOf(Color.Transparent, MaterialTheme.colorScheme.scrim.copy(alpha = 0.8f))
                         )
                     )
             )
@@ -220,12 +217,12 @@ fun CategoryCard(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(4.dp))
-                                .background(primaryDark)
+                                .background(MaterialTheme.colorScheme.primary)
                                 .padding(horizontal = 6.dp, vertical = 2.dp)
                         ) {
                             Text(
                                 text = category.badge,
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 fontWeight = FontWeight.ExtraBold,
                                 fontSize = 10.sp
                             )
@@ -243,7 +240,7 @@ fun CategoryCard(
                         text = category.subtitle,
                         fontWeight = FontWeight.Normal,
                         fontSize = 12.sp,
-                        color = Color.LightGray
+                        color = Color.White.copy(alpha = 0.7f)
                     )
                 }
             }

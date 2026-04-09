@@ -26,7 +26,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import com.example.golazo_store.domain.model.PedidoAdmin
-import com.example.golazo_store.ui.theme.primaryDark
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -59,14 +58,14 @@ fun AdminPedidosScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = "FILTRAR POR ESTADO",
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(horizontal = 16.dp)
@@ -91,16 +90,16 @@ fun AdminPedidosScreen(
 
             if (state.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = primaryDark)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else if (state.error != null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = state.error!!, color = Color.Red)
+                    Text(text = state.error!!, color = MaterialTheme.colorScheme.error)
                 }
             } else {
                 Card(
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     modifier = Modifier
                         .fillMaxSize()
@@ -118,11 +117,11 @@ fun AdminPedidosScreen(
                                 text = "Pedidos Recientes",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.sp,
-                                color = Color.Black
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                         
-                        Divider(color = Color(0xFFEEEEEE), thickness = 1.dp)
+                        Divider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
 
                         LazyColumn(
                             modifier = Modifier.weight(1f)
@@ -132,7 +131,7 @@ fun AdminPedidosScreen(
                                     pedido = pedido,
                                     onClick = { onNavigateToDetail(pedido.id) }
                                 )
-                                Divider(color = Color(0xFFEEEEEE), thickness = 1.dp)
+                                Divider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
                             }
                         }
                     }
@@ -151,7 +150,7 @@ fun AdminPedidosTopBar(onNavigateBack: () -> Unit) {
                 text = "Pedidos",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
         },
         navigationIcon = {
@@ -159,11 +158,11 @@ fun AdminPedidosTopBar(onNavigateBack: () -> Unit) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Volver",
-                    tint = Color.Black
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
     )
 }
 
@@ -176,14 +175,14 @@ fun FilterChip(
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(20.dp))
-            .background(if (isSelected) Color(0xFF1E2329) else Color(0xFFF0F4F8))
+            .background(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant)
             .clickable { onClick() }
             .padding(horizontal = 16.dp, vertical = 8.dp),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = filter,
-            color = if (isSelected) Color.White else Color.Black,
+            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium
         )
@@ -200,19 +199,19 @@ fun AdminPedidoItem(
     }
     
     val statusColor = when (pedido.estado) {
-        "Pendiente" -> Color(0xFFFFF3CD)
-        "Enviado" -> Color(0xFFD0E2FF)
-        "Completado" -> Color(0xFFD4EDDA)
-        "Cancelado" -> Color(0xFFF8D7DA)
-        else -> Color.LightGray
+        "Pendiente" -> MaterialTheme.colorScheme.tertiaryContainer
+        "Enviado" -> MaterialTheme.colorScheme.primaryContainer
+        "Completado" -> MaterialTheme.colorScheme.secondaryContainer
+        "Cancelado" -> MaterialTheme.colorScheme.errorContainer
+        else -> MaterialTheme.colorScheme.surfaceVariant
     }
     
     val statusTextColor = when (pedido.estado) {
-        "Pendiente" -> Color(0xFF856404)
-        "Enviado" -> Color(0xFF0043CE)
-        "Completado" -> Color(0xFF155724)
-        "Cancelado" -> Color(0xFF721C24)
-        else -> Color.DarkGray
+        "Pendiente" -> MaterialTheme.colorScheme.onTertiaryContainer
+        "Enviado" -> MaterialTheme.colorScheme.onPrimaryContainer
+        "Completado" -> MaterialTheme.colorScheme.onSecondaryContainer
+        "Cancelado" -> MaterialTheme.colorScheme.onErrorContainer
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
     val totalItems = pedido.items.sumOf { it.cantidad }
@@ -227,13 +226,13 @@ fun AdminPedidoItem(
         Box(
             modifier = Modifier
                 .size(48.dp)
-                .background(Color(0xFFF0F4F8), RoundedCornerShape(8.dp)),
+                .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Default.ReceiptLong,
                 contentDescription = "Receipt",
-                tint = Color.Gray,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(24.dp)
             )
         }
@@ -250,7 +249,7 @@ fun AdminPedidoItem(
                     text = pedido.numeroPedido,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 
                 Box(
@@ -271,7 +270,7 @@ fun AdminPedidoItem(
             Text(
                 text = pedido.usuario?.nombre ?: "Cliente Desconocido",
                 fontSize = 12.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             
             Spacer(modifier = Modifier.height(4.dp))
@@ -280,14 +279,14 @@ fun AdminPedidoItem(
                 text = "${format.format(pedido.total)} \n$totalItems ARTÍCULOS",
                 fontWeight = FontWeight.Bold,
                 fontSize = 12.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
         
         Icon(
             imageVector = Icons.Outlined.ChevronRight,
             contentDescription = "Ver Detalle",
-            tint = Color.Gray,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(start = 8.dp)
         )
     }

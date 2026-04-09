@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.golazo_store.ui.theme.primaryDark
+
 
 val provinciasDR = listOf(
     "Azua", "Baoruco", "Barahona", "Dajabón", "Distrito Nacional", "Duarte",
@@ -77,7 +77,7 @@ fun AddressEditBodyScreen(
                         text = title,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
-                        color = Color(0xFF07152B)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -85,16 +85,16 @@ fun AddressEditBodyScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "ATRÁS",
-                            tint = Color(0xFF07152B)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFF9F9FB)
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
-        containerColor = Color(0xFFF9F9FB)
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -179,12 +179,12 @@ fun AddressEditBodyScreen(
                     Checkbox(
                         checked = state.esPrincipal,
                         onCheckedChange = { onEvent(AddressEditEvent.OnEsPrincipalChange(it)) },
-                        colors = CheckboxDefaults.colors(checkedColor = primaryDark)
+                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
                     )
                     Text(
                         text = "Guardar esta direccion como principal",
                         fontSize = 14.sp,
-                        color = Color(0xFF6B7A90)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -196,18 +196,18 @@ fun AddressEditBodyScreen(
                         .fillMaxWidth()
                         .height(56.dp),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryDark),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     enabled = !state.isLoading
                 ) {
                     if (state.isLoading) {
                         CircularProgressIndicator(
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(24.dp)
                         )
                     } else {
                         Text(
                             text = "Guardar Dirección",
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         )
@@ -215,7 +215,7 @@ fun AddressEditBodyScreen(
                         Icon(
                             imageVector = Icons.Default.Save,
                             contentDescription = "Guardar",
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
@@ -241,13 +241,13 @@ fun AddressTextField(
             text = label,
             fontWeight = FontWeight.Bold,
             fontSize = 13.sp,
-            color = Color(0xFF07152B)
+            color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            placeholder = { Text(placeholder, color = Color.Gray) },
+            placeholder = { Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant) },
             isError = error != null,
             supportingText = {
                 if (error != null) {
@@ -257,11 +257,11 @@ fun AddressTextField(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = Color.White,
-                focusedContainerColor = Color.White,
-                unfocusedBorderColor = Color(0xFFE2E8F0),
-                focusedBorderColor = primaryDark,
-                cursorColor = primaryDark,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                cursorColor = MaterialTheme.colorScheme.primary,
                 errorBorderColor = MaterialTheme.colorScheme.error,
                 errorSupportingTextColor = MaterialTheme.colorScheme.error
             ),
@@ -289,7 +289,7 @@ fun AddressProvinceDropdown(
             text = label,
             fontWeight = FontWeight.Bold,
             fontSize = 13.sp,
-            color = Color(0xFF07152B)
+            color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(8.dp))
         ExposedDropdownMenuBox(
@@ -301,7 +301,7 @@ fun AddressProvinceDropdown(
                 value = value,
                 onValueChange = {},
                 readOnly = true,
-                placeholder = { Text(placeholder, color = Color.Gray) },
+                placeholder = { Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant) },
                 isError = error != null,
                 supportingText = {
                     if (error != null) {
@@ -314,23 +314,23 @@ fun AddressProvinceDropdown(
                 modifier = Modifier.fillMaxWidth().menuAnchor(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedContainerColor = Color.White,
-                    focusedContainerColor = Color.White,
-                    unfocusedBorderColor = Color(0xFFE2E8F0),
-                    focusedBorderColor = primaryDark,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
                     errorBorderColor = MaterialTheme.colorScheme.error,
-                    errorContainerColor = Color.White
+                    errorContainerColor = MaterialTheme.colorScheme.surface
                 )
             )
 
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.background(Color.White)
+                modifier = Modifier.background(MaterialTheme.colorScheme.surface)
             ) {
                 provincias.forEach { provincia ->
                     DropdownMenuItem(
-                        text = { Text(provincia, color = Color(0xFF07152B)) },
+                        text = { Text(provincia, color = MaterialTheme.colorScheme.onSurface) },
                         onClick = {
                             onValueChange(provincia)
                             expanded = false

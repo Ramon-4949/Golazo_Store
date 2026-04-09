@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import com.example.golazo_store.ui.theme.primaryDark
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -75,7 +74,7 @@ fun CreateListBodyScreen(
                         text = "Gestión de publicaciones",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = Color(0xFF07152B)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -83,26 +82,26 @@ fun CreateListBodyScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Regresar",
-                            tint = Color(0xFF07152B)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFFAF9F6) // Matches Figma light creamy background
+                    containerColor = MaterialTheme.colorScheme.surface // Matches Figma light creamy background
                 )
             )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onNavigateToCreate,
-                containerColor = Color(0xFFF6A820), // Darker yellow/orange from Figma
+                containerColor = MaterialTheme.colorScheme.primary, // Darker yellow/orange from Figma
                 shape = CircleShape,
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Agregar Camiseta",
-                    tint = Color.Black
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         },
@@ -111,18 +110,18 @@ fun CreateListBodyScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFFAF9F6))
+                .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
         ) {
             if (state.isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.Center),
-                    color = primaryDark
+                    color = MaterialTheme.colorScheme.primary
                 )
             } else if (state.camisetas.isEmpty()) {
                 Text(
                     text = "No hay publicaciones registradas.",
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.align(Alignment.Center)
                 )
             } else {
@@ -159,15 +158,15 @@ fun CreateListBodyScreen(
                                 showDeleteDialog = null
                             }
                         ) {
-                            Text("Eliminar", color = Color.Red, fontWeight = FontWeight.Bold)
+                            Text("Eliminar", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
                         }
                     },
                     dismissButton = {
                         TextButton(onClick = { showDeleteDialog = null }) {
-                            Text("Cancelar", color = Color.Gray)
+                            Text("Cancelar", color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     },
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             }
         }
@@ -186,7 +185,7 @@ fun CreateListCardItem(
 
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -201,7 +200,7 @@ fun CreateListCardItem(
                 modifier = Modifier
                     .size(64.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFFE8F1F8)),
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
                 if (camiseta.imagenUrl.isNotBlank()) {
@@ -216,7 +215,7 @@ fun CreateListCardItem(
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(Color(0xFF81B8E8))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
                     )
                 }
             }
@@ -231,7 +230,7 @@ fun CreateListCardItem(
                     text = camiseta.nombre,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF07152B),
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -241,13 +240,13 @@ fun CreateListCardItem(
                         text = formatter.format(camiseta.precio),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = "Stock: ${camiseta.stockTotal} ud.",
                         fontSize = 12.sp,
-                        color = Color(0xFFA0B2C6),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Medium
                     )
                 }
@@ -261,7 +260,7 @@ fun CreateListCardItem(
                 Icon(
                     imageVector = Icons.Outlined.Edit,
                     contentDescription = "Editar",
-                    tint = Color(0xFF435671),
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .size(24.dp)
                         .clickable { onEditClick() }
@@ -269,7 +268,7 @@ fun CreateListCardItem(
                 Icon(
                     imageVector = Icons.Outlined.Delete,
                     contentDescription = "Eliminar",
-                    tint = Color(0xFFE53935),
+                    tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier
                         .size(24.dp)
                         .clickable { onDeleteClick() }

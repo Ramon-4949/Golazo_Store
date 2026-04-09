@@ -30,7 +30,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.golazo_store.domain.model.ItemPedidoAdmin
 import com.example.golazo_store.domain.model.PedidoAdmin
-import com.example.golazo_store.ui.theme.primaryDark
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -54,16 +53,16 @@ fun AdminPedidoDetailScreen(
                     Button(
                         onClick = { viewModel.onEvent(AdminPedidoDetailEvent.SaveChanges) },
                         modifier = Modifier.fillMaxWidth().height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = primaryDark),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(8.dp),
                         enabled = !state.isUpdating
                     ) {
                         if (state.isUpdating) {
-                            CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(24.dp))
+                            CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp))
                         } else {
-                            Icon(imageVector = Icons.Default.Save, contentDescription = "Guardar", tint = Color.Black)
+                            Icon(imageVector = Icons.Default.Save, contentDescription = "Guardar", tint = MaterialTheme.colorScheme.onPrimary)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "Guardar Cambios", color = Color.Black, fontWeight = FontWeight.Bold)
+                            Text(text = "Guardar Cambios", color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -76,7 +75,7 @@ fun AdminPedidoDetailScreen(
             }
         } else if (state.error != null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = state.error!!, color = Color.Red)
+                Text(text = state.error!!, color = MaterialTheme.colorScheme.error)
             }
         } else if (state.pedido != null) {
             PedidoDetailContent(
@@ -98,13 +97,13 @@ fun AdminPedidoDetailTopBar(pedidoNumber: String, onNavigateBack: () -> Unit) {
                 Text(
                     text = "Detalle del Pedido",
                     fontSize = 12.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = pedidoNumber,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
         },
@@ -113,11 +112,11 @@ fun AdminPedidoDetailTopBar(pedidoNumber: String, onNavigateBack: () -> Unit) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Volver",
-                    tint = Color.Black
+                    tint = MaterialTheme.colorScheme.onSurface
                 )
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
     )
 }
 
@@ -135,7 +134,7 @@ fun PedidoDetailContent(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
             .padding(paddingValues)
     ) {
         item {
@@ -157,7 +156,7 @@ fun PedidoDetailContent(
 
         items(pedido.items) { item ->
             ProductItemRow(item, format)
-            Divider(color = Color(0xFFEEEEEE), thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
+            Divider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp, modifier = Modifier.padding(horizontal = 16.dp))
         }
 
         item {
@@ -173,7 +172,7 @@ fun PedidoDetailContent(
 fun SectionTitle(title: String) {
     Text(
         text = title,
-        color = Color.Gray,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontSize = 12.sp,
         fontWeight = FontWeight.Bold,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
@@ -191,10 +190,10 @@ fun ClientInfoSection(pedido: PedidoAdmin) {
         Box(
             modifier = Modifier
                 .size(48.dp)
-                .background(Color(0xFFFFF7E6), CircleShape),
+                .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Icon(imageVector = Icons.Default.Person, contentDescription = "Cliente", tint = Color(0xFFD4A373))
+            Icon(imageVector = Icons.Default.Person, contentDescription = "Cliente", tint = MaterialTheme.colorScheme.onPrimaryContainer)
         }
         Spacer(modifier = Modifier.width(12.dp))
         Column {
@@ -202,12 +201,12 @@ fun ClientInfoSection(pedido: PedidoAdmin) {
                 text = pedido.usuario?.nombre?.takeIf { it.isNotBlank() } ?: "Sin nombre",
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = pedido.usuario?.correo?.takeIf { it.isNotBlank() } ?: "Sin correo",
                 fontSize = 14.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -218,17 +217,17 @@ fun ClientInfoSection(pedido: PedidoAdmin) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .background(Color(0xFFF8F9FA), RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(imageVector = Icons.Default.LocationOn, contentDescription = "Dirección", tint = Color(0xFFEAA121))
+        Icon(imageVector = Icons.Default.LocationOn, contentDescription = "Dirección", tint = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(modifier = Modifier.width(12.dp))
         Column {
             Text(
                 text = "DIRECCIÓN DE ENVÍO",
                 fontSize = 10.sp,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontWeight = FontWeight.Bold
             )
             val direccionText = if (pedido.direccion != null) {
@@ -241,7 +240,7 @@ fun ClientInfoSection(pedido: PedidoAdmin) {
             Text(
                 text = direccionText,
                 fontSize = 14.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -265,8 +264,8 @@ fun StatusDropdownSection(state: AdminPedidoDetailUiState, viewModel: AdminPedid
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                 shape = RoundedCornerShape(8.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = primaryDark,
-                    unfocusedBorderColor = primaryDark.copy(alpha = 0.5f)
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
                 )
             )
 
@@ -290,19 +289,19 @@ fun StatusDropdownSection(state: AdminPedidoDetailUiState, viewModel: AdminPedid
     Spacer(modifier = Modifier.height(8.dp))
     
     val statusColor = when (state.pedido?.estado) {
-        "Pendiente" -> Color(0xFFFFF3CD)
-        "Enviado" -> Color(0xFFD0E2FF)
-        "Completado" -> Color(0xFFD4EDDA)
-        "Cancelado" -> Color(0xFFF8D7DA)
-        else -> Color.LightGray
+        "Pendiente" -> MaterialTheme.colorScheme.tertiaryContainer
+        "Enviado" -> MaterialTheme.colorScheme.primaryContainer
+        "Completado" -> MaterialTheme.colorScheme.secondaryContainer
+        "Cancelado" -> MaterialTheme.colorScheme.errorContainer
+        else -> MaterialTheme.colorScheme.surfaceVariant
     }
     
     val statusTextColor = when (state.pedido?.estado) {
-        "Pendiente" -> Color(0xFF856404)
-        "Enviado" -> Color(0xFF0043CE)
-        "Completado" -> Color(0xFF155724)
-        "Cancelado" -> Color(0xFF721C24)
-        else -> Color.DarkGray
+        "Pendiente" -> MaterialTheme.colorScheme.onTertiaryContainer
+        "Enviado" -> MaterialTheme.colorScheme.onPrimaryContainer
+        "Completado" -> MaterialTheme.colorScheme.onSecondaryContainer
+        "Cancelado" -> MaterialTheme.colorScheme.onErrorContainer
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
     Box(
@@ -332,7 +331,7 @@ fun ProductItemRow(item: ItemPedidoAdmin, format: NumberFormat) {
         Box(
             modifier = Modifier
                 .size(60.dp)
-                .background(Color(0xFF1E2329), RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
         ) {
             val imageUrl = item.camiseta?.imagenUrl
             if (!imageUrl.isNullOrBlank()) {
@@ -356,20 +355,20 @@ fun ProductItemRow(item: ItemPedidoAdmin, format: NumberFormat) {
                 text = item.camiseta?.nombre ?: "Producto desconocido",
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = "Cantidad: ${item.cantidad}",
                 fontSize = 12.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = format.format(item.precioUnitario),
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -381,33 +380,33 @@ fun PaymentSummarySection(pedido: PedidoAdmin, format: NumberFormat) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .background(Color(0xFFF8F9FA), RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
             .padding(16.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Subtotal", color = Color.Gray, fontSize = 14.sp)
-            Text(format.format(pedido.total), color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            Text("Subtotal", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+            Text(format.format(pedido.total), color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold, fontSize = 14.sp)
         }
         Spacer(modifier = Modifier.height(8.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Envío (Standard)", color = Color.Gray, fontSize = 14.sp)
-            Text("Gratis", color = Color(0xFF28A745), fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            Text("Envío (Standard)", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+            Text("Gratis", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Divider(color = Color(0xFFEEEEEE), thickness = 1.dp)
+        Divider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Total", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Text(format.format(pedido.total), color = Color.Black, fontWeight = FontWeight.Black, fontSize = 20.sp)
+            Text("Total", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            Text(format.format(pedido.total), color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Black, fontSize = 20.sp)
         }
     }
 }

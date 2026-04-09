@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import com.example.golazo_store.ui.theme.primaryDark
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
@@ -97,7 +96,7 @@ fun CreateEditBodyScreen(
                     }
                 },
                 actions = { Spacer(modifier = Modifier.width(48.dp)) }, // To perfectly center title
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
         bottomBar = bottomNavigation,
@@ -106,7 +105,7 @@ fun CreateEditBodyScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
                 .padding(vertical = 16.dp)
@@ -170,19 +169,19 @@ fun CreateEditBodyScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = primaryDark),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(8.dp)
             ) {
                 if (state.isLoading) {
-                    CircularProgressIndicator(color = Color.Black, modifier = Modifier.size(24.dp))
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp))
                 } else {
-                    Text(if (state.isEditing) "Editar publicación" else "Crear publicación", color = Color.Black, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text(if (state.isEditing) "Editar publicación" else "Crear publicación", color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 }
             }
 
             Text(
                 text = "Cancelar",
-                color = Color(0xFF6B7A93),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
                 modifier = Modifier
@@ -216,9 +215,10 @@ fun ImagePickerSection(
         contentAlignment = Alignment.Center
     ) {
         // Dashed border background
+        val dashColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
         androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
             drawRoundRect(
-                color = Color(0xFFFFD54F).copy(alpha = 0.5f), // Light yellow dash
+                color = dashColor, // Light dash
                 style = stroke,
                 cornerRadius = androidx.compose.ui.geometry.CornerRadius(16.dp.toPx())
             )
@@ -230,7 +230,7 @@ fun ImagePickerSection(
                 .fillMaxSize()
                 .padding(2.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFFFFFDF5)), // Very light yellow background
+                .background(MaterialTheme.colorScheme.surfaceVariant), // Light background
             contentAlignment = Alignment.Center
         ) {
             val modelImage = imageUri ?: originalImageUrl
@@ -247,7 +247,7 @@ fun ImagePickerSection(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(8.dp)
-                        .background(Color.White.copy(alpha = 0.7f), RoundedCornerShape(50))
+                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f), RoundedCornerShape(50))
                 ) {
                     Icon(Icons.Default.ArrowBack, contentDescription = "Remove") // Simple icon reuse
                 }
@@ -259,20 +259,20 @@ fun ImagePickerSection(
                     Icon(
                         imageVector = Icons.Outlined.PhotoCamera,
                         contentDescription = "Camera",
-                        tint = primaryDark,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(48.dp)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = "Sin imagen de producto",
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 16.sp
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Sube una foto de la camiseta para la tienda",
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -284,10 +284,10 @@ fun ImagePickerSection(
                                 )
                             )
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = primaryDark),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Subir Imagen", color = Color.Black, fontWeight = FontWeight.Bold)
+                        Text("Subir Imagen", color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -313,7 +313,7 @@ fun FormSectionTitle(title: String) {
         text = title,
         fontWeight = FontWeight.ExtraBold,
         fontSize = 16.sp,
-        color = Color(0xFF2B2B2B),
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 12.dp)
@@ -336,13 +336,13 @@ fun CustomTextField(
             text = label,
             fontWeight = FontWeight.Bold,
             fontSize = 12.sp,
-            color = Color(0xFF2B2B2B),
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(bottom = 4.dp)
         )
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            placeholder = { Text(placeholder, color = Color(0xFF90A4AE)) },
+            placeholder = { Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(8.dp),
             singleLine = singleLine,
@@ -354,10 +354,10 @@ fun CustomTextField(
                 }
             },
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = primaryDark,
-                unfocusedBorderColor = Color(0xFFFFF0EC), // Light border
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant, // Light border
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                 errorBorderColor = MaterialTheme.colorScheme.error,
                 errorSupportingTextColor = MaterialTheme.colorScheme.error
             )
@@ -381,7 +381,7 @@ fun CategoryDropdown(
             text = "Categoría",
             fontWeight = FontWeight.Bold,
             fontSize = 12.sp,
-            color = Color(0xFF2B2B2B),
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(bottom = 4.dp)
         )
         ExposedDropdownMenuBox(
@@ -405,10 +405,10 @@ fun CategoryDropdown(
                     }
                 },
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = primaryDark,
-                    unfocusedBorderColor = Color(0xFFFFF0EC),
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                     errorBorderColor = MaterialTheme.colorScheme.error,
                     errorSupportingTextColor = MaterialTheme.colorScheme.error
                 )
@@ -416,11 +416,11 @@ fun CategoryDropdown(
             ExposedDropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.background(Color.White)
+                modifier = Modifier.background(MaterialTheme.colorScheme.surface)
             ) {
                 categorias.forEach { categoria ->
                     DropdownMenuItem(
-                        text = { Text(text = categoria.nombre, color = Color.Black) },
+                        text = { Text(text = categoria.nombre, color = MaterialTheme.colorScheme.onSurface) },
                         onClick = {
                             onCategoriaSelected(categoria.id)
                             expanded = false
@@ -445,20 +445,20 @@ fun StockRow(
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // Size box
+        val strokeColor = MaterialTheme.colorScheme.primary
         Box(
             modifier = Modifier
                 .width(48.dp)
                 .height(48.dp)
-                .background(Color(0xFFFFFDF5), RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
                 .clip(RoundedCornerShape(8.dp))
                 .clickable { /* No action needed */ },
             contentAlignment = Alignment.Center
         ) {
-            // we CreateEdit a border matching Figma: yellow border
             androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
                 val strokeWidth = 1.dp.toPx()
                 drawRoundRect(
-                    color = Color(0xFFFFD54F),
+                    color = strokeColor,
                     style = Stroke(width = strokeWidth),
                     cornerRadius = androidx.compose.ui.geometry.CornerRadius(8.dp.toPx())
                 )
@@ -466,7 +466,7 @@ fun StockRow(
             Text(
                 text = label,
                 fontWeight = FontWeight.Bold,
-                color = if (label.contains("X")) Color(0xFF9FA8B8) else Color.Black,
+                color = if (label.contains("X")) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
                 fontSize = 14.sp
             )
         }
@@ -475,7 +475,7 @@ fun StockRow(
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            placeholder = { Text("0", color = Color.Gray) },
+            placeholder = { Text("0", color = MaterialTheme.colorScheme.onSurfaceVariant) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             isError = error != null,
@@ -487,10 +487,10 @@ fun StockRow(
             shape = RoundedCornerShape(8.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = primaryDark,
-                unfocusedBorderColor = Color(0xFFFFF0EC),
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                 errorBorderColor = MaterialTheme.colorScheme.error,
                 errorSupportingTextColor = MaterialTheme.colorScheme.error
             )

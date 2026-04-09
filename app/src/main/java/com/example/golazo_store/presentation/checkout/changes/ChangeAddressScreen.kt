@@ -34,7 +34,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.golazo_store.domain.model.Direccion
-import com.example.golazo_store.ui.theme.primaryDark
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,7 +78,7 @@ fun ChangeAddressScreen(
                         text = "Cambiar Dirección",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = Color(0xFF07152B)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -86,14 +86,14 @@ fun ChangeAddressScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "ATRÁS",
-                            tint = Color(0xFF07152B)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -104,8 +104,8 @@ fun ChangeAddressScreen(
             OutlinedTextField(
                 value = searchQuery,
                 onValueChange = { searchQuery = it },
-                placeholder = { Text("Buscar dirección...", color = Color.Gray) },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = Color.Gray) },
+                placeholder = { Text("Buscar dirección...", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -113,15 +113,15 @@ fun ChangeAddressScreen(
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = Color.Transparent,
                     focusedBorderColor = Color.Transparent,
-                    unfocusedContainerColor = Color(0xFFF3F4F6),
-                    focusedContainerColor = Color(0xFFF3F4F6)
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant
                 ),
                 singleLine = true
             )
 
             if (state.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = primaryDark)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else {
                 LazyColumn(
@@ -152,8 +152,8 @@ fun ChangeAddressScreen(
 fun AddressSelectionCard(direccion: Direccion, isSelected: Boolean, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, if (isSelected) primaryDark else Color(0xFFE5E7EB)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
@@ -165,13 +165,13 @@ fun AddressSelectionCard(direccion: Direccion, isSelected: Boolean, onClick: () 
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(Color(0xFFFFF7DE), RoundedCornerShape(8.dp)),
+                    .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Outlined.LocationOn,
                     contentDescription = null,
-                    tint = primaryDark
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
@@ -181,7 +181,7 @@ fun AddressSelectionCard(direccion: Direccion, isSelected: Boolean, onClick: () 
                         text = direccion.nombreDireccion,
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
-                        color = Color(0xFF07152B),
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false)
@@ -190,14 +190,14 @@ fun AddressSelectionCard(direccion: Direccion, isSelected: Boolean, onClick: () 
                         Spacer(modifier = Modifier.width(8.dp))
                         Box(
                             modifier = Modifier
-                                .background(primaryDark, RoundedCornerShape(12.dp))
+                                .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
                                 .padding(horizontal = 6.dp, vertical = 2.dp)
                         ) {
                             Text(
                                 "PRINCIPAL",
                                 fontSize = 9.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 maxLines = 1
                             )
                         }
@@ -207,7 +207,7 @@ fun AddressSelectionCard(direccion: Direccion, isSelected: Boolean, onClick: () 
                 Text(
                     text = "${direccion.calleNumero}\n${direccion.codigoPostal} ${direccion.ciudad}, ${direccion.provincia}",
                     fontSize = 13.sp,
-                    color = Color(0xFF6B7A90)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
@@ -215,7 +215,7 @@ fun AddressSelectionCard(direccion: Direccion, isSelected: Boolean, onClick: () 
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
                     contentDescription = "Selected",
-                    tint = primaryDark
+                    tint = MaterialTheme.colorScheme.primary
                 )
             } else {
                 Box(
@@ -223,7 +223,7 @@ fun AddressSelectionCard(direccion: Direccion, isSelected: Boolean, onClick: () 
                         .size(24.dp)
                         .clip(CircleShape)
                         .background(Color.Transparent)
-                        .border(1.dp, Color(0xFFD1D5DB), CircleShape)
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
                 )
             }
         }
@@ -232,6 +232,7 @@ fun AddressSelectionCard(direccion: Direccion, isSelected: Boolean, onClick: () 
 
 @Composable
 private fun DashedAddButton(text: String, onClick: () -> Unit) {
+    val dashedColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -242,7 +243,7 @@ private fun DashedAddButton(text: String, onClick: () -> Unit) {
                     pathEffect = PathEffect.dashPathEffect(floatArrayOf(15f, 15f), 0f)
                 )
                 drawRoundRect(
-                    color = Color(0xFF6B7A90).copy(alpha = 0.5f),
+                    color = dashedColor,
                     style = stroke,
                     cornerRadius = androidx.compose.ui.geometry.CornerRadius(12.dp.toPx())
                 )
@@ -251,13 +252,13 @@ private fun DashedAddButton(text: String, onClick: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.Add, contentDescription = null, tint = Color(0xFF6B7A90))
+            Icon(Icons.Default.Add, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = text,
                 fontWeight = FontWeight.Bold,
                 fontSize = 12.sp,
-                color = Color(0xFF6B7A90),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 letterSpacing = 1.sp
             )
         }

@@ -9,7 +9,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.example.golazo_store.ui.theme.primaryDark
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.golazo_store.presentation.navigation.Screen
@@ -24,7 +23,7 @@ fun GolazoBottomNavigation(
     onNavigateToProfile: () -> Unit
 ) {
     NavigationBar(
-        containerColor = Color.White,
+        containerColor = MaterialTheme.colorScheme.surface,
         tonalElevation = 8.dp
     ) {
         NavigationBarItem(
@@ -38,11 +37,11 @@ fun GolazoBottomNavigation(
                 ) 
             },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = primaryDark,
-                selectedTextColor = primaryDark,
-                indicatorColor = Color.White,
-                unselectedIconColor = Color.Gray,
-                unselectedTextColor = Color.Gray
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                selectedTextColor = MaterialTheme.colorScheme.primary,
+                indicatorColor = MaterialTheme.colorScheme.surface,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
         )
         NavigationBarItem(
@@ -56,11 +55,11 @@ fun GolazoBottomNavigation(
                 ) 
             },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = primaryDark,
-                selectedTextColor = primaryDark,
-                indicatorColor = Color.White,
-                unselectedIconColor = Color.Gray,
-                unselectedTextColor = Color.Gray
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                selectedTextColor = MaterialTheme.colorScheme.primary,
+                indicatorColor = MaterialTheme.colorScheme.surface,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
         )
         NavigationBarItem(
@@ -79,11 +78,11 @@ fun GolazoBottomNavigation(
                 ) 
             },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = primaryDark,
-                selectedTextColor = primaryDark,
-                indicatorColor = Color.White,
-                unselectedIconColor = Color.Gray,
-                unselectedTextColor = Color.Gray
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                selectedTextColor = MaterialTheme.colorScheme.primary,
+                indicatorColor = MaterialTheme.colorScheme.surface,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
         )
         NavigationBarItem(
@@ -97,11 +96,11 @@ fun GolazoBottomNavigation(
                 ) 
             },
             colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = primaryDark,
-                selectedTextColor = primaryDark,
-                indicatorColor = Color.White,
-                unselectedIconColor = Color.Gray,
-                unselectedTextColor = Color.Gray
+                selectedIconColor = MaterialTheme.colorScheme.primary,
+                selectedTextColor = MaterialTheme.colorScheme.primary,
+                indicatorColor = MaterialTheme.colorScheme.surface,
+                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
         )
     }

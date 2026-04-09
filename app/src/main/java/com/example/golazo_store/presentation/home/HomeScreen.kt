@@ -37,7 +37,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.golazo_store.domain.model.Camiseta
-import com.example.golazo_store.ui.theme.primaryDark
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -83,7 +82,7 @@ fun HomeBodyScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             Spacer(modifier = Modifier.height(8.dp))
             SearchBar(
@@ -100,11 +99,11 @@ fun HomeBodyScreen(
 
             if (state.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = primaryDark)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else if (state.error != null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = state.error, color = Color.Red, textAlign = TextAlign.Center)
+                    Text(text = state.error, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
                 }
             } else {
                 ProductsGrid(
@@ -134,7 +133,7 @@ fun HomeTopBar(
                 fontSize = 20.sp,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
-                color = Color(0xFF07152B)
+                color = MaterialTheme.colorScheme.onSurface
             )
         },
         actions = {
@@ -146,8 +145,8 @@ fun HomeTopBar(
                     badge = {
                         if (cartItemCount > 0) {
                             Badge(
-                                containerColor = primaryDark,
-                                contentColor = Color.Black
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             ) {
                                 Text(text = cartItemCount.toString(), fontWeight = FontWeight.Bold)
                             }
@@ -157,13 +156,13 @@ fun HomeTopBar(
                     Icon(
                         imageVector = Icons.Outlined.ShoppingCart,
                         contentDescription = "Cart",
-                        tint = Color(0xFF07152B)
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         )
     )
 }
@@ -176,8 +175,8 @@ fun SearchBar(
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
-        placeholder = { Text("Buscar camisetas, equipos...", color = Color.Gray) },
-        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.Gray) },
+        placeholder = { Text("Buscar camisetas, equipos...", color = MaterialTheme.colorScheme.onSurfaceVariant) },
+        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search", tint = MaterialTheme.colorScheme.onSurfaceVariant) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
@@ -185,10 +184,10 @@ fun SearchBar(
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = Color.Transparent,
             focusedBorderColor = Color.Transparent,
-            unfocusedContainerColor = Color(0xFFF0F4F8),
-            focusedContainerColor = Color(0xFFF0F4F8),
-            focusedTextColor = Color.Black,
-            unfocusedTextColor = Color.Black
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
         )
     )
 }
@@ -211,13 +210,13 @@ fun FilterChipsRow(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(20.dp))
-                    .background(if (isSelected) primaryDark else Color(0xFFF0F4F8))
+                    .background(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant)
                     .clickable { onFilterSelected(filter) }
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Text(
                     text = filter,
-                    color = if (isSelected) Color.Black else Color.DarkGray,
+                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                     fontSize = 14.sp
                 )
@@ -270,7 +269,7 @@ fun ProductCard(
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier.clickable { onNavigateToDetail(product.id) }
     ) {
@@ -282,7 +281,7 @@ fun ProductCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
-                    .background(Color(0xFFF4F5F7))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
             ) {
                 val imageUrl = product.imagenUrl?.takeIf { it.isNotBlank() }
                 if (imageUrl != null) {
@@ -302,7 +301,7 @@ fun ProductCard(
                     Icon(
                         imageVector = Icons.Default.Search,
                         contentDescription = "No image",
-                        tint = Color.Gray,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier
                             .align(Alignment.Center)
                             .size(48.dp)
@@ -314,12 +313,12 @@ fun ProductCard(
                         .align(Alignment.TopEnd)
                         .padding(8.dp)
                         .size(32.dp)
-                        .background(Color.White, CircleShape)
+                        .background(MaterialTheme.colorScheme.surface, CircleShape)
                         .clickable { onEvent(HomeEvent.ToggleFavorite(product.id)) },
                     contentAlignment = Alignment.Center
                 ) {
                     val icon = if (isFavorite) Icons.Filled.Favorite else Icons.Filled.Favorite
-                    val iconTint = if (isFavorite) primaryDark else Color.Black
+                    val iconTint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                     Icon(
                         imageVector = icon,
                         contentDescription = "Favorite",
@@ -342,7 +341,7 @@ fun ProductCard(
                     text = categoryName,
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 11.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     letterSpacing = 1.sp,
                     textAlign = TextAlign.Center
                 )
@@ -352,7 +351,7 @@ fun ProductCard(
                     text = product.nombre,
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = Color(0xFF07152B),
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     textAlign = TextAlign.Center
@@ -363,7 +362,7 @@ fun ProductCard(
                     text = format.format(product.precio),
                     fontWeight = FontWeight.Black,
                     fontSize = 16.sp,
-                    color = Color(0xFF07152B),
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(8.dp))

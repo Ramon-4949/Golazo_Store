@@ -30,7 +30,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.golazo_store.domain.model.MetodoPago
-import com.example.golazo_store.ui.theme.primaryDark
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 
@@ -66,7 +65,7 @@ fun ChangePaymentScreen(
                         text = "Cambiar Método de Pago",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = Color(0xFF07152B)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -74,14 +73,14 @@ fun ChangePaymentScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "ATRÁS",
-                            tint = Color(0xFF07152B)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -90,14 +89,14 @@ fun ChangePaymentScreen(
         ) {
             if (state.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = primaryDark)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else {
                 Text(
                     text = "TARJETAS GUARDADAS",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF6B7A90),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     letterSpacing = 1.sp,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
                 )
@@ -130,8 +129,8 @@ fun ChangePaymentScreen(
 fun PaymentSelectionCard(metodoPago: MetodoPago, isSelected: Boolean, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, if (isSelected) primaryDark else Color(0xFFE5E7EB)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
@@ -143,12 +142,12 @@ fun PaymentSelectionCard(metodoPago: MetodoPago, isSelected: Boolean, onClick: (
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(Color(0xFFF3F4F6), RoundedCornerShape(4.dp)),
+                    .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = if (metodoPago.tipoTarjeta.lowercase().contains("visa")) "VISA" else "MC",
-                    color = Color(0xFF1E3A8A),
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Black,
                     fontSize = 10.sp
                 )
@@ -160,7 +159,7 @@ fun PaymentSelectionCard(metodoPago: MetodoPago, isSelected: Boolean, onClick: (
                         text = "${metodoPago.tipoTarjeta} •••• ${metodoPago.numeroOculto.takeLast(4)}",
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
-                        color = Color(0xFF07152B),
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false)
@@ -169,14 +168,14 @@ fun PaymentSelectionCard(metodoPago: MetodoPago, isSelected: Boolean, onClick: (
                         Spacer(modifier = Modifier.width(8.dp))
                         Box(
                             modifier = Modifier
-                                .background(primaryDark, RoundedCornerShape(12.dp))
+                                .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
                                 .padding(horizontal = 6.dp, vertical = 2.dp)
                         ) {
                             Text(
                                 "PRINCIPAL",
                                 fontSize = 9.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 maxLines = 1
                             )
                         }
@@ -186,7 +185,7 @@ fun PaymentSelectionCard(metodoPago: MetodoPago, isSelected: Boolean, onClick: (
                 Text(
                     text = "Vence ${metodoPago.mesExpiracion}/${metodoPago.anioExpiracion.toString().takeLast(2)}",
                     fontSize = 13.sp,
-                    color = Color(0xFF6B7A90)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))
@@ -194,7 +193,7 @@ fun PaymentSelectionCard(metodoPago: MetodoPago, isSelected: Boolean, onClick: (
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
                     contentDescription = "Selected",
-                    tint = primaryDark
+                    tint = MaterialTheme.colorScheme.primary
                 )
             } else {
                 Box(
@@ -202,7 +201,7 @@ fun PaymentSelectionCard(metodoPago: MetodoPago, isSelected: Boolean, onClick: (
                         .size(24.dp)
                         .clip(CircleShape)
                         .background(Color.Transparent)
-                        .border(1.dp, Color(0xFFD1D5DB), CircleShape)
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
                 )
             }
         }
@@ -211,6 +210,7 @@ fun PaymentSelectionCard(metodoPago: MetodoPago, isSelected: Boolean, onClick: (
 
 @Composable
 private fun DashedAddButton(text: String, onClick: () -> Unit) {
+    val dashedColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -222,7 +222,7 @@ private fun DashedAddButton(text: String, onClick: () -> Unit) {
                     pathEffect = PathEffect.dashPathEffect(floatArrayOf(15f, 15f), 0f)
                 )
                 drawRoundRect(
-                    color = Color(0xFF6B7A90).copy(alpha = 0.5f),
+                    color = dashedColor,
                     style = stroke,
                     cornerRadius = androidx.compose.ui.geometry.CornerRadius(12.dp.toPx())
                 )
@@ -231,13 +231,13 @@ private fun DashedAddButton(text: String, onClick: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Default.Add, contentDescription = null, tint = Color(0xFF6B7A90))
+            Icon(Icons.Default.Add, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = text,
                 fontWeight = FontWeight.Bold,
                 fontSize = 12.sp,
-                color = Color(0xFF6B7A90),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 letterSpacing = 1.sp
             )
         }
