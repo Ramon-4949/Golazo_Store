@@ -39,7 +39,6 @@ import coil.request.ImageRequest
 import com.example.golazo_store.domain.model.Camiseta
 import java.text.NumberFormat
 import java.util.Locale
-import com.example.golazo_store.ui.theme.primaryDark
 
 @Composable
 fun CamisetaDetailScreen(
@@ -82,7 +81,7 @@ fun CamisetaDetailBodyScreen(
                         text = "Golazo Store",
                         fontWeight = FontWeight.Black,
                         fontSize = 18.sp,
-                        color = Color(0xFF07152B),
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
@@ -92,7 +91,7 @@ fun CamisetaDetailBodyScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "ATRÁS",
-                            tint = Color(0xFF07152B)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
@@ -100,20 +99,20 @@ fun CamisetaDetailBodyScreen(
                     Spacer(modifier = Modifier.width(48.dp))
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFF9F9FB)
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
-        containerColor = Color(0xFFF9F9FB)
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         if (state.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = primaryDark)
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         } else if (state.errorMessage != null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = state.errorMessage, color = Color.Red, textAlign = TextAlign.Center)
+                    Text(text = state.errorMessage, color = MaterialTheme.colorScheme.error, textAlign = TextAlign.Center)
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = { onEvent(CamisetaDetailEvent.RetryLoading) }) {
                         Text("Reintentar")
@@ -152,7 +151,7 @@ fun CamisetaDetailContent(
             .verticalScroll(scrollState)
             .padding(paddingValues)
             .padding(horizontal = 24.dp)
-            .background(Color(0xFFF9F9FB))
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -161,7 +160,7 @@ fun CamisetaDetailContent(
                 .fillMaxWidth()
                 .height(300.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFFF0F0F0)),
+                .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
             val imageUrl = camiseta.imagenUrl.takeIf { it?.isNotBlank() == true }
@@ -187,14 +186,14 @@ fun CamisetaDetailContent(
             text = camiseta.nombre,
             fontWeight = FontWeight.Bold,
             fontSize = 22.sp,
-            color = Color(0xFF07152B)
+            color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = format.format(camiseta.precio),
             fontWeight = FontWeight.Black,
             fontSize = 22.sp,
-            color = Color(0xFF07152B)
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -202,7 +201,7 @@ fun CamisetaDetailContent(
         Text(
             text = camiseta.descripcion,
             fontSize = 14.sp,
-            color = Color.DarkGray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             lineHeight = 20.sp
         )
 
@@ -214,7 +213,7 @@ fun CamisetaDetailContent(
                 text = "Talla: ${selectedSize ?: ""}",
                 fontWeight = FontWeight.Bold,
                 fontSize = 13.sp,
-                color = Color(0xFF07152B)
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -263,7 +262,7 @@ fun CamisetaDetailContent(
                 text = "Disponible",
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
-                color = Color(0xFF2E7D32) // Greenish
+                color = MaterialTheme.colorScheme.secondary
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -290,13 +289,13 @@ fun CamisetaDetailContent(
                 Text(
                     text = "Solo quedan $stockDisponible unidades en stock.",
                     fontSize = 11.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {
                 Text(
                     text = "Selecciona una talla para ver el stock disponible.",
                     fontSize = 11.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -308,14 +307,14 @@ fun CamisetaDetailContent(
             Icon(
                 imageVector = Icons.Outlined.LocalShipping,
                 contentDescription = null,
-                tint = Color.Gray,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(16.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "Envío gratis en pedidos superiores a $150",
                 fontSize = 12.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
@@ -325,14 +324,14 @@ fun CamisetaDetailContent(
             Icon(
                 imageVector = Icons.Outlined.CheckCircleOutline,
                 contentDescription = null,
-                tint = Color.Gray,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(16.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "Producto 100% auténtico con licencia oficial",
                 fontSize = 12.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
@@ -343,20 +342,20 @@ fun CamisetaDetailContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = primaryDark),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             shape = RoundedCornerShape(12.dp),
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp)
         ) {
             Icon(
                 imageVector = Icons.Outlined.ShoppingCart,
                 contentDescription = null,
-                tint = Color.Black,
+                tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = "Añadir al Carrito",
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onPrimary,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
@@ -390,11 +389,11 @@ fun QuantityDropdown(
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
             },
             colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color(0xFFF1F5F9),
-                unfocusedContainerColor = Color(0xFFF1F5F9),
-                disabledContainerColor = Color(0xFFF1F5F9),
-                focusedBorderColor = Color(0xFFE2E8F0),
-                unfocusedBorderColor = Color(0xFFE2E8F0)
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                focusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant
             ),
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier
@@ -436,25 +435,25 @@ fun SizeChip(
     onClick: () -> Unit
 ) {
     val borderColor = when {
-        !isEnabled -> Color(0xFFE2E8F0)
+        !isEnabled -> MaterialTheme.colorScheme.outlineVariant
         isError -> MaterialTheme.colorScheme.error
-        isSelected -> primaryDark
-        else -> Color(0xFFE2E8F0)
+        isSelected -> MaterialTheme.colorScheme.primary
+        else -> MaterialTheme.colorScheme.outlineVariant
     }
 
     val borderWidth = if (isError || isSelected) 2.dp else 1.dp
     
     val backgroundColor = when {
-        !isEnabled -> Color(0xFFF1F5F9)
-        isSelected -> Color(0xFFFFF7E6)
-        else -> Color.White
+        !isEnabled -> MaterialTheme.colorScheme.surfaceVariant
+        isSelected -> MaterialTheme.colorScheme.primaryContainer
+        else -> MaterialTheme.colorScheme.surface
     }
 
     val textColor = when {
-        !isEnabled -> Color.LightGray
+        !isEnabled -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
         isError -> MaterialTheme.colorScheme.error
-        isSelected -> primaryDark
-        else -> Color(0xFF07152B)
+        isSelected -> MaterialTheme.colorScheme.onPrimaryContainer
+        else -> MaterialTheme.colorScheme.onSurface
     }
 
     Box(

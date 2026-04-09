@@ -13,9 +13,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-val AuthYellow = Color(0xFFFFB300)
-val AuthBackground = Color(0xFFF9FAFB)
-val AuthBorder = Color(0xFFE5E7EB)
+
 
 @Composable
 fun AuthTextField(
@@ -33,8 +31,8 @@ fun AuthTextField(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(label, fontWeight = FontWeight.SemiBold, color = Color.DarkGray) },
-        placeholder = { Text(placeholder, color = Color.Gray) },
+        label = { Text(label, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant) },
+        placeholder = { Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant) },
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         visualTransformation = visualTransformation,
@@ -47,13 +45,13 @@ fun AuthTextField(
         },
         shape = RoundedCornerShape(12.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedContainerColor = AuthBackground,
-            focusedContainerColor = AuthBackground,
-            unfocusedBorderColor = AuthBorder,
-            focusedBorderColor = AuthYellow,
-            cursorColor = AuthYellow,
-            focusedLabelColor = AuthYellow,
-            unfocusedLabelColor = Color.DarkGray,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            cursorColor = MaterialTheme.colorScheme.primary,
+            focusedLabelColor = MaterialTheme.colorScheme.primary,
+            unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
             errorBorderColor = MaterialTheme.colorScheme.error,
             errorSupportingTextColor = MaterialTheme.colorScheme.error
         ),
@@ -72,9 +70,9 @@ fun AuthButton(
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = AuthYellow,
-            contentColor = Color.Black,
-            disabledContainerColor = Color.LightGray
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
         shape = RoundedCornerShape(12.dp),
         enabled = enabled,

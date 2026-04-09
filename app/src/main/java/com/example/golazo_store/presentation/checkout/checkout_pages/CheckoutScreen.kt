@@ -30,7 +30,6 @@ import coil.compose.AsyncImage
 import com.example.golazo_store.domain.model.CartItem
 import com.example.golazo_store.domain.model.Direccion
 import com.example.golazo_store.domain.model.MetodoPago
-import com.example.golazo_store.ui.theme.primaryDark
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -70,10 +69,10 @@ fun CheckoutScreen(
             text = { Text(state.error!!) },
             confirmButton = {
                 TextButton(onClick = { viewModel.dismissError() }) {
-                    Text("OK", color = primaryDark, fontWeight = FontWeight.Bold)
+                    Text("OK", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                 }
             },
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         )
     }
 
@@ -103,7 +102,7 @@ fun CheckoutBodyScreen(
                         text = "Finalizar Compra",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = Color(0xFF07152B)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -111,16 +110,16 @@ fun CheckoutBodyScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "ATRÁS",
-                            tint = Color(0xFF07152B)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
         bottomBar = {
             Surface(
-                color = Color.White,
+                color = MaterialTheme.colorScheme.surface,
                 shadowElevation = 8.dp,
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -133,8 +132,8 @@ fun CheckoutBodyScreen(
                         onClick = onConfirmOrder,
                         enabled = !state.isPlacingOrder && state.cartItems.isNotEmpty(),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = primaryDark,
-                            disabledContainerColor = Color.LightGray
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant
                         ),
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier
@@ -142,12 +141,12 @@ fun CheckoutBodyScreen(
                             .height(56.dp)
                     ) {
                         if (state.isPlacingOrder) {
-                            CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                            CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(24.dp))
                         } else {
                             Text(
                                 "Confirmar Pedido ->",
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 fontSize = 16.sp
                             )
                         }
@@ -155,12 +154,12 @@ fun CheckoutBodyScreen(
                 }
             }
         },
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
 
         if (state.isLoadingData) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = primaryDark)
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         } else {
             LazyColumn(
@@ -207,7 +206,7 @@ fun CheckoutBodyScreen(
                         text = "TU PEDIDO",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF6B7A90),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         letterSpacing = 1.sp
                     )
                     Spacer(modifier = Modifier.height(12.dp))
@@ -224,7 +223,7 @@ fun CheckoutBodyScreen(
                         text = "RESUMEN DEL PEDIDO",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF6B7A90),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         letterSpacing = 1.sp
                     )
                     Spacer(modifier = Modifier.height(16.dp))
@@ -234,13 +233,13 @@ fun CheckoutBodyScreen(
                     }
 
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(text = "Subtotal", color = Color(0xFF6B7A90), fontSize = 14.sp)
-                        Text(text = format.format(state.subtotal), fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Text(text = "Subtotal", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                        Text(text = format.format(state.subtotal), fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
                     }
                     Spacer(modifier = Modifier.height(12.dp))
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(text = "Envío", color = Color(0xFF6B7A90), fontSize = 14.sp)
-                        Text(text = "Gratis", color = Color(0xFF4CAF50), fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Text(text = "Envío", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                        Text(text = "Gratis", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(
@@ -248,8 +247,8 @@ fun CheckoutBodyScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "Total", fontWeight = FontWeight.ExtraBold, fontSize = 18.sp, color = Color(0xFF07152B))
-                        Text(text = format.format(state.total), fontWeight = FontWeight.ExtraBold, fontSize = 22.sp, color = Color(0xFF07152B))
+                        Text(text = "Total", fontWeight = FontWeight.ExtraBold, fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
+                        Text(text = format.format(state.total), fontWeight = FontWeight.ExtraBold, fontSize = 22.sp, color = MaterialTheme.colorScheme.onSurface)
                     }
                 }
             }
@@ -268,14 +267,14 @@ fun SectionHeader(title: String, actionText: String, onAction: () -> Unit) {
             text = title,
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF6B7A90),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             letterSpacing = 1.sp
         )
         Text(
             text = actionText,
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold,
-            color = primaryDark,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable { onAction() }
         )
     }
@@ -285,7 +284,7 @@ fun SectionHeader(title: String, actionText: String, onAction: () -> Unit) {
 fun AddressCard(direccion: Direccion) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8F9FA)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         elevation = CardDefaults.cardElevation(0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -296,10 +295,10 @@ fun AddressCard(direccion: Direccion) {
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(Color(0xFFFFF7DE), RoundedCornerShape(8.dp)),
+                    .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Outlined.LocationOn, contentDescription = null, tint = primaryDark)
+                Icon(Icons.Outlined.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column {
@@ -307,13 +306,13 @@ fun AddressCard(direccion: Direccion) {
                     text = direccion.nombreDireccion,
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
-                    color = Color(0xFF07152B)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "${direccion.calleNumero}\n${direccion.codigoPostal} ${direccion.ciudad}, ${direccion.provincia}",
                     fontSize = 13.sp,
-                    color = Color(0xFF6B7A90)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -324,7 +323,7 @@ fun AddressCard(direccion: Direccion) {
 fun PaymentCard(metodoPago: MetodoPago) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFF8F9FA)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         elevation = CardDefaults.cardElevation(0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -335,12 +334,12 @@ fun PaymentCard(metodoPago: MetodoPago) {
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(Color(0xFF1E3A8A), RoundedCornerShape(4.dp)),
+                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = if (metodoPago.tipoTarjeta.lowercase().contains("visa")) "VISA" else "MC",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Black,
                     fontSize = 10.sp
                 )
@@ -351,17 +350,17 @@ fun PaymentCard(metodoPago: MetodoPago) {
                     text = "${metodoPago.tipoTarjeta} terminada en ${metodoPago.numeroOculto.takeLast(4)}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 15.sp,
-                    color = Color(0xFF07152B)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "Expira ${metodoPago.mesExpiracion}/${metodoPago.anioExpiracion}",
                     fontSize = 13.sp,
-                    color = Color(0xFF6B7A90)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
-            Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF9EA7B5))
+            Icon(Icons.Default.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
@@ -380,7 +379,7 @@ fun CheckoutCartItem(item: CartItem) {
         Box(
             modifier = Modifier
                 .size(60.dp)
-                .background(Color(0xFFF5F6F8), RoundedCornerShape(8.dp)),
+                .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.Center
         ) {
             AsyncImage(
@@ -396,7 +395,7 @@ fun CheckoutCartItem(item: CartItem) {
                 text = item.nombre,
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
-                color = Color(0xFF07152B),
+                color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -404,14 +403,14 @@ fun CheckoutCartItem(item: CartItem) {
             Text(
                 text = "Talla: ${item.talla} • Cantidad: ${item.cantidad}",
                 fontSize = 12.sp,
-                color = Color(0xFF6B7A90)
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = format.format(item.precio),
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 15.sp,
-                color = Color(0xFF07152B)
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -421,12 +420,12 @@ fun CheckoutCartItem(item: CartItem) {
 fun EmptyCardPlaceholder(message: String) {
     Card(
         shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, Color(0xFFEEEEEE)),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier.fillMaxWidth()
     ) {
         Box(modifier = Modifier.padding(16.dp), contentAlignment = Alignment.Center) {
-            Text(message, color = Color.Gray)
+            Text(message, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

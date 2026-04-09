@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.golazo_store.ui.theme.primaryDark
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun PaymentAddScreen(
@@ -75,7 +75,7 @@ fun PaymentAddBodyScreen(
                         text = "Agregar Métodos de Pago",
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.sp,
-                        color = Color(0xFF07152B)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -83,16 +83,16 @@ fun PaymentAddBodyScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "ATRÁS",
-                            tint = Color(0xFF07152B)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFF9F9FB)
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
-        containerColor = Color(0xFFF9F9FB)
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -169,12 +169,12 @@ fun PaymentAddBodyScreen(
                     Checkbox(
                         checked = state.esPrincipal,
                         onCheckedChange = { onEvent(PaymentAddEvent.OnEsPrincipalChange(it)) },
-                        colors = CheckboxDefaults.colors(checkedColor = primaryDark)
+                        colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary)
                     )
                     Text(
                         text = "Guardar esta tarjeta como principal",
                         fontSize = 14.sp,
-                        color = Color(0xFF6B7A90)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -187,24 +187,24 @@ fun PaymentAddBodyScreen(
                         .fillMaxWidth()
                         .height(56.dp),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryDark),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     enabled = !state.isLoading
                 ) {
                     if (state.isLoading) {
                         CircularProgressIndicator(
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(24.dp)
                         )
                     } else {
                         Icon(
                             imageVector = Icons.Default.CreditCard,
                             contentDescription = "Guardar",
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "Guardar Tarjeta",
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         )
@@ -248,7 +248,7 @@ fun VisualCreditCard(state: PaymentAddUiState) {
             .clip(RoundedCornerShape(16.dp))
             .background(
                 brush = Brush.linearGradient(
-                    colors = listOf(Color(0xFF1E243A), Color(0xFF111424))
+                    colors = listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.tertiary)
                 )
             )
             .padding(24.dp)
@@ -261,19 +261,19 @@ fun VisualCreditCard(state: PaymentAddUiState) {
             ) {
                 Text(
                     text = "GOLAZO STORE PLATINUM",
-                    color = Color.White.copy(alpha = 0.7f),
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f),
                     fontSize = 10.sp,
                     letterSpacing = 1.sp,
                     fontWeight = FontWeight.SemiBold
                 )
                 Box(
                     modifier = Modifier
-                        .background(Color.White.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
+                        .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f), RoundedCornerShape(4.dp))
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = cardType,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -286,7 +286,7 @@ fun VisualCreditCard(state: PaymentAddUiState) {
             Icon(
                 imageVector = Icons.Default.Wifi,
                 contentDescription = null,
-                tint = primaryDark,
+                tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.size(32.dp).offset(y = (-8).dp)
             )
 
@@ -294,7 +294,7 @@ fun VisualCreditCard(state: PaymentAddUiState) {
 
             Text(
                 text = displayNum,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 fontSize = 20.sp,
                 letterSpacing = 3.sp,
                 fontWeight = FontWeight.Medium
@@ -310,13 +310,13 @@ fun VisualCreditCard(state: PaymentAddUiState) {
                 Column {
                     Text(
                         text = "TITULAR DE LA TARJETA",
-                        color = Color.White.copy(alpha = 0.5f),
+                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
                         fontSize = 8.sp,
                         letterSpacing = 0.5.sp
                     )
                     Text(
                         text = displayHolder,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         letterSpacing = 1.sp
@@ -327,13 +327,13 @@ fun VisualCreditCard(state: PaymentAddUiState) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "VENCE",
-                            color = Color.White.copy(alpha = 0.5f),
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
                             fontSize = 8.sp,
                             letterSpacing = 0.5.sp
                         )
                         Text(
                             text = displayExp,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -341,13 +341,13 @@ fun VisualCreditCard(state: PaymentAddUiState) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
                             text = "CVV",
-                            color = Color.White.copy(alpha = 0.5f),
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f),
                             fontSize = 8.sp,
                             letterSpacing = 0.5.sp
                         )
                         Text(
                             text = displayCvv,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -375,18 +375,18 @@ fun PaymentTextField(
             text = label,
             fontWeight = FontWeight.Bold,
             fontSize = 13.sp,
-            color = Color(0xFF07152B)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            placeholder = { Text(placeholder, color = Color.Gray) },
+            placeholder = { Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)) },
             leadingIcon = {
                 Icon(
                     imageVector = leadingIcon,
                     contentDescription = null,
-                    tint = Color.Gray
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                 )
             },
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
@@ -400,11 +400,12 @@ fun PaymentTextField(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = Color.White,
-                focusedContainerColor = Color.White,
-                unfocusedBorderColor = Color(0xFFE2E8F0),
-                focusedBorderColor = primaryDark,
-                cursorColor = primaryDark,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                unfocusedBorderColor = Color.Transparent,
+                focusedBorderColor = Color.Transparent,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
                 errorBorderColor = MaterialTheme.colorScheme.error,
                 errorSupportingTextColor = MaterialTheme.colorScheme.error
             ),

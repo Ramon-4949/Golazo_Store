@@ -31,7 +31,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.golazo_store.domain.model.PedidoAdmin
-import com.example.golazo_store.ui.theme.primaryDark
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -59,10 +58,10 @@ fun MisPedidosScreen(
                         Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -71,13 +70,13 @@ fun MisPedidosScreen(
         ) {
             TabRow(
                 selectedTabIndex = state.currentTab,
-                containerColor = Color.White,
-                contentColor = primaryDark,
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.primary,
                 indicator = { tabPositions ->
                     if (state.currentTab < tabPositions.size) {
                         TabRowDefaults.Indicator(
                             Modifier.tabIndicatorOffset(tabPositions[state.currentTab]),
-                            color = primaryDark
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -90,7 +89,7 @@ fun MisPedidosScreen(
                             Text(
                                 text = title,
                                 fontWeight = if (state.currentTab == index) FontWeight.Bold else FontWeight.Normal,
-                                color = if (state.currentTab == index) Color(0xFF1E2329) else Color.Gray
+                                color = if (state.currentTab == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     )
@@ -99,11 +98,11 @@ fun MisPedidosScreen(
 
             if (state.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = primaryDark)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else if (state.error != null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = state.error!!, color = Color.Red)
+                    Text(text = state.error!!, color = MaterialTheme.colorScheme.error)
                 }
             } else {
                 val filteredPedidos = state.pedidos.filter { pedido ->
@@ -163,22 +162,22 @@ fun PedidoCard(
     val isEntregado = pedido.estado.equals("ENTREGADO", ignoreCase = true) || pedido.estado.equals("COMPLETADO", ignoreCase = true)
 
     val badgeColor = when {
-        isEnCamino -> Color(0xFFFFF7E6)
-        isEntregado -> Color(0xFFE6F4EA)
-        else -> Color(0xFFF3F4F6)
+        isEnCamino -> MaterialTheme.colorScheme.primaryContainer
+        isEntregado -> MaterialTheme.colorScheme.secondaryContainer
+        else -> MaterialTheme.colorScheme.surfaceVariant
     }
     val badgeTextColor = when {
-        isEnCamino -> Color(0xFFEAA121)
-        isEntregado -> Color(0xFF28A745)
-        else -> Color.Gray
+        isEnCamino -> MaterialTheme.colorScheme.onPrimaryContainer
+        isEntregado -> MaterialTheme.colorScheme.onSecondaryContainer
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
     Card(
         modifier = Modifier.fillMaxWidth().clickable { onDetailClicked() },
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, Color(0xFFEEEEEE))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -206,7 +205,7 @@ fun PedidoCard(
                     text = format.format(pedido.total),
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
             
@@ -216,12 +215,12 @@ fun PedidoCard(
                 text = "Pedido ${if(pedido.numeroPedido.isNotEmpty()) "#${pedido.numeroPedido}" else "#ORD-${pedido.id}"}",
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = "$formattedDate • $artText",
                 fontSize = 12.sp,
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             
             Spacer(modifier = Modifier.height(12.dp))
@@ -233,7 +232,7 @@ fun PedidoCard(
                         modifier = Modifier
                             .size(50.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFFF5F5F5)),
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
                         contentAlignment = Alignment.Center
                     ) {
                          val imageUrl = item.camiseta?.imagenUrl
@@ -250,7 +249,7 @@ fun PedidoCard(
                              )
                          } else {
                              // Fallback if no image
-                             Text("Img", color = Color.Gray, fontSize = 10.sp)
+                             Text("Img", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 10.sp)
                          }
                     }
                 }
@@ -264,35 +263,35 @@ fun PedidoCard(
                     Button(
                         onClick = onTrackClicked,
                         modifier = Modifier.weight(1f).height(48.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = primaryDark),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Icon(Icons.Default.LocalShipping, contentDescription = null, tint = Color.Black, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.LocalShipping, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Rastrear", color = Color.Black, fontWeight = FontWeight.Bold)
+                        Text("Rastrear", color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
                     }
                     Button(
                         onClick = { /* More actions */ },
                         modifier = Modifier.size(48.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface),
                         shape = RoundedCornerShape(8.dp),
                         contentPadding = PaddingValues(0.dp),
-                        border = BorderStroke(1.dp, Color(0xFFEEEEEE))
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
                     ) {
-                        Icon(Icons.Default.MoreHoriz, contentDescription = "Más", tint = Color.Black)
+                        Icon(Icons.Default.MoreHoriz, contentDescription = "Más", tint = MaterialTheme.colorScheme.onSurface)
                     }
                 }
             } else {
                 Button(
                     onClick = if (isEntregado) { { /* Buy again action */ } } else onDetailClicked,
                     modifier = Modifier.fillMaxWidth().height(48.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF8F9FA)),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
                     shape = RoundedCornerShape(8.dp),
                     elevation = ButtonDefaults.buttonElevation(0.dp)
                 ) {
                     Text(
                         text = if (isEntregado) "Comprar de nuevo" else "Ver detalles",
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Bold
                     )
                 }

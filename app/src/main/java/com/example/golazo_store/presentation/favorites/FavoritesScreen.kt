@@ -17,7 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.example.golazo_store.ui.theme.primaryDark
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -78,7 +77,7 @@ fun FavoritesBodyScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(horizontal = 16.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
@@ -92,7 +91,7 @@ fun FavoritesBodyScreen(
                     text = "${state.favoriteItems.size} artículos guardados",
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
-                    color = Color.DarkGray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 
                 Row(
@@ -102,7 +101,7 @@ fun FavoritesBodyScreen(
                     Icon(
                         imageVector = Icons.Default.FilterList,
                         contentDescription = "Filtrar",
-                        tint = primaryDark,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
@@ -110,7 +109,7 @@ fun FavoritesBodyScreen(
                         text = "Filtrar",
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
-                        color = primaryDark
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -119,11 +118,11 @@ fun FavoritesBodyScreen(
 
             if (state.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = primaryDark)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else if (state.favoriteItems.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No hay artículos guardados.", color = Color.Gray)
+                    Text("No hay artículos guardados.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
                 val format = NumberFormat.getCurrencyInstance(Locale.getDefault())
@@ -172,7 +171,7 @@ fun FavoritesTopBar(
                 fontSize = 20.sp,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
-                color = Color(0xFF07152B)
+                color = MaterialTheme.colorScheme.onSurface
             )
         },
         actions = {
@@ -184,8 +183,8 @@ fun FavoritesTopBar(
                     badge = {
                         if (cartItemCount > 0) {
                             Badge(
-                                containerColor = primaryDark,
-                                contentColor = Color.Black
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             ) {
                                 Text(text = cartItemCount.toString(), fontWeight = FontWeight.Bold)
                             }
@@ -195,13 +194,13 @@ fun FavoritesTopBar(
                     Icon(
                         imageVector = Icons.Outlined.ShoppingCart,
                         contentDescription = "Cart",
-                        tint = Color(0xFF07152B)
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         )
     )
 }

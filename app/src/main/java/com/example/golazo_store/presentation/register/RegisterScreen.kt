@@ -25,11 +25,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.Golazo_Store.R
-import com.example.golazo_store.presentation.components.AuthButton
 import com.example.golazo_store.presentation.components.AuthTextField
-import com.example.golazo_store.presentation.components.AuthYellow
+import com.example.golazo_store.presentation.components.AuthButton
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     onNavigateBack: () -> Unit,
@@ -80,15 +79,15 @@ fun RegisterScreen(
             Image(
                 painter = painterResource(id = R.drawable.icon),
                 contentDescription = "Golazo Store Logo",
-                modifier = Modifier.size(180.dp).padding(top = 16.dp)
+                modifier = Modifier.size(220.dp).padding(top = 16.dp)
             )
             
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Únete a la mejor comunidad de fútbol y obtén beneficios exclusivos.",
+                text = "¡Bienvenidos a Golazo Store!\nÚnete a la mejor comunidad de fútbol y obtén beneficios exclusivos.",
                 fontSize = 14.sp,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
 
@@ -106,7 +105,7 @@ fun RegisterScreen(
                     label = "Nombre completo",
                     placeholder = "Juan Pérez",
                     error = state.nombreError,
-                    leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = Color.Gray) }
+                    leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }
                 )
 
                 // Email
@@ -117,7 +116,7 @@ fun RegisterScreen(
                     placeholder = "ejemplo@correo.com",
                     error = state.emailError,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = Color.Gray) }
+                    leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }
                 )
 
                 // Password
@@ -129,11 +128,11 @@ fun RegisterScreen(
                     error = state.passwordError,
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = Color.Gray) },
+                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
                     trailingIcon = {
                         val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(imageVector = image, contentDescription = null, tint = Color.Gray)
+                            Icon(imageVector = image, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 )
@@ -147,7 +146,7 @@ fun RegisterScreen(
                     error = state.confirmPasswordError,
                     visualTransformation = if (confirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    leadingIcon = { Icon(Icons.Default.Refresh, contentDescription = null, tint = Color.Gray) },
+                    leadingIcon = { Icon(Icons.Default.Refresh, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
                     trailingIcon = {
                     }
                 )
@@ -156,7 +155,7 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             if (state.isLoading) {
-                CircularProgressIndicator(color = AuthYellow)
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             } else {
                 AuthButton(
                     text = "Crear cuenta",
@@ -170,10 +169,10 @@ fun RegisterScreen(
                 modifier = Modifier.padding(bottom = 16.dp, top = 24.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(text = "¿Ya tienes una cuenta? ", color = Color.Gray)
+                Text(text = "¿Ya tienes una cuenta? ", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(
                     text = "Inicia sesión aquí",
-                    color = AuthYellow,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable { onNavigateBack() }
                 )

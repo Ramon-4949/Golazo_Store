@@ -32,7 +32,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.golazo_store.domain.model.CartItem
-import com.example.golazo_store.ui.theme.primaryDark
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -79,7 +78,7 @@ fun CartBodyScreen(
                         text = "Carrito de Compras",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = Color(0xFF07152B),
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
@@ -89,7 +88,7 @@ fun CartBodyScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "ATRÁS",
-                            tint = Color(0xFF07152B)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
@@ -97,15 +96,15 @@ fun CartBodyScreen(
                     Spacer(modifier = Modifier.width(48.dp))
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
-        containerColor = Color(0xFFF9F9FB)
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         if (state.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = primaryDark)
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         } else if (state.items.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -113,15 +112,15 @@ fun CartBodyScreen(
                     Text(
                         text = "Tu carrito está vacío",
                         fontSize = 16.sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
                         onClick = onBack,
-                        colors = ButtonDefaults.buttonColors(containerColor = primaryDark),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Volver a la tienda", color = Color.Black, fontWeight = FontWeight.Bold)
+                        Text("Volver a la tienda", color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -149,7 +148,7 @@ fun CartBodyScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White)
+                        .background(MaterialTheme.colorScheme.surface)
                         .padding(16.dp)
                 ) {
                     Button(
@@ -157,20 +156,20 @@ fun CartBodyScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = primaryDark),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(8.dp),
                         elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
                     ) {
                         Text(
                             text = "Finalizar Compra ",
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp
                         )
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = "Next",
-                            tint = Color.Black,
+                            tint = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -190,7 +189,7 @@ fun CartItemCard(
 
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -205,7 +204,7 @@ fun CartItemCard(
                 modifier = Modifier
                     .size(80.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFFF0F0F0)),
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
                 val fullUrl = if (item.imagenUrl.startsWith("http")) item.imagenUrl else "http://golazostoreapi.somee.com${item.imagenUrl}"
@@ -237,7 +236,7 @@ fun CartItemCard(
                         text = item.nombre,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
-                        color = Color(0xFF07152B),
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f)
@@ -249,7 +248,7 @@ fun CartItemCard(
                         Icon(
                             imageVector = Icons.Outlined.DeleteOutline,
                             contentDescription = "Eliminar",
-                            tint = Color(0xFFD32F2F),
+                            tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -260,7 +259,7 @@ fun CartItemCard(
                 Text(
                     text = "Talla: ${item.talla} | Cantidad: ${item.cantidad}",
                     fontSize = 12.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -274,15 +273,15 @@ fun CartItemCard(
                         text = format.format(item.precio),
                         fontWeight = FontWeight.Black,
                         fontSize = 16.sp,
-                        color = Color(0xFF07152B)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     // Quantity Controller
                     Row(
                         modifier = Modifier
-                            .border(1.dp, Color.LightGray, RoundedCornerShape(6.dp))
+                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(6.dp))
                             .clip(RoundedCornerShape(6.dp))
-                            .background(Color.White),
+                            .background(MaterialTheme.colorScheme.surface),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Box(
@@ -290,12 +289,13 @@ fun CartItemCard(
                                 .clickable { onEvent(CartEvent.DecrementQuantity(item.cartId, item.cantidad)) }
                                 .padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
-                            Text("-", color = Color.Gray, fontWeight = FontWeight.Bold)
+                            Text("-", color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Bold)
                         }
                         Text(
                             text = item.cantidad.toString(),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.padding(horizontal = 4.dp)
                         )
                         Box(
@@ -303,7 +303,7 @@ fun CartItemCard(
                                 .clickable { onEvent(CartEvent.IncrementQuantity(item.cartId, item.cantidad)) }
                                 .padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
-                            Text("+", color = Color.Gray, fontWeight = FontWeight.Bold)
+                            Text("+", color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -321,13 +321,13 @@ fun CartSummary(state: CartUiState) {
         text = "Resumen de compra",
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
-        color = Color(0xFF07152B),
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier.padding(bottom = 12.dp)
     )
 
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -340,8 +340,8 @@ fun CartSummary(state: CartUiState) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Subtotal", color = Color.Gray, fontSize = 14.sp)
-                Text(format.format(state.subtotal), color = Color.DarkGray, fontSize = 14.sp)
+                Text("Subtotal", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                Text(format.format(state.subtotal), color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -350,20 +350,20 @@ fun CartSummary(state: CartUiState) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Costo de envío", color = Color.Gray, fontSize = 14.sp)
-                Text("Gratis", color = Color(0xFF388E3C), fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Text("Costo de envío", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 14.sp)
+                Text("Gratis", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            Divider(color = Color.LightGray.copy(alpha = 0.5f))
+            Divider(color = MaterialTheme.colorScheme.outlineVariant)
             Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Total", fontWeight = FontWeight.Black, fontSize = 16.sp, color = Color(0xFF07152B))
-                Text(format.format(state.total), fontWeight = FontWeight.Black, fontSize = 16.sp, color = Color(0xFF07152B))
+                Text("Total", fontWeight = FontWeight.Black, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
+                Text(format.format(state.total), fontWeight = FontWeight.Black, fontSize = 16.sp, color = MaterialTheme.colorScheme.onSurface)
             }
         }
     }

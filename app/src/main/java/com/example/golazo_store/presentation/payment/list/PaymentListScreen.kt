@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.golazo_store.domain.model.MetodoPago
-import com.example.golazo_store.ui.theme.primaryDark
 
 @Composable
 fun PaymentListScreen(
@@ -52,15 +51,15 @@ fun PaymentListScreen(
                         paymentToDelete = null
                     }
                 ) {
-                    Text("Eliminar", color = Color(0xFFE53935), fontWeight = FontWeight.Bold)
+                    Text("Eliminar", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { paymentToDelete = null }) {
-                    Text("Cancelar", color = Color.Gray)
+                    Text("Cancelar", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             },
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         )
     }
 
@@ -88,7 +87,7 @@ fun PaymentListBodyScreen(
                         text = "Métodos de Pago",
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = Color(0xFF07152B)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -96,19 +95,19 @@ fun PaymentListBodyScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "ATRÁS",
-                            tint = Color(0xFF07152B)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onNavigateToAdd,
-                containerColor = primaryDark,
+                containerColor = MaterialTheme.colorScheme.primary,
                 shape = CircleShape,
                 modifier = Modifier.padding(bottom = 50.dp)
             ) {
@@ -116,12 +115,12 @@ fun PaymentListBodyScreen(
                     Icon(
                         imageVector = Icons.Default.CreditCard,
                         contentDescription = "Agregar Tarjeta",
-                        tint = Color.Black
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = null,
-                        tint = Color.Black,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier
                             .size(14.dp)
                             .align(Alignment.BottomEnd)
@@ -130,7 +129,7 @@ fun PaymentListBodyScreen(
                 }
             }
         },
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -144,18 +143,18 @@ fun PaymentListBodyScreen(
                 text = "TARJETAS GUARDADAS",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF9E9E9E),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 letterSpacing = 1.sp
             )
             Spacer(modifier = Modifier.height(16.dp))
 
             if (state.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = primaryDark)
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             } else if (state.payments.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("No tienes tarjetas guardadas.", color = Color.Gray)
+                    Text("No tienes tarjetas guardadas.", color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             } else {
                 LazyColumn(
@@ -184,9 +183,9 @@ fun PaymentCardItem(
 
     Card(
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = if (isMain) 4.dp else 2.dp),
-        border = if (isMain) BorderStroke(2.dp, primaryDark) else BorderStroke(1.dp, Color(0xFFEEEEEE)),
+        border = if (isMain) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -200,12 +199,12 @@ fun PaymentCardItem(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFFF5F6F8)),
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = if (payment.tipoTarjeta.lowercase().contains("visa")) "VISA" else "MC",
-                    color = Color(0xFF1E3A8A),
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Black,
                     fontSize = 12.sp
                 )
@@ -223,7 +222,7 @@ fun PaymentCardItem(
                         text = payment.numeroOculto,
                         fontWeight = FontWeight.Bold,
                         fontSize = 15.sp,
-                        color = Color(0xFF07152B),
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,
                         overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f)
@@ -232,14 +231,14 @@ fun PaymentCardItem(
                         Spacer(modifier = Modifier.width(8.dp))
                         Box(
                             modifier = Modifier
-                                .background(primaryDark, RoundedCornerShape(12.dp))
+                                .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
                                 .padding(horizontal = 8.dp, vertical = 2.dp)
                         ) {
                             Text(
                                 text = "PRINCIPAL",
                                 fontSize = 9.sp,
                                 fontWeight = FontWeight.ExtraBold,
-                                color = Color.Black,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 maxLines = 1,
                                 softWrap = false
                             )
@@ -250,7 +249,7 @@ fun PaymentCardItem(
                 Text(
                     text = "Vence ${payment.mesExpiracion}/${payment.anioExpiracion}",
                     fontSize = 13.sp,
-                    color = Color(0xFF6B7A90)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -266,7 +265,7 @@ fun PaymentCardItem(
                 Icon(
                     imageVector = Icons.Outlined.DeleteOutline,
                     contentDescription = "Eliminar",
-                    tint = Color(0xFFE53935),
+                    tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier.size(24.dp)
                 )
             }

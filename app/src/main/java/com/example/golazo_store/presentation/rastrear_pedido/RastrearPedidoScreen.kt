@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.golazo_store.domain.model.PedidoAdmin
-import com.example.golazo_store.ui.theme.primaryDark
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -48,18 +47,18 @@ fun RastrearPedidoScreen(
                         Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         if (state.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = primaryDark)
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         } else if (state.error != null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = state.error!!, color = Color.Red)
+                Text(text = state.error!!, color = MaterialTheme.colorScheme.error)
             }
         } else if (state.pedido != null) {
             val pedido = state.pedido!!
@@ -73,7 +72,7 @@ fun RastrearPedidoScreen(
                 Text(
                     text = "ESTADO DEL ENVÍO",
                     fontSize = 10.sp,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
@@ -81,7 +80,7 @@ fun RastrearPedidoScreen(
                     text = "Pedido ${if(pedido.numeroPedido.isNotEmpty()) "#${pedido.numeroPedido}" else "#ORD-${pedido.id}"}",
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -89,32 +88,32 @@ fun RastrearPedidoScreen(
                     text = "Historial del envío",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 
                 OrderTimeline(pedido)
                 
                 Spacer(modifier = Modifier.weight(1f))
-                Divider(color = Color(0xFFEEEEEE), thickness = 1.dp)
+                Divider(color = MaterialTheme.colorScheme.outlineVariant, thickness = 1.dp)
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 // Address Section
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.LocationOn, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(20.dp))
+                    Icon(Icons.Default.LocationOn, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Dirección de entrega", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                    Text("Dirección de entrega", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFFF8F9FA), RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
                         .padding(16.dp)
                 ) {
                     Column {
                         val nombreCliente = pedido.usuario?.nombre?.takeIf { it.isNotBlank() } ?: "Cliente General"
-                        Text(text = nombreCliente, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Black)
+                        Text(text = nombreCliente, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
                         Spacer(modifier = Modifier.height(4.dp))
                         
                         val direccionText = if (pedido.direccion != null) {
@@ -124,7 +123,7 @@ fun RastrearPedidoScreen(
                         } else {
                             "Dirección no disponible"
                         }
-                        Text(text = direccionText, fontSize = 14.sp, color = Color.Gray)
+                        Text(text = direccionText, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
                 Spacer(modifier = Modifier.height(32.dp))
@@ -216,28 +215,28 @@ fun TimelineItem(
                     .clip(CircleShape)
                     .background(
                         when {
-                            isCanceled -> Color(0xFFFFEBEE) // Light Red
-                            isCurrent && isTruck -> Color(0xFFFFF7E6) // Light orange logic 
-                            title == "Completado" && isCompleted -> Color(0xFFE8F5E9) // Light Green
-                            isCompleted || isCurrent -> Color(0xFF212529) // Dark fulfilled
-                            else -> Color.White
+                            isCanceled -> MaterialTheme.colorScheme.errorContainer
+                            isCurrent && isTruck -> MaterialTheme.colorScheme.primaryContainer
+                            title == "Completado" && isCompleted -> MaterialTheme.colorScheme.secondaryContainer
+                            isCompleted || isCurrent -> MaterialTheme.colorScheme.primary
+                            else -> MaterialTheme.colorScheme.surface
                         }
                     )
                     .border(
                         width = 1.dp,
-                        color = if (isCompleted || isCurrent) Color.Transparent else Color(0xFFDEE2E6),
+                        color = if (isCompleted || isCurrent) Color.Transparent else MaterialTheme.colorScheme.outlineVariant,
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
             ) {
                 if (isCanceled) {
-                    Icon(Icons.Default.Close, contentDescription = null, tint = Color.Red, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.Close, contentDescription = null, tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(14.dp))
                 } else if (isCurrent && isTruck) {
-                    Icon(Icons.Default.LocalShipping, contentDescription = null, tint = primaryDark, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.LocalShipping, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(14.dp))
                 } else if (title == "Completado" && isCompleted) {
-                    Icon(Icons.Default.Check, contentDescription = null, tint = Color(0xFF4CAF50), modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.Check, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(14.dp))
                 } else if (isCompleted || isCurrent) {
-                    Icon(Icons.Default.Check, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
+                    Icon(Icons.Default.Check, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.size(14.dp))
                 }
             }
             if (!isLast) {
@@ -245,7 +244,7 @@ fun TimelineItem(
                     modifier = Modifier
                         .width(2.dp)
                         .weight(1f)
-                        .background(if (isCompleted && !isCurrent && !isCanceled) Color(0xFF212529) else Color(0xFFDEE2E6))
+                        .background(if (isCompleted && !isCurrent && !isCanceled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant)
                 )
             }
         }
@@ -258,11 +257,11 @@ fun TimelineItem(
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
                 color = when {
-                    isCanceled -> Color.Red
-                    title == "Completado" && isCompleted -> Color(0xFF4CAF50)
-                    isCurrent && isTruck -> primaryDark
-                    isCompleted || isCurrent -> Color.Black
-                    else -> Color.Gray
+                    isCanceled -> MaterialTheme.colorScheme.error
+                    title == "Completado" && isCompleted -> MaterialTheme.colorScheme.secondary
+                    isCurrent && isTruck -> MaterialTheme.colorScheme.primary
+                    isCompleted || isCurrent -> MaterialTheme.colorScheme.onSurface
+                    else -> MaterialTheme.colorScheme.onSurfaceVariant
                 }
             )
             if (subtitle.isNotEmpty()) {
@@ -270,7 +269,7 @@ fun TimelineItem(
                 Text(
                     text = subtitle,
                     fontSize = 13.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

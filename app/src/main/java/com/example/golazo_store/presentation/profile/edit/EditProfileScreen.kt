@@ -28,7 +28,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.golazo_store.ui.theme.primaryDark
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,12 +72,12 @@ fun EditProfileScreen(
                         viewModel.onEvent(EditProfileEvent.OnEliminarCuenta)
                     }
                 ) {
-                    Text("Eliminar", color = Color.Red)
+                    Text("Eliminar", color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Cancelar", color = Color(0xFF07152B))
+                    Text("Cancelar", color = MaterialTheme.colorScheme.onSurface)
                 }
             }
         )
@@ -92,7 +91,7 @@ fun EditProfileScreen(
                         text = "Editar perfil",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF07152B)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -100,20 +99,20 @@ fun EditProfileScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Atrás",
-                            tint = Color(0xFF07152B)
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         if (state.isLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = primaryDark)
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         } else {
             Column(
@@ -130,14 +129,14 @@ fun EditProfileScreen(
                 Box(
                     modifier = Modifier
                         .size(100.dp)
-                        .background(Color(0xFFF3F4F6), shape = CircleShape),
+                        .background(MaterialTheme.colorScheme.surfaceVariant, shape = CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Default.Person,
                         contentDescription = "Avatar",
                         modifier = Modifier.size(50.dp),
-                        tint = Color(0xFFA0B2C6)
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -145,7 +144,7 @@ fun EditProfileScreen(
                     text = "Actualiza tu información",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF53647A)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 // Inputs
@@ -174,7 +173,7 @@ fun EditProfileScreen(
                 // Action Buttons
                 Button(
                     onClick = { viewModel.onEvent(EditProfileEvent.OnGuardarCambios) },
-                    colors = ButtonDefaults.buttonColors(containerColor = primaryDark),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(24.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -184,7 +183,7 @@ fun EditProfileScreen(
                         text = "Guardar cambios",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF07152B)
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
 
@@ -193,7 +192,7 @@ fun EditProfileScreen(
                         text = "Cancelar",
                         fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF53647A)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -207,7 +206,7 @@ fun EditProfileScreen(
                     Icon(
                         imageVector = Icons.Default.Cancel,
                         contentDescription = "Eliminar",
-                        tint = Color(0xFFE53935),
+                        tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -215,7 +214,7 @@ fun EditProfileScreen(
                         text = "Eliminar cuenta",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFFE53935)
+                        color = MaterialTheme.colorScheme.error
                     )
                 }
                 
@@ -239,13 +238,13 @@ fun EditProfileTextField(
             text = label,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF53647A)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            placeholder = { Text(placeholder, color = Color(0xFFA0B2C6)) },
+            placeholder = { Text(placeholder, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
@@ -256,12 +255,12 @@ fun EditProfileTextField(
                 }
             },
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = Color(0xFFE2E8F0),
-                focusedBorderColor = primaryDark,
-                unfocusedContainerColor = Color(0xFFFAFAFA),
-                focusedContainerColor = Color(0xFFFAFAFA),
-                unfocusedTextColor = Color(0xFF07152B),
-                focusedTextColor = Color(0xFF07152B),
+                unfocusedBorderColor = Color.Transparent,
+                focusedBorderColor = Color.Transparent,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
                 errorBorderColor = MaterialTheme.colorScheme.error,
                 errorSupportingTextColor = MaterialTheme.colorScheme.error
             )
@@ -284,7 +283,7 @@ fun EditProfilePasswordField(
             text = label,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF53647A)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
@@ -295,7 +294,7 @@ fun EditProfilePasswordField(
             singleLine = true,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            placeholder = { Text("••••••••", color = Color(0xFFA0B2C6)) },
+            placeholder = { Text("••••••••", color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha=0.5f)) },
             isError = error != null,
             supportingText = {
                 if (error != null) {
@@ -303,12 +302,12 @@ fun EditProfilePasswordField(
                 }
             },
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = Color(0xFFE2E8F0),
-                focusedBorderColor = primaryDark,
-                unfocusedContainerColor = Color(0xFFFAFAFA),
-                focusedContainerColor = Color(0xFFFAFAFA),
-                unfocusedTextColor = Color(0xFF07152B),
-                focusedTextColor = Color(0xFF07152B),
+                unfocusedBorderColor = Color.Transparent,
+                focusedBorderColor = Color.Transparent,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
                 errorBorderColor = MaterialTheme.colorScheme.error,
                 errorSupportingTextColor = MaterialTheme.colorScheme.error
             ),
@@ -318,7 +317,7 @@ fun EditProfilePasswordField(
                 else Icons.Default.VisibilityOff
 
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                    Icon(imageVector = image, contentDescription = null, tint = Color(0xFFA0B2C6))
+                    Icon(imageVector = image, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         )

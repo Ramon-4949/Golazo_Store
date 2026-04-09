@@ -25,9 +25,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.Golazo_Store.R
-import com.example.golazo_store.presentation.components.AuthButton
 import com.example.golazo_store.presentation.components.AuthTextField
-import com.example.golazo_store.presentation.components.AuthYellow
+import com.example.golazo_store.presentation.components.AuthButton
+import androidx.compose.runtime.Composable
 
 @Composable
 fun LoginScreen(
@@ -65,15 +65,16 @@ fun LoginScreen(
         Image(
             painter = painterResource(id = R.drawable.icon),
             contentDescription = "Golazo Store Logo",
-            modifier = Modifier.size(200.dp)
+            modifier = Modifier.size(250.dp)
         )
         
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Bienvenido de nuevo",
-            fontSize = 16.sp,
-            color = Color.Gray
+            text = "¡Bienvenidos a Golazo Store!",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Spacer(modifier = Modifier.height(48.dp))
@@ -103,7 +104,7 @@ fun LoginScreen(
                 trailingIcon = {
                     val image = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(imageVector = image, contentDescription = null, tint = Color.Gray)
+                        Icon(imageVector = image, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             )
@@ -114,7 +115,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         if (state.isLoading) {
-            CircularProgressIndicator(color = AuthYellow)
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
         } else {
             AuthButton(
                 text = "Iniciar Sesión",
@@ -128,10 +129,10 @@ fun LoginScreen(
             modifier = Modifier.padding(bottom = 16.dp, top = 24.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            Text(text = "¿No tienes una cuenta? ", color = Color.Gray)
+            Text(text = "¿No tienes una cuenta? ", color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(
                 text = "Registrarse",
-                color = AuthYellow,
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.clickable { onNavigateToRegister() }
             )
