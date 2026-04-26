@@ -17,7 +17,10 @@ El administrador tiene acceso a funcionalidades avanzadas como crear y modificar
 2. Explora productos y añade al carrito.
 3. Gestiona direcciones y metodos de pago.
 4. Administra productos y pedidos si eres administrador.
-5. Personalizar tu perfil y mas 
+5. Personalizar tu perfil y mas.
+
+#Video representativo de como usar la app
+https://www.youtube.com/watch?v=3bfG6aPV3wM
 
 <img width="720" height="1612" alt="Screenshot_20260415_200210_com_example_Golazo_Store_MainActivity" src="https://github.com/user-attachments/assets/fbf24ba3-f076-4b9f-9519-818e5fe2ee7b" />
 <img width="720" height="1612" alt="Screenshot_20260415_200220_com_example_Golazo_Store_MainActivity" src="https://github.com/user-attachments/assets/0ca57c45-91da-4e03-922a-50401283157c" />
