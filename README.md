@@ -9,6 +9,8 @@
 Golazo Store es un e-commerce especializado en la venta de productos relacionados con el fútbol: camisetas y más.
 Los usuarios pueden registrarse y loguearse, gestionar sus direcciones de envío ,metodos de pago y añadir roductos a favoritos y más.
 
+El administrador tiene acceso a funcionalidades avanzadas como crear y modificar productos, gestionar las sugerencias y reseñas recibidas, así como generar reportes de ventas y productos. Además, puede actualizar el estado de los pedidos según su proceso de entrega.
+
 ## Cómo usar la aplicación
 
 1. Inicia sesión o regístrate.
